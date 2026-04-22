@@ -114,10 +114,10 @@ export default function Footer() {
         <div className="border-t border-slate-700/40 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
           <p className="text-xs text-slate-500">© 2026 SAIEN Network. Tous droits réservés.</p>
           <div className="flex items-center gap-4">
-            <Link href="#" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+            <Link href="/mentions-legales" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
               Mentions légales
             </Link>
-            <Link href="#" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+            <Link href="/confidentialite" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
               Politique de confidentialité
             </Link>
           </div>
