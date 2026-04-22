@@ -123,3 +123,4 @@ Le build de production utilise `output: "standalone"` de Next.js.
 3. Vérifier `npm run lint` et `npx tsc --noEmit` avant de pousser
 4. Ouvrir une Pull Request vers `main`
 # saien_front_2026
+# saien_frontend_2026
