@@ -1,36 +1,125 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# SAIEN — Front-end
 
-## Getting Started
+Interface web du réseau **SAIEN** (Synergie Africaine pour l'Innovation et l'Excellence Numérique).
 
-First, run the development server:
+Construit avec **Next.js 16** (App Router), **TypeScript**, **Tailwind CSS v4** et **shadcn/ui**. Servi en production via **Docker + NGINX**.
+
+---
+
+## Stack technique
+
+| Technologie | Version | Rôle |
+|---|---|---|
+| Next.js | 16.2.4 | Framework React (App Router) |
+| React | 19 | UI |
+| TypeScript | 5 | Typage statique |
+| Tailwind CSS | v4 | Styles utilitaires |
+| shadcn/ui | — | Composants accessibles |
+| lucide-react | 0.542 | Icônes |
+| Docker | — | Conteneurisation multi-stage |
+| NGINX | 1.27 | Reverse proxy prod |
+
+---
+
+## Démarrage rapide
+
+### Développement local (Node)
 
 ```bash
+cd front
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Ouvre [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Développement avec Docker
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+docker compose up web
+```
 
-## Learn More
+| URL | Service |
+|---|---|
+| http://localhost:3000 | Dev (Next.js Turbopack) |
+| http://localhost:8080 | NGINX → Dev |
+| http://localhost:8081 | NGINX → Prod (standalone) |
 
-To learn more about Next.js, take a look at the following resources:
+### Production avec Docker
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+docker compose up --build
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## Scripts disponibles
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+```bash
+npm run dev      # Serveur de développement (Turbopack, hostname 0.0.0.0)
+npm run build    # Build de production
+npm run start    # Serveur de production
+npm run lint     # ESLint
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Structure des pages
+
+```
+app/
+├── page.tsx              # Accueil
+├── a-propos/page.tsx     # Notre histoire, fondations, pont technologique
+├── vision/page.tsx       # Vision & Missions
+├── reseau/page.tsx       # Bureau, annuaire des membres, membres d'honneur
+├── actualites/page.tsx   # Articles, recherche, newsletter
+└── evenements/page.tsx   # Agenda (événements + webinaires), filtres, pagination
+```
+
+## Structure des composants
+
+```
+components/
+├── Navbar.tsx             # Navigation principale
+├── Footer.tsx             # Pied de page
+├── about/                 # Composants page À propos
+├── home/                  # Composants page Accueil
+├── reseau/                # Composants page Réseau & Bureau
+├── actualites/            # Composants page Actualités
+├── evenements/            # Composants page Événements
+└── (vision)               # HeroSection, MissionsSection, etc.
+```
+
+---
+
+## Variables d'environnement
+
+Copier `.env.example` en `.env.local` :
+
+```bash
+cp .env.example .env.local
+```
+
+> Aucune variable requise pour le démarrage — le projet fonctionne sans configuration.
+
+---
+
+## Docker — architecture
+
+```
+Dockerfile          Multi-stage : base → deps → dev → builder → runner
+docker-compose.yml  Services : web (dev), web-prod, nginx
+nginx/default.conf  Port 80 → web:3000 (dev) | Port 81 → web-prod:3000 (prod)
+```
+
+Le build de production utilise `output: "standalone"` de Next.js.
+
+---
+
+## Contribuer
+
+1. Créer une branche `feature/<nom>` depuis `main`
+2. Respecter la convention PascalCase, composants colocalisés dans `components/<page>/`
+3. Vérifier `npm run lint` et `npx tsc --noEmit` avant de pousser
+4. Ouvrir une Pull Request vers `main`
+# saien_front_2026
