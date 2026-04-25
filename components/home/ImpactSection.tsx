@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useRef, useState, useCallback } from "react";
-import { Users2, Globe, Layers, ArrowRight } from "lucide-react";
+import { Users2, Globe, Layers } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import RegisterModal from "./RegisterModal";
 
 /* ── Compteur animé ─────────────────────────────────────── */
 function useCountUp(target: number, duration = 1200, active = false) {
@@ -31,7 +30,6 @@ interface StatCardProps {
   label: string;
   description: string;
   visible: boolean;
-  onDoubleClick: () => void;
 }
 
 function StatCard({
@@ -41,7 +39,6 @@ function StatCard({
   label,
   description,
   visible,
-  onDoubleClick,
 }: StatCardProps) {
   const count = useCountUp(rawValue, 1400, visible);
   const [popped, setPopped] = useState(false);
@@ -58,12 +55,13 @@ function StatCard({
     <div
       role="button"
       tabIndex={0}
-      aria-label={`${rawValue}${suffix} ${label} — double-clic pour s'inscrire`}
+      aria-label={`${rawValue}${suffix} ${label}`}
       onClick={triggerPop}
-      onDoubleClick={onDoubleClick}
       onKeyDown={(e) => {
-        if (e.key === "Enter") triggerPop();
-        if (e.key === " ") { e.preventDefault(); onDoubleClick(); }
+        if (e.key === "Enter" || e.key === " ") { 
+          e.preventDefault(); 
+          triggerPop(); 
+        }
       }}
       className={[
         "group relative bg-white rounded-2xl border border-slate-100 p-6 sm:p-8",
@@ -105,14 +103,6 @@ function StatCard({
       </div>
 
       <p className="relative text-slate-500 text-sm leading-relaxed">{description}</p>
-
-      {/* Indicateur double-clic desktop */}
-      <span
-        className="hidden lg:block absolute bottom-3 right-4 text-[10px] text-slate-300 group-hover:text-emerald-400 transition-colors"
-        aria-hidden="true"
-      >
-        double-clic pour s&apos;inscrire
-      </span>
     </div>
   );
 }
@@ -145,7 +135,6 @@ const STATS = [
 /* ── Section principale ─────────────────────────────────── */
 export default function ImpactSection() {
   const [visible, setVisible] = useState(false);
-  const [modalOpen, setModalOpen] = useState(false);
   const sectionRef = useRef<HTMLElement>(null);
 
   useEffect(() => {
@@ -158,55 +147,34 @@ export default function ImpactSection() {
   }, []);
 
   return (
-    <>
-      <section
-        ref={sectionRef}
-        className="bg-slate-50 py-16 lg:py-24"
-        aria-labelledby="impact-heading"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12 lg:mb-16 max-w-xl mx-auto">
-            <h2
-              id="impact-heading"
-              className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3"
-            >
-              L&apos;impact du réseau SAIEN
-            </h2>
-            <p className="text-slate-500 text-sm sm:text-base">
-              Une communauté grandissante d&apos;experts dédiés à l&apos;avancement de l&apos;IA.
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-            {STATS.map((stat) => (
-              <StatCard
-                key={stat.label}
-                {...stat}
-                visible={visible}
-                onDoubleClick={() => setModalOpen(true)}
-              />
-            ))}
-          </div>
-
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-3">
-            <button
-              onClick={() => setModalOpen(true)}
-              className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.97] transition-all text-white font-semibold text-sm px-8 py-3.5 rounded-full shadow-lg shadow-emerald-200"
-            >
-              S&apos;inscrire au réseau
-              <ArrowRight className="w-4 h-4" aria-hidden="true" />
-            </button>
-            <p className="hidden lg:block text-xs text-slate-400 italic">
-              ou double-cliquez sur une carte
-            </p>
-            <p className="sm:hidden text-xs text-slate-400 text-center">
-              Cliquez sur une carte pour interagir
-            </p>
-          </div>
+    <section
+      ref={sectionRef}
+      className="bg-slate-50 py-16 lg:py-24"
+      aria-labelledby="impact-heading"
+    >
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="text-center mb-12 lg:mb-16 max-w-xl mx-auto">
+          <h2
+            id="impact-heading"
+            className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3"
+          >
+            L&apos;impact du réseau SAIEN
+          </h2>
+          <p className="text-slate-500 text-sm sm:text-base">
+            Une communauté grandissante d&apos;experts dédiés à l&apos;avancement de l&apos;IA.
+          </p>
         </div>
-      </section>
 
-      <RegisterModal open={modalOpen} onClose={() => setModalOpen(false)} />
-    </>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
+          {STATS.map((stat) => (
+            <StatCard
+              key={stat.label}
+              {...stat}
+              visible={visible}
+            />
+          ))}
+        </div>
+      </div>
+    </section>
   );
 }

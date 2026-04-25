@@ -1,20 +1,31 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import {
   Calendar,
-  Video,
   Clock,
   MapPin,
   Users,
   ChevronLeft,
   ChevronRight,
   Search,
+  Video,
+  MonitorPlay,
+  ArrowRight,
 } from "lucide-react";
+
+interface Intervenant {
+  name: string;
+  role: string;
+  initials: string;
+}
 
 interface EventTag {
   label: string;
+  icon?: any;
   color: string;
+  bgColor: string;
 }
 
 interface AgendaEvent {
@@ -23,12 +34,16 @@ interface AgendaEvent {
   month: string;
   year: string;
   tags: EventTag[];
+  thematique: string;
+  format: string;
   title: string;
   description: string;
   time: string;
   location: string;
   seats?: string;
-  type: "evenement" | "webinaire";
+  imageUrl?: string;
+  objectifs?: string[];
+  intervenants?: Intervenant[];
 }
 
 const EVENTS: AgendaEvent[] = [
@@ -37,110 +52,110 @@ const EVENTS: AgendaEvent[] = [
     day: "24",
     month: "OCT",
     year: "2024",
+    thematique: "Intelligence Artificielle",
+    format: "Hybride",
     tags: [
-      { label: "Conférence", color: "bg-blue-50 text-blue-600" },
-      { label: "Hybride", color: "bg-emerald-50 text-emerald-600" },
+      { label: "Conférence", color: "text-blue-600", bgColor: "bg-blue-50", icon: Video },
+      { label: "Hybride", color: "text-emerald-600", bgColor: "bg-emerald-50", icon: MonitorPlay },
     ],
     title: "Sommet Africain de l'IA 2024",
-    description:
-      "Rejoignez les leaders de la tech et décideurs politiques pour discuter de l'avenir de l'intelligence artificielle en Afrique et de son impact sur le développement économique.",
+    description: "Rejoignez les leaders de la tech et décideurs politiques pour discuter de l'avenir de l'intelligence artificielle en Afrique et de son impact sur le développement économique.",
     time: "09:00 – 18:00 (GMT)",
     location: "Dakar, Sénégal & En ligne",
     seats: "500+ participants",
-    type: "evenement",
+    imageUrl: "/event-1.png",
+    objectifs: ["Comprendre les enjeux de l'IA", "Créer des synergies", "Élaborer des politiques"],
+    intervenants: [
+      { name: "Dr. Aissatou Sow", role: "Chercheuse IA", initials: "AS" },
+      { name: "Marc Dupont", role: "Directeur Tech", initials: "MD" }
+    ]
   },
   {
     id: 2,
-    day: "05",
-    month: "DÉC",
-    year: "2024",
-    tags: [
-      { label: "Meetup", color: "bg-pink-50 text-pink-600" },
-      { label: "Présentiel", color: "bg-slate-100 text-slate-600" },
-    ],
-    title: "Meetup SAIEN Paris — IA et Finance",
-    description:
-      "Une soirée de networking autour des applications de l'IA dans le secteur financier, avec des présentations courtes et des tables rondes thématiques.",
-    time: "18:30 – 21:30 (CET)",
-    location: "Station F, Paris",
-    seats: "80 places",
-    type: "evenement",
-  },
-  {
-    id: 3,
-    day: "20",
-    month: "JAN",
-    year: "2025",
-    tags: [
-      { label: "Conférence", color: "bg-blue-50 text-blue-600" },
-      { label: "Présentiel", color: "bg-slate-100 text-slate-600" },
-    ],
-    title: "Forum Innovation Diaspora Africaine",
-    description:
-      "Trois jours de rencontres, pitchs de startups et ateliers autour des enjeux de l'IA et du transfert technologique vers l'Afrique.",
-    time: "09:00 – 18:00 (CET)",
-    location: "Cité des Sciences, Paris",
-    seats: "200 places",
-    type: "evenement",
-  },
-  {
-    id: 4,
     day: "12",
     month: "NOV",
     year: "2024",
+    thematique: "Data Science",
+    format: "En ligne",
     tags: [
-      { label: "Atelier Pratique", color: "bg-orange-50 text-orange-600" },
-      { label: "En ligne", color: "bg-purple-50 text-purple-600" },
+      { label: "Atelier Pratique", color: "text-purple-600", bgColor: "bg-purple-50", icon: Video },
+      { label: "En ligne", color: "text-blue-600", bgColor: "bg-blue-50", icon: MonitorPlay },
     ],
     title: "Déployer des modèles LLM en production",
-    description:
-      "Un atelier technique intensif pour les ingénieurs data souhaitant maîtriser l'optimisation et le déploiement de modèles de langage à grande échelle.",
+    description: "Un atelier technique intensif pour les ingénieurs data souhaitant maîtriser l'optimisation et le déploiement de modèles de langage à grande échelle.",
     time: "14:00 – 17:00 (CET)",
     location: "Zoom Meeting",
     seats: "Limité à 50 places",
-    type: "webinaire",
+    imageUrl: "/event-3.png",
+    objectifs: ["Optimiser les prompt", "Gérer les coûts d'inférence"],
+    intervenants: [
+      { name: "Youssef Alaoui", role: "ML Engineer", initials: "YA" }
+    ]
+  },
+  {
+    id: 3,
+    day: "05",
+    month: "DÉC",
+    year: "2024",
+    thematique: "Intelligence Artificielle",
+    format: "Présentiel",
+    tags: [
+      { label: "Meetup", color: "text-pink-600", bgColor: "bg-pink-50" },
+      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-slate-100" },
+    ],
+    title: "Meetup SAIEN Paris — IA et Finance",
+    description: "Une soirée de networking autour des applications de l'IA dans le secteur financier, avec des présentations courtes et des tables rondes thématiques. ",
+    time: "18:30 – 21:30 (CET)",
+    location: "Station F, Paris",
+    seats: "80 places",
+    imageUrl: "/event-2.png",
+    intervenants: [
+      { name: "Sophie Martin", role: "Analyste Quant", initials: "SM" },
+      { name: "Amadou Diallo", role: "Data Scientist", initials: "AD" },
+      { name: "Lucie Bernard", role: "Investisseur", initials: "LB" }
+    ]
+  },
+  {
+    id: 4,
+    day: "20",
+    month: "JAN",
+    year: "2025",
+    thematique: "Innovation Diaspora",
+    format: "Présentiel",
+    tags: [
+      { label: "Conférence", color: "text-orange-600", bgColor: "bg-orange-50" },
+      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-slate-100" },
+    ],
+    title: "Forum Innovation Diaspora Africaine",
+    description: "Trois jours de rencontres, pitchs de startups et ateliers autour des enjeux de l'IA et du transfert technologique vers l'Afrique.",
+    time: "09:00 – 18:00 (CET)",
+    location: "Cité des Sciences, Paris",
+    seats: "200 places",
+    objectifs: ["Favoriser l'investissement", "Pitch de startups"],
   },
   {
     id: 5,
-    day: "18",
-    month: "DÉC",
-    year: "2024",
-    tags: [
-      { label: "Table ronde", color: "bg-teal-50 text-teal-600" },
-      { label: "En ligne", color: "bg-purple-50 text-purple-600" },
-    ],
-    title: "L'IA générative en santé africaine",
-    description:
-      "Table ronde avec des praticiens de santé et data scientists sur l'utilisation responsable de l'IA générative dans les systèmes de santé du continent.",
-    time: "10:00 – 12:00 (GMT)",
-    location: "Zoom Meeting",
-    seats: "Limité à 100 places",
-    type: "webinaire",
-  },
-  {
-    id: 6,
-    day: "08",
+    day: "15",
     month: "FÉV",
     year: "2025",
+    thematique: "Réseaux & Sécurité",
+    format: "En ligne",
     tags: [
-      { label: "Formation", color: "bg-indigo-50 text-indigo-600" },
-      { label: "En ligne", color: "bg-purple-50 text-purple-600" },
+      { label: "Webinaire", color: "text-teal-600", bgColor: "bg-teal-50" },
+      { label: "En ligne", color: "text-blue-600", bgColor: "bg-blue-50" },
     ],
-    title: "Bootcamp RAG : Retrieval-Augmented Generation",
-    description:
-      "Deux jours intensifs pour maîtriser les architectures RAG, de la théorie à la mise en production avec LangChain et LlamaIndex.",
-    time: "09:00 – 17:00 (CET)",
-    location: "Zoom Meeting",
-    seats: "Limité à 30 places",
-    type: "webinaire",
+    title: "Cybersécurité à l'ère de l'IA générative",
+    description: "Analysez les nouvelles menaces posées par les deepfakes et les IA génératives, et comment s'en prémunir efficacement dans les entreprises.",
+    time: "10:00 – 12:00 (GMT)",
+    location: "Microsoft Teams",
   },
 ];
 
 const THEMATIQUES = [
-  "Intelligence Artificielle",
-  "Data Science",
-  "Réseaux & Sécurité",
-  "Innovation Diaspora",
+  { name: "Intelligence Artificielle", count: 12 },
+  { name: "Data Science", count: 8 },
+  { name: "Réseaux & Sécurité", count: 5 },
+  { name: "Innovation Diaspora", count: 14 },
 ];
 
 const FORMATS = ["Tous les formats", "Présentiel", "En ligne", "Hybride"];
@@ -148,272 +163,215 @@ const FORMATS = ["Tous les formats", "Présentiel", "En ligne", "Hybride"];
 const PER_PAGE = 3;
 
 export default function AgendaSection() {
-  const [tab, setTab] = useState<"evenement" | "webinaire">("evenement");
+  const [tab, setTab] = useState<"evenements" | "webinaires">("evenements");
   const [search, setSearch] = useState("");
   const [format, setFormat] = useState("Tous les formats");
+  const [selectedThematiques, setSelectedThematiques] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
-  const filtered = EVENTS.filter((e) => {
-    if (e.type !== tab) return false;
-    if (search && !e.title.toLowerCase().includes(search.toLowerCase()))
-      return false;
-    if (
-      format !== "Tous les formats" &&
-      !e.tags.some((t) => t.label.toLowerCase() === format.toLowerCase())
-    )
-      return false;
+  const isWebinaire = (e: AgendaEvent) =>
+    e.tags.some((t) => t.label.toLowerCase().includes("webinaire"));
+
+  const tabFiltered = EVENTS.filter((e) =>
+    tab === "webinaires" ? isWebinaire(e) : !isWebinaire(e)
+  );
+
+  const filtered = tabFiltered.filter((e) => {
+    if (search && !e.title.toLowerCase().includes(search.toLowerCase())) return false;
+    if (selectedThematiques.length > 0 && !selectedThematiques.includes(e.thematique)) return false;
+    if (format !== "Tous les formats" && e.format.toLowerCase() !== format.toLowerCase()) return false;
     return true;
   });
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const displayed = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
 
-  const handleTabChange = (next: "evenement" | "webinaire") => {
-    setTab(next);
+  const toggleThematique = (tName: string) => {
+    setSelectedThematiques(prev =>
+      prev.includes(tName) ? prev.filter(n => n !== tName) : [...prev, tName]
+    );
     setPage(1);
   };
 
+  const clearFilters = () => {
+    setSearch("");
+    setFormat("Tous les formats");
+    setSelectedThematiques([]);
+    setPage(1);
+  };
+
+  const switchTab = (t: "evenements" | "webinaires") => {
+    setTab(t);
+    setPage(1);
+    clearFilters();
+  };
+
   return (
-    <section
-      className="bg-white py-12 lg:py-16"
-      aria-labelledby="agenda-heading"
-    >
+    <section className="bg-[#F8FAFC] min-h-screen py-12 lg:py-16" aria-labelledby="agenda-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* En-tête */}
-        <div className="mb-8">
-          <h1
-            id="agenda-heading"
-            className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2"
+
+        {/* ── Onglets ── */}
+        <div className="flex items-center gap-1 mb-8 border-b border-gray-200">
+          <button
+            onClick={() => switchTab("evenements")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-colors -mb-px ${
+              tab === "evenements"
+                ? "border-[#00A859] text-[#00A859]"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
           >
-            Agenda SAIEN
-          </h1>
-          <p className="text-slate-500 text-sm sm:text-base">
-            Découvrez nos prochains événements, conférences et ateliers dédiés
-            à l&apos;intelligence artificielle et à l&apos;innovation en
-            Afrique.
-          </p>
+            <Calendar className="w-4 h-4" />
+            Événements
+          </button>
+          <button
+            onClick={() => switchTab("webinaires")}
+            className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-colors -mb-px ${
+              tab === "webinaires"
+                ? "border-[#00A859] text-[#00A859]"
+                : "border-transparent text-slate-500 hover:text-slate-700"
+            }`}
+          >
+            <Video className="w-4 h-4" />
+            Webinaires
+          </button>
         </div>
 
-        {/* Tabs */}
-        <div className="flex gap-1 border-b border-slate-100 mb-8">
-          {(
-            [
-              { key: "evenement", icon: Calendar, label: "Événements" },
-              { key: "webinaire", icon: Video, label: "Webinaires" },
-            ] as const
-          ).map(({ key, icon: Icon, label }) => (
-            <button
-              key={key}
-              onClick={() => handleTabChange(key)}
-              className={`flex items-center gap-2 px-4 py-2.5 text-sm font-medium border-b-2 -mb-px transition-colors ${
-                tab === key
-                  ? "border-emerald-500 text-emerald-600"
-                  : "border-transparent text-slate-500 hover:text-slate-700"
-              }`}
-            >
-              <Icon className="w-4 h-4" aria-hidden="true" />
-              {label}
-            </button>
-          ))}
-        </div>
+        <div className="flex flex-col lg:flex-row gap-8 items-start">
 
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Sidebar filtres */}
-          <aside className="lg:w-56 shrink-0">
-            <div className="relative mb-6">
-              <Search
-                className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400"
-                aria-hidden="true"
-              />
+          <aside className="w-full lg:w-[280px] shrink-0 bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:sticky lg:top-24">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-base font-bold text-[#0A2540]">Filtres</h2>
+              <button onClick={clearFilters} className="text-xs text-slate-400 hover:text-slate-700 font-medium transition-colors">Réinitialiser</button>
+            </div>
+
+            <div className="relative mb-8">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="search"
-                placeholder="Rechercher un événement..."
+                placeholder="Rechercher..."
                 value={search}
-                onChange={(e) => {
-                  setSearch(e.target.value);
-                  setPage(1);
-                }}
-                className="w-full pl-9 pr-3 py-2 text-sm border border-slate-200 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
-                aria-label="Rechercher un événement"
+                onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+                className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A859]/40 focus:border-[#00A859]"
               />
             </div>
 
-            <div className="mb-6">
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
-                Thématiques
-              </p>
-              <div className="flex flex-col gap-2">
+            <div className="mb-8">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#0A2540]/60 mb-4">Thématiques</p>
+              <div className="flex flex-col gap-3">
                 {THEMATIQUES.map((t) => (
-                  <label key={t} className="flex items-center gap-2 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      className="w-4 h-4 rounded accent-emerald-500"
-                    />
-                    <span className="text-sm text-slate-600">{t}</span>
+                  <label key={t.name} className="flex items-center justify-between cursor-pointer group">
+                    <div className="flex items-center gap-3">
+                      <input
+                        type="checkbox"
+                        checked={selectedThematiques.includes(t.name)}
+                        onChange={() => toggleThematique(t.name)}
+                        className="w-4 h-4 rounded border-gray-300 text-[#00A859] focus:ring-[#00A859]"
+                      />
+                      <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{t.name}</span>
+                    </div>
+                    <span className="text-[10px] font-semibold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">{t.count}</span>
                   </label>
                 ))}
               </div>
             </div>
 
             <div>
-              <p className="text-xs font-bold uppercase tracking-widest text-slate-500 mb-3">
-                Format
-              </p>
-              <div className="flex flex-col gap-2">
+              <p className="text-[10px] font-bold uppercase tracking-widest text-[#0A2540]/60 mb-4">Format</p>
+              <div className="flex flex-col gap-3">
                 {FORMATS.map((f) => (
-                  <label key={f} className="flex items-center gap-2 cursor-pointer">
+                  <label key={f} className="flex items-center gap-3 cursor-pointer group">
                     <input
                       type="radio"
                       name="format"
                       checked={format === f}
-                      onChange={() => {
-                        setFormat(f);
-                        setPage(1);
-                      }}
-                      className="w-4 h-4 accent-emerald-500"
+                      onChange={() => { setFormat(f); setPage(1); }}
+                      className="w-4 h-4 text-[#00A859] border-gray-300 focus:ring-[#00A859]"
                     />
-                    <span
-                      className={`text-sm ${
-                        format === f
-                          ? "text-emerald-600 font-medium"
-                          : "text-slate-600"
-                      }`}
-                    >
-                      {f}
-                    </span>
+                    <span className={`text-sm transition-colors group-hover:text-slate-900 ${format === f ? "text-[#0A2540] font-semibold" : "text-slate-500"}`}>{f}</span>
                   </label>
                 ))}
               </div>
             </div>
           </aside>
 
-          {/* Liste */}
-          <div className="flex-1">
-            <div className="flex items-center justify-between mb-5">
-              <p className="text-sm font-semibold text-slate-700">
-                {tab === "evenement" ? "Événements" : "Webinaires"} à venir{" "}
-                <span className="text-slate-400 font-normal">
-                  ({filtered.length})
-                </span>
+          <div className="flex-1 w-full min-w-0">
+            <div className="flex items-center justify-between mb-6">
+              <h1 id="agenda-heading" className="text-2xl font-bold text-[#0A2540]">
+                {tab === "webinaires" ? "Webinaires" : "Événements"} à venir{" "}
+                <span className="text-[#00A859]">({filtered.length})</span>
+              </h1>
+              <p className="hidden sm:block text-sm text-slate-400">
+                Trier par : <span className="font-semibold text-[#0A2540]">Date (plus proche)</span>
               </p>
-              <span className="text-sm text-slate-500">
-                Trier par :{" "}
-                <span className="font-medium text-slate-700">
-                  Date (plus proche)
-                </span>
-              </span>
             </div>
 
-            {displayed.length === 0 ? (
-              <p className="text-center py-16 text-slate-400 text-sm">
-                Aucun résultat
-              </p>
-            ) : (
-              <div className="flex flex-col gap-4">
-                {displayed.map((event) => (
-                  <div
-                    key={event.id}
-                    className="flex gap-5 bg-white rounded-2xl border border-slate-100 p-5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
-                  >
+            <div className="flex flex-col gap-4">
+              {displayed.length === 0 ? (
+                <div className="bg-white p-12 text-center rounded-2xl border border-slate-100 shadow-sm">
+                  <p className="text-slate-500 text-sm">Aucun résultat trouvé pour ces filtres.</p>
+                  <button onClick={clearFilters} className="mt-4 text-sm text-[#00A859] font-semibold hover:underline">Réinitialiser les filtres</button>
+                </div>
+              ) : (
+                displayed.map((event) => (
+                  <div key={event.id} className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row overflow-hidden hover:shadow-md hover:border-[#00A859]/20 transition-all duration-200">
+
                     {/* Bloc date */}
-                    <div className="w-14 shrink-0 flex flex-col items-center justify-start pt-1">
-                      <span className="text-xs font-bold text-emerald-500 uppercase">
-                        {event.month}
-                      </span>
-                      <span className="text-3xl font-extrabold text-slate-900 leading-none">
-                        {event.day}
-                      </span>
-                      <span className="text-xs text-slate-400">{event.year}</span>
+                    <div className="w-full md:w-28 bg-gradient-to-b from-[#0A2540] to-[#0d2f4d] flex flex-col items-center justify-center py-6 px-4 shrink-0">
+                      <span className="text-[10px] font-bold text-[#00A859] uppercase tracking-[0.2em]">{event.month}</span>
+                      <span className="text-[2.8rem] leading-none font-black text-white my-1">{event.day}</span>
+                      <span className="text-[10px] text-white/50 font-medium">{event.year}</span>
                     </div>
 
                     {/* Contenu */}
-                    <div className="flex-1 min-w-0">
-                      <div className="flex flex-wrap gap-1.5 mb-2">
-                        {event.tags.map((tag) => (
-                          <span
-                            key={tag.label}
-                            className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${tag.color}`}
-                          >
-                            {tag.label}
-                          </span>
-                        ))}
+                    <div className="flex-1 p-5 md:p-6 flex flex-col min-w-0">
+                      <div className="flex flex-wrap items-center gap-2 mb-3">
+                        {event.tags.map((tag, i) => {
+                          const IconComponent = tag.icon;
+                          return (
+                            <span key={i} className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${tag.color} ${tag.bgColor}`}>
+                              {IconComponent && <IconComponent className="w-3.5 h-3.5" />}
+                              {tag.label}
+                            </span>
+                          );
+                        })}
                       </div>
-                      <h3 className="font-bold text-slate-900 text-sm sm:text-base mb-1.5">
-                        {event.title}
-                      </h3>
-                      <p className="text-slate-500 text-xs sm:text-sm leading-relaxed mb-3">
-                        {event.description}
-                      </p>
-                      <div className="flex flex-wrap gap-4 text-xs text-slate-500">
-                        <span className="flex items-center gap-1">
-                          <Clock
-                            className="w-3.5 h-3.5 text-slate-400"
-                            aria-hidden="true"
-                          />
-                          {event.time}
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <MapPin
-                            className="w-3.5 h-3.5 text-slate-400"
-                            aria-hidden="true"
-                          />
-                          {event.location}
-                        </span>
-                        {event.seats && (
-                          <span className="flex items-center gap-1">
-                            <Users
-                              className="w-3.5 h-3.5 text-slate-400"
-                              aria-hidden="true"
-                            />
-                            {event.seats}
-                          </span>
-                        )}
+                      <h3 className="text-lg font-bold text-[#0A2540] mb-1.5 group-hover:text-[#00A859] transition-colors line-clamp-1">{event.title}</h3>
+                      <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-4">{event.description}</p>
+                      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500 font-medium">
+                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[#00A859] shrink-0" />{event.time}</span>
+                        <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-[#00A859] shrink-0" />{event.location}</span>
+                        {event.seats && <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-[#00A859] shrink-0" />{event.seats}</span>}
                       </div>
                     </div>
 
-                    {/* CTA */}
-                    <div className="shrink-0 flex items-center">
-                      <button className="bg-emerald-500 hover:bg-emerald-600 active:scale-95 transition-all text-white text-xs font-semibold px-4 py-2 rounded-full">
-                        S&apos;inscrire
+                    {/* Actions */}
+                    <div className="px-5 py-5 md:px-6 flex md:flex-col items-center md:justify-center gap-3 border-t md:border-t-0 md:border-l border-gray-100 shrink-0 relative z-10">
+                      <button aria-label="Ajouter au calendrier" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 flex items-center justify-center hover:bg-gray-50 hover:text-[#00A859] hover:border-[#00A859]/30 transition-all shadow-sm">
+                        <Calendar className="w-4 h-4" />
                       </button>
+                      <Link href={`/evenements/${event.id}`} className="relative z-10 flex items-center gap-2 px-5 py-2.5 bg-[#00A859] hover:bg-[#008f4c] text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm whitespace-nowrap">
+                        Voir <ArrowRight className="w-4 h-4" />
+                      </Link>
                     </div>
-                  </div>
-                ))}
-              </div>
-            )}
 
-            {/* Pagination */}
+                    <Link href={`/evenements/${event.id}`} className="absolute inset-0 z-0" aria-hidden="true" tabIndex={-1} />
+                  </div>
+                ))
+              )}
+            </div>
+
             {totalPages > 1 && (
-              <div className="flex items-center justify-center gap-1 mt-8">
-                <button
-                  onClick={() => setPage((p) => Math.max(1, p - 1))}
-                  disabled={page === 1}
-                  className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-30 transition-colors"
-                  aria-label="Page précédente"
-                >
-                  <ChevronLeft className="w-4 h-4" aria-hidden="true" />
+              <div className="flex justify-center items-center gap-2 mt-10">
+                <button onClick={() => setPage((p) => Math.max(1, p - 1))} disabled={page === 1} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-700 disabled:opacity-40 transition-all">
+                  <ChevronLeft className="w-5 h-5" />
                 </button>
                 {Array.from({ length: totalPages }).map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setPage(i + 1)}
-                    className={`w-8 h-8 rounded-lg text-sm font-medium transition-colors ${
-                      page === i + 1
-                        ? "bg-emerald-500 text-white"
-                        : "hover:bg-slate-100 text-slate-600"
-                    }`}
-                    aria-current={page === i + 1 ? "page" : undefined}
-                  >
+                  <button key={i} onClick={() => setPage(i + 1)} className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all ${page === i + 1 ? "bg-[#00A859] text-white shadow-md" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"}`}>
                     {i + 1}
                   </button>
                 ))}
-                <button
-                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-                  disabled={page === totalPages}
-                  className="p-2 rounded-lg hover:bg-slate-100 disabled:opacity-30 transition-colors"
-                  aria-label="Page suivante"
-                >
-                  <ChevronRight className="w-4 h-4" aria-hidden="true" />
+                <button onClick={() => setPage((p) => Math.min(totalPages, p + 1))} disabled={page === totalPages} className="w-10 h-10 flex items-center justify-center rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-700 disabled:opacity-40 transition-all">
+                  <ChevronRight className="w-5 h-5" />
                 </button>
               </div>
             )}

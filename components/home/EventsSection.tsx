@@ -4,9 +4,8 @@ import EventCard from "./EventCard";
 
 const EVENTS = [
   {
-    day: "15",
-    month: "Nov",
-    imageBg: "bg-gradient-to-br from-slate-700 via-blue-900 to-slate-900",
+    dateBadge: "15 Nov",
+    imageUrl: "/event-1.png", // <- Image de la présentation (personnes en salle)
     category: "Webinaire",
     CategoryIcon: Monitor,
     title: "L'IA générative en entreprise",
@@ -15,9 +14,8 @@ const EVENTS = [
     time: "14:00 – 15:30 (CET)",
   },
   {
-    day: "28",
-    month: "Nov",
-    imageBg: "bg-gradient-to-br from-teal-700 via-cyan-900 to-slate-900",
+    dateBadge: "28 Nov",
+    imageUrl: "/event-2.png", // <- Image du groupe de personnes en networking
     category: "Paris, France",
     CategoryIcon: MapPin,
     title: "Meetup Diaspora Tech",
@@ -26,12 +24,11 @@ const EVENTS = [
     time: "18:30 – 21:00 (CET)",
   },
   {
-    day: "05",
-    month: "Déc",
-    imageBg: "bg-gradient-to-br from-purple-800 via-indigo-900 to-slate-900",
+    dateBadge: "05 Déc",
+    imageUrl: "/event-3.png", // <- Image de la personne avec deux écrans
     category: "Workshop En Ligne",
     CategoryIcon: GraduationCap,
-    title: "Masterclass : Fine-tuning LLMs",
+    title: "Masterclass: Fine-tuning LLMs",
     description:
       "Atelier technique sur l'adaptation de modèles open-source à des cas d'usage spécifiques.",
     time: "10:00 – 12:00 (EST)",
