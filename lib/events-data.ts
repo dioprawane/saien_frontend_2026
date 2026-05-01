@@ -43,7 +43,7 @@ export const EVENTS: AgendaEvent[] = [
     format: "Hybride",
     tags: [
       { label: "Conférence", color: "text-blue-600", bgColor: "bg-blue-50", iconName: "Video" },
-      { label: "Hybride", color: "text-emerald-600", bgColor: "bg-emerald-50", iconName: "MonitorPlay" },
+      { label: "Hybride", color: "text-brand-green-hover", bgColor: "bg-brand-green-soft", iconName: "MonitorPlay" },
     ],
     title: "Sommet Africain de l'IA 2024",
     description: "Rejoignez les leaders de la tech et décideurs politiques pour discuter de l'avenir de l'intelligence artificielle en Afrique et de son impact sur le développement économique.",
@@ -116,7 +116,7 @@ export const EVENTS: AgendaEvent[] = [
     format: "Présentiel",
     tags: [
       { label: "Meetup", color: "text-pink-600", bgColor: "bg-pink-50" },
-      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-slate-100" },
+      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-brand-surface" },
     ],
     title: "Meetup SAIEN Paris — IA et Finance",
     description: "Une soirée de networking autour des applications de l'IA dans le secteur financier, avec des présentations courtes et des tables rondes thématiques.",
@@ -153,7 +153,7 @@ export const EVENTS: AgendaEvent[] = [
     format: "Présentiel",
     tags: [
       { label: "Conférence", color: "text-orange-600", bgColor: "bg-orange-50" },
-      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-slate-100" },
+      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-brand-surface" },
     ],
     title: "Forum Innovation Diaspora Africaine",
     description: "Trois jours de rencontres, pitchs de startups et ateliers autour des enjeux de l'IA et du transfert technologique vers l'Afrique.",
@@ -185,7 +185,7 @@ export const EVENTS: AgendaEvent[] = [
     thematique: "Réseaux & Sécurité",
     format: "En ligne",
     tags: [
-      { label: "Webinaire", color: "text-teal-600", bgColor: "bg-teal-50" },
+      { label: "Webinaire", color: "text-brand-green-hover", bgColor: "bg-brand-green-soft" },
       { label: "En ligne", color: "text-blue-600", bgColor: "bg-blue-50" },
     ],
     title: "Cybersécurité à l'ère de l'IA générative",

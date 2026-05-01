@@ -9,8 +9,8 @@ export default function HomeHero() {
 
           {/* ── Texte ── */}
           <div className="flex-1 flex flex-col gap-6 text-left">
-            <span className="inline-flex w-fit items-center gap-2 bg-emerald-50 border border-emerald-100 text-emerald-600 text-xs font-semibold px-3 py-1.5 rounded-full">
-              <span className="w-1.5 h-1.5 bg-emerald-400 rounded-full animate-pulse" aria-hidden="true" />
+            <span className="inline-flex w-fit items-center gap-2 bg-brand-green-soft border border-brand-green-soft-strong text-brand-green-hover text-xs font-semibold px-3 py-1.5 rounded-full">
+              <span className="w-1.5 h-1.5 bg-brand-green rounded-full animate-pulse" aria-hidden="true" />
               Réseau d&apos;Intelligence Artificielle
             </span>
 
@@ -20,7 +20,7 @@ export default function HomeHero() {
             >
               Connecter<br />
               l&apos;Innovation<br />
-              <span className="text-emerald-500">Sans Frontières.</span>
+              <span className="text-brand-green">Sans Frontières.</span>
             </h1>
 
             <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-md">
@@ -31,14 +31,14 @@ export default function HomeHero() {
             <div className="flex flex-col sm:flex-row gap-3">
               <Link
                 href="/vision"
-                className="inline-flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 transition-colors text-white text-sm font-semibold px-6 py-3 rounded-full"
+                className="inline-flex items-center justify-center gap-2 bg-brand-green hover:bg-brand-green-hover transition-colors text-white text-sm font-semibold px-6 py-3 rounded-full"
               >
                 Découvrir notre mission
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </Link>
               <Link
                 href="/reseau"
-                className="inline-flex items-center justify-center bg-transparent hover:bg-slate-50 transition-colors text-slate-800 border border-slate-200 text-sm font-semibold px-6 py-3 rounded-full"
+                className="inline-flex items-center justify-center bg-transparent hover:bg-brand-surface transition-colors text-slate-800 border border-slate-200 text-sm font-semibold px-6 py-3 rounded-full"
               >
                 Voir les membres
               </Link>
@@ -54,7 +54,7 @@ export default function HomeHero() {
             >
               {/* Halos de fond */}
               <div className="absolute inset-0" aria-hidden="true">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-emerald-500/10 rounded-full blur-3xl" />
+                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 bg-brand-green/10 rounded-full blur-3xl" />
                 <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-blue-400/10 rounded-full blur-2xl" />
               </div>
 
@@ -76,7 +76,7 @@ export default function HomeHero() {
               ].map((node, i) => (
                 <div
                   key={i}
-                  className={`absolute w-2 h-2 bg-emerald-400 rounded-full shadow-[0_0_6px_2px_rgba(52,211,153,0.5)] ${node.pulse ? "animate-pulse" : ""}`}
+                  className={`absolute w-2 h-2 bg-brand-green rounded-full shadow-[0_0_6px_2px_rgba(16,185,129,0.45)] ${node.pulse ? "animate-pulse" : ""}`}
                   style={{ left: node.x, top: node.y }}
                   aria-hidden="true"
                 />

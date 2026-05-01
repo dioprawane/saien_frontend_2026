@@ -50,10 +50,10 @@ export default function FondationsSection() {
           {FONDATIONS.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="bg-slate-50 rounded-2xl border border-slate-100 p-6 flex flex-col gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+              className="bg-brand-surface rounded-2xl border border-slate-100 p-6 flex flex-col gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                <Icon className="w-5 h-5 text-emerald-500" aria-hidden="true" />
+              <div className="w-10 h-10 rounded-xl bg-brand-green-soft flex items-center justify-center">
+                <Icon className="w-5 h-5 text-brand-green" aria-hidden="true" />
               </div>
               <h3 className="font-bold text-slate-900 text-sm">{title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed">

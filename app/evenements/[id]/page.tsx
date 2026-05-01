@@ -53,7 +53,7 @@ export default async function EvenementDetailPage({
   return (
     <>
       <Navbar />
-      <main className="bg-[#F8FAFC] min-h-screen">
+      <main className="bg-brand-surface min-h-screen">
 
         {/* ── Hero ── */}
         <div className="relative w-full h-[420px] md:h-[500px] overflow-hidden">
@@ -114,20 +114,20 @@ export default async function EvenementDetailPage({
               {/* Meta info bar */}
               <div className="flex flex-wrap items-center gap-x-8 gap-y-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm text-sm text-slate-600 font-medium">
                 <span className="flex items-center gap-2">
-                  <Calendar className="w-4 h-4 text-[#00A859] shrink-0" />
+                  <Calendar className="w-4 h-4 text-brand-green shrink-0" />
                   {event.day} {event.month} {event.year}
                 </span>
                 <span className="flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-[#00A859] shrink-0" />
+                  <Clock className="w-4 h-4 text-brand-green shrink-0" />
                   {event.time}
                 </span>
                 <span className="flex items-center gap-2">
-                  <MapPin className="w-4 h-4 text-[#00A859] shrink-0" />
+                  <MapPin className="w-4 h-4 text-brand-green shrink-0" />
                   {event.location}
                 </span>
                 {event.seats && (
                   <span className="flex items-center gap-2">
-                    <Users className="w-4 h-4 text-[#00A859] shrink-0" />
+                    <Users className="w-4 h-4 text-brand-green shrink-0" />
                     {event.seats}
                   </span>
                 )}
@@ -151,7 +151,7 @@ export default async function EvenementDetailPage({
                         key={i}
                         className="flex items-start gap-3 p-4 bg-white rounded-xl border border-gray-100 shadow-sm"
                       >
-                        <CheckCircle2 className="w-5 h-5 text-[#00A859] shrink-0 mt-0.5" />
+                        <CheckCircle2 className="w-5 h-5 text-brand-green shrink-0 mt-0.5" />
                         <span className="text-sm text-slate-600 leading-snug">{obj}</span>
                       </div>
                     ))}
@@ -163,11 +163,11 @@ export default async function EvenementDetailPage({
               {event.programme && (
                 <div>
                   <h2 className="text-xl font-bold text-[#0A2540] mb-5">Programme</h2>
-                  <div className="relative pl-6 border-l-2 border-[#00A859]/20 space-y-6">
+                  <div className="relative pl-6 border-l-2 border-brand-green/20 space-y-6">
                     {event.programme.map((item, i) => (
                       <div key={i} className="relative">
-                        <div className="absolute -left-[1.625rem] w-4 h-4 rounded-full border-2 border-[#00A859] bg-white top-0.5" />
-                        <span className="text-xs font-bold text-[#00A859] uppercase tracking-widest">
+                        <div className="absolute -left-[1.625rem] w-4 h-4 rounded-full border-2 border-brand-green bg-white top-0.5" />
+                        <span className="text-xs font-bold text-brand-green uppercase tracking-widest">
                           {item.time}
                         </span>
                         <h3 className="text-sm font-bold text-[#0A2540] mt-0.5">{item.title}</h3>
@@ -248,7 +248,7 @@ export default async function EvenementDetailPage({
             <div className="w-full lg:w-[300px] shrink-0">
               <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 lg:sticky lg:top-24 space-y-5">
                 <div>
-                  <p className="text-[10px] font-bold uppercase tracking-widest text-[#00A859] mb-2">
+                  <p className="text-[10px] font-bold uppercase tracking-widest text-brand-green mb-2">
                     Inscription
                   </p>
                   <h3 className="text-lg font-bold text-[#0A2540] leading-snug">
@@ -258,30 +258,30 @@ export default async function EvenementDetailPage({
 
                 <div className="space-y-3 text-sm text-slate-600">
                   <div className="flex items-center gap-3">
-                    <Calendar className="w-4 h-4 text-[#00A859] shrink-0" />
+                    <Calendar className="w-4 h-4 text-brand-green shrink-0" />
                     <span>{event.day} {event.month} {event.year}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <Clock className="w-4 h-4 text-[#00A859] shrink-0" />
+                    <Clock className="w-4 h-4 text-brand-green shrink-0" />
                     <span>{event.time}</span>
                   </div>
                   <div className="flex items-center gap-3">
-                    <MapPin className="w-4 h-4 text-[#00A859] shrink-0" />
+                    <MapPin className="w-4 h-4 text-brand-green shrink-0" />
                     <span>{event.location}</span>
                   </div>
                   {event.seats && (
                     <div className="flex items-center gap-3">
-                      <Users className="w-4 h-4 text-[#00A859] shrink-0" />
+                      <Users className="w-4 h-4 text-brand-green shrink-0" />
                       <span>{event.seats}</span>
                     </div>
                   )}
                 </div>
 
                 <div className="pt-2 space-y-3">
-                  <button className="w-full py-3 bg-[#00A859] hover:bg-[#008f4c] text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm">
+                  <button className="w-full py-3 bg-brand-green hover:bg-brand-green-hover text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm">
                     S'inscrire maintenant
                   </button>
-                  <button className="w-full py-3 border border-gray-200 text-slate-600 hover:bg-gray-50 font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                  <button className="w-full py-3 border border-gray-200 text-slate-600 hover:bg-brand-surface font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2">
                     <Share2 className="w-4 h-4" />
                     Partager l'événement
                   </button>
@@ -290,7 +290,7 @@ export default async function EvenementDetailPage({
                 <div className="pt-2 border-t border-gray-100 text-center">
                   <p className="text-xs text-slate-400">
                     Réservé aux membres SAIEN.{" "}
-                    <Link href="/rejoindre" className="text-[#00A859] font-semibold hover:underline">
+                    <Link href="/rejoindre" className="text-brand-green font-semibold hover:underline">
                       Rejoindre
                     </Link>
                   </p>
@@ -304,3 +304,4 @@ export default async function EvenementDetailPage({
     </>
   );
 }
+

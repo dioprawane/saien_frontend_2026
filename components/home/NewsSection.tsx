@@ -8,30 +8,33 @@ import ArticleRow from "./ArticleRow";
 const ARTICLES = [
   {
     category: "Publication",
-    categoryColor: "bg-blue-50 text-blue-600",
+    categoryColor: "bg-blue-100 text-blue-700",
     date: "il y a 2 jours",
-    imageBg: "bg-gradient-to-br from-teal-500 to-blue-700",
+    imageUrl: "/event-1.png",
     title: "Rapport SAIEN 2024 : L'état de l'IA en Afrique francophone",
     description:
       "Notre dernière étude met en lumière les avancées majeures et les défis de l'écosystème IA sur le continent.",
+    href: "/actualites",
   },
   {
     category: "Partenariat",
-    categoryColor: "bg-amber-50 text-amber-600",
+    categoryColor: "bg-amber-100 text-amber-700",
     date: "il y a 1 semaine",
-    imageBg: "bg-gradient-to-br from-slate-600 to-slate-800",
+    imageUrl: "/event-2.png",
     title: "Nouveau partenariat stratégique avec l'Institut de l'IA",
     description:
       "Cette collaboration permettra d'offrir des bourses de recherche aux membres de notre réseau.",
+    href: "/actualites",
   },
   {
     category: "Technologie",
-    categoryColor: "bg-purple-50 text-purple-600",
+    categoryColor: "bg-brand-green-soft text-brand-green-hover",
     date: "il y a 2 semaines",
-    imageBg: "bg-gradient-to-br from-green-700 to-slate-900",
+    imageUrl: "/event-3.png",
     title: "Lancement de la plateforme open-source SAIEN-Core",
     description:
       "Une suite d'outils développée par notre communauté pour faciliter le déploiement de modèles en production.",
+    href: "/actualites",
   },
 ];
 
@@ -41,21 +44,21 @@ const OPPORTUNITIES = [
     company: "Fintech",
     location: "Montréal, Canada",
     tag: "Nouveau",
-    tagColor: "bg-emerald-50 text-emerald-600",
+    tagColor: "text-slate-400",
   },
   {
     title: "Chercheur en NLP",
     company: "Lab IA",
     location: "Paris, France",
     tag: "il y a 3j",
-    tagColor: "bg-slate-100 text-slate-500",
+    tagColor: "text-slate-400",
   },
   {
     title: "Appel à projets : IA & Santé",
     company: "Global",
     location: "Remote",
-    tag: "Dans 6 jours",
-    tagColor: "bg-orange-50 text-orange-600",
+    tag: "Clôture bientôt",
+    tagColor: "text-brand-green-hover",
   },
 ];
 
@@ -63,42 +66,40 @@ export default function NewsSection() {
   const [email, setEmail] = useState("");
 
   return (
-    <section className="py-16 lg:py-24 bg-white" aria-labelledby="news-heading">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col lg:flex-row gap-10 lg:gap-12">
-
-          {/* ── Colonne principale : articles ── */}
-          <div className="flex-1 min-w-0">
-            <div className="flex items-center justify-between mb-2">
+    <section
+      className="border-y border-slate-200/70 bg-brand-surface py-16 lg:py-20"
+      aria-labelledby="news-heading"
+    >
+      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_320px] xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-10">
+          <div className="min-w-0">
+            <div className="mb-5 flex items-end justify-between gap-4 border-b border-slate-300/70 pb-4">
               <h2
                 id="news-heading"
-                className="text-xl sm:text-2xl font-bold text-slate-900"
+                className="text-3xl font-black tracking-tight text-[#0A2540] sm:text-4xl"
               >
                 Dernières Actualités
               </h2>
               <Link
                 href="/actualites"
-                className="text-sm text-emerald-500 hover:text-emerald-600 font-medium transition-colors"
+                className="shrink-0 text-sm font-semibold text-slate-500 transition-colors hover:text-slate-700"
               >
                 Tout voir
               </Link>
             </div>
 
-            <div>
+            <div className="space-y-4">
               {ARTICLES.map((article) => (
                 <ArticleRow key={article.title} {...article} />
               ))}
             </div>
           </div>
 
-          {/* ── Sidebar droite ── */}
-          <div className="w-full lg:w-80 xl:w-96 shrink-0 flex flex-col gap-6">
-
-            {/* Opportunités */}
-            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-              <div className="flex items-center gap-2 mb-4">
-                <Briefcase className="w-4 h-4 text-emerald-500" aria-hidden="true" />
-                <h3 className="font-bold text-slate-900 text-sm">
+          <aside className="flex flex-col gap-6">
+            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_18px_42px_-30px_rgba(10,37,64,0.95)] sm:p-6">
+              <div className="mb-4 flex items-center gap-2">
+                <Briefcase className="h-4 w-4 text-brand-green-hover" aria-hidden="true" />
+                <h3 className="text-lg font-bold text-[#0A2540]">
                   Opportunités du réseau
                 </h3>
               </div>
@@ -107,23 +108,21 @@ export default function NewsSection() {
                 {OPPORTUNITIES.map((opp) => (
                   <li
                     key={opp.title}
-                    className="flex items-start justify-between gap-3 py-3 border-b border-slate-200 last:border-0"
+                    className="flex items-start justify-between gap-4 border-b border-slate-200 py-3.5 last:border-0"
                   >
                     <div className="min-w-0">
-                      <p className="font-semibold text-slate-900 text-sm leading-snug">
+                      <p className="text-sm font-semibold leading-snug text-[#0A2540]">
                         {opp.title}
-                        <span className="text-slate-400 font-normal">
+                        <span className="font-medium text-slate-500">
                           {" "}· {opp.company}
                         </span>
                       </p>
-                      <p className="text-xs text-slate-500 mt-0.5 flex items-center gap-1">
-                        <MapPin className="w-3 h-3 shrink-0" aria-hidden="true" />
+                      <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
+                        <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
                         {opp.location}
                       </p>
                     </div>
-                    <span
-                      className={`shrink-0 text-[10px] font-semibold px-2 py-0.5 rounded-full whitespace-nowrap ${opp.tagColor}`}
-                    >
+                    <span className={`shrink-0 text-[11px] font-semibold whitespace-nowrap ${opp.tagColor}`}>
                       {opp.tag}
                     </span>
                   </li>
@@ -131,28 +130,26 @@ export default function NewsSection() {
               </ul>
 
               <Link
-                href="/offres"
-                className="mt-4 flex items-center justify-center gap-1.5 text-sm font-medium text-slate-700 bg-white hover:bg-slate-50 border border-slate-200 py-2.5 rounded-xl transition-colors w-full"
+                href="/reseau"
+                className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-surface py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-brand-green-soft"
               >
                 Voir toutes les offres
-                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
               </Link>
             </div>
 
-            {/* Newsletter */}
-            <div className="bg-slate-50 rounded-2xl p-5 border border-slate-100">
-              <div className="flex items-center gap-2 mb-2">
-                <Mail className="w-4 h-4 text-emerald-500" aria-hidden="true" />
-                <h3 className="font-bold text-slate-900 text-sm">
-                  Restez connecté
-                </h3>
+            <div className="rounded-2xl border border-[#0A3458] bg-[#0A3458] p-5 text-white shadow-[0_20px_45px_-26px_rgba(10,52,88,0.9)] sm:p-6">
+              <div className="mb-2 flex items-center gap-2">
+                <Mail className="h-4 w-4 text-brand-green-soft-strong" aria-hidden="true" />
+                <h3 className="text-xl font-bold">Restez connecté</h3>
               </div>
-              <p className="text-slate-500 text-xs leading-relaxed mb-4">
-                Recevez notre veille technologique mensuelle et les actus du
-                réseau.
+
+              <p className="mb-4 text-sm leading-relaxed text-slate-200">
+                Recevez notre veille technologique mensuelle et les actus du réseau.
               </p>
+
               <form
-                className="flex flex-col gap-2"
+                className="flex flex-col gap-2.5"
                 onSubmit={(e) => {
                   e.preventDefault();
                   setEmail("");
@@ -165,18 +162,17 @@ export default function NewsSection() {
                   required
                   placeholder="Votre adresse email"
                   aria-label="Votre adresse email pour la newsletter"
-                  className="w-full bg-white border border-slate-200 text-slate-900 text-sm px-3 py-2.5 rounded-lg placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors"
+                  className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2.5 text-sm text-white placeholder:text-slate-300 focus:border-brand-green focus:outline-none transition-colors"
                 />
                 <button
                   type="submit"
-                  className="w-full bg-emerald-500 hover:bg-emerald-600 transition-colors text-white text-sm font-semibold py-2.5 rounded-lg"
+                  className="w-full rounded-lg bg-brand-green py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-green-hover"
                 >
                   S&apos;abonner
                 </button>
               </form>
             </div>
-
-          </div>
+          </aside>
         </div>
       </div>
     </section>

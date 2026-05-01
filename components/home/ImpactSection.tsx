@@ -66,22 +66,22 @@ function StatCard({
       className={[
         "group relative bg-white rounded-2xl border border-slate-100 p-6 sm:p-8",
         "flex flex-col gap-4 cursor-pointer select-none",
-        "hover:shadow-2xl hover:border-emerald-200 hover:-translate-y-1",
+        "hover:shadow-2xl hover:border-brand-green-soft-strong hover:-translate-y-1",
         "active:scale-[0.97] transition-all duration-300 ease-out",
-        "focus:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500",
+        "focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green",
         popped ? "animate-stat-pop" : "",
       ].join(" ")}
     >
       {/* Halo de fond au hover */}
       <div
-        className="absolute inset-0 rounded-2xl bg-gradient-to-br from-emerald-50/0 to-emerald-100/0 group-hover:from-emerald-50/60 group-hover:to-teal-50/40 transition-all duration-300 pointer-events-none"
+        className="absolute inset-0 rounded-2xl bg-gradient-to-br from-brand-green-soft/0 to-brand-green-soft-strong/0 group-hover:from-brand-green-soft/60 group-hover:to-brand-green-soft/40 transition-all duration-300 pointer-events-none"
         aria-hidden="true"
       />
 
       {/* Icône */}
-      <div className="relative w-11 h-11 rounded-xl bg-emerald-50 group-hover:bg-emerald-100 group-hover:scale-110 transition-all duration-300 flex items-center justify-center shrink-0">
+      <div className="relative w-11 h-11 rounded-xl bg-brand-green-soft group-hover:bg-brand-green-soft-strong group-hover:scale-110 transition-all duration-300 flex items-center justify-center shrink-0">
         <Icon
-          className="w-5 h-5 text-emerald-500 group-hover:text-emerald-600 transition-colors"
+          className="w-5 h-5 text-brand-green group-hover:text-brand-green-hover transition-colors"
           aria-hidden="true"
         />
       </div>
@@ -91,13 +91,13 @@ function StatCard({
         <div
           className={[
             "text-4xl sm:text-5xl font-extrabold text-slate-900 leading-none",
-            "group-hover:text-emerald-600 transition-colors duration-300",
+            "group-hover:text-brand-green-hover transition-colors duration-300",
             visible ? "animate-count-up" : "opacity-0",
           ].join(" ")}
         >
           {count}{suffix}
         </div>
-        <div className="text-xs font-bold uppercase tracking-[0.15em] text-emerald-500">
+        <div className="text-xs font-bold uppercase tracking-[0.15em] text-brand-green">
           {label}
         </div>
       </div>
@@ -149,7 +149,7 @@ export default function ImpactSection() {
   return (
     <section
       ref={sectionRef}
-      className="bg-slate-50 py-16 lg:py-24"
+      className="bg-brand-surface py-16 lg:py-24"
       aria-labelledby="impact-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

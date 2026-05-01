@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import MentionsLegalesPage from "@/components/legal/MentionsLegalesPage";
 
 export const metadata: Metadata = {
@@ -8,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function MentionsLegalesRoute() {
-  return <MentionsLegalesPage />;
+  return (
+    <>
+      <Navbar />
+      <main>
+        <MentionsLegalesPage />
+      </main>
+      <Footer />
+    </>
+  );
 }

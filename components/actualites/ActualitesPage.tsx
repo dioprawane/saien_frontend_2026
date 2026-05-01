@@ -1,114 +1,24 @@
 "use client";
 
-import { useState } from "react";
-import { Search, Clock, ArrowRight, Tag } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { Search, Clock, ArrowRight } from "lucide-react";
+import { ARTICLES, ARTICLE_CATEGORIES } from "@/lib/articles-data";
 
-interface Article {
-  id: number;
-  category: string;
-  categoryColor: string;
-  title: string;
-  excerpt: string;
-  author: string;
-  date: string;
-  readTime: string;
-  featured?: boolean;
-}
-
-const ARTICLES: Article[] = [
-  {
-    id: 1,
-    category: "Intelligence Artificielle",
-    categoryColor: "bg-blue-50 text-blue-600",
-    title: "L'IA générative au service du développement africain",
-    excerpt:
-      "Comment les modèles de langage à grande échelle transforment les secteurs de la santé, de l'agriculture et de l'éducation sur le continent.",
-    author: "Amadou Diallo",
-    date: "15 oct. 2024",
-    readTime: "8 min",
-    featured: true,
-  },
-  {
-    id: 2,
-    category: "Réseau & Communauté",
-    categoryColor: "bg-emerald-50 text-emerald-600",
-    title: "Retour sur le Sommet Africain de l'IA 2024",
-    excerpt:
-      "Plus de 500 participants réunis à Dakar pour trois jours d'échanges intenses. Découvrez les temps forts et les engagements pris.",
-    author: "Fatou Sow",
-    date: "10 oct. 2024",
-    readTime: "5 min",
-  },
-  {
-    id: 3,
-    category: "Data Science",
-    categoryColor: "bg-purple-50 text-purple-600",
-    title: "Benchmark des LLMs open-source pour les langues africaines",
-    excerpt:
-      "Une étude comparative approfondie sur les performances des principaux modèles open-source appliqués au wolof, swahili et amharique.",
-    author: "Jean-Marc Kone",
-    date: "02 oct. 2024",
-    readTime: "12 min",
-  },
-  {
-    id: 4,
-    category: "Innovation",
-    categoryColor: "bg-orange-50 text-orange-600",
-    title: "SAIEN lance son programme de mentorat 2025",
-    excerpt:
-      "Vingt experts seniors accompagneront les talents de la diaspora sur des projets concrets en machine learning et MLOps.",
-    author: "Awa Ndiaye",
-    date: "25 sept. 2024",
-    readTime: "4 min",
-  },
-  {
-    id: 5,
-    category: "Intelligence Artificielle",
-    categoryColor: "bg-blue-50 text-blue-600",
-    title: "Régulation de l'IA en Afrique : état des lieux 2024",
-    excerpt:
-      "Tour d'horizon des initiatives législatives en cours au Sénégal, Rwanda, Kenya et Côte d'Ivoire pour encadrer l'essor de l'IA.",
-    author: "Prof. Marie Desroches",
-    date: "18 sept. 2024",
-    readTime: "10 min",
-  },
-  {
-    id: 6,
-    category: "Tutoriel",
-    categoryColor: "bg-teal-50 text-teal-600",
-    title: "Fine-tuner un LLM avec des données en français : guide pratique",
-    excerpt:
-      "De la préparation du dataset au déploiement sur Hugging Face, un guide pas-à-pas pour adapter un modèle à votre domaine.",
-    author: "Thomas Laurent",
-    date: "10 sept. 2024",
-    readTime: "15 min",
-  },
-  {
-    id: 7,
-    category: "Réseau & Communauté",
-    categoryColor: "bg-emerald-50 text-emerald-600",
-    title: "Témoignage : comment SAIEN a changé ma carrière",
-    excerpt:
-      "Sarah Benali revient sur son parcours au sein du réseau, de membre junior à directrice innovation dans une scale-up genevoise.",
-    author: "Sarah Benali",
-    date: "01 sept. 2024",
-    readTime: "6 min",
-  },
-];
-
-const CATEGORIES = [
-  "Toutes",
-  "Intelligence Artificielle",
-  "Data Science",
-  "Réseau & Communauté",
-  "Innovation",
-  "Tutoriel",
-];
+const INITIAL_VISIBLE_ARTICLES = 4;
+const LOAD_MORE_STEP = 4;
 
 export default function ActualitesPage() {
+  const router = useRouter();
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Toutes");
+  const [visibleArticles, setVisibleArticles] = useState(INITIAL_VISIBLE_ARTICLES);
+
+  useEffect(() => {
+    setVisibleArticles(INITIAL_VISIBLE_ARTICLES);
+  }, [query, activeCategory]);
 
   const filtered = ARTICLES.filter((a) => {
     const matchCat =
@@ -121,7 +31,13 @@ export default function ActualitesPage() {
   });
 
   const featured = filtered.find((a) => a.featured);
-  const rest = filtered.filter((a) => !a.featured || activeCategory !== "Toutes" || query);
+  const rest = filtered.filter((a) => !a.featured);
+  const sourceArticles = activeCategory === "Toutes" && !query ? rest : filtered;
+  const displayedArticles = sourceArticles.slice(0, visibleArticles);
+
+  const openArticle = (slug: string) => {
+    router.push(`/actualites/${slug}`);
+  };
 
   return (
     <section className="bg-white py-12 lg:py-16" aria-labelledby="actu-heading">
@@ -152,20 +68,20 @@ export default function ActualitesPage() {
               placeholder="Rechercher un article..."
               value={query}
               onChange={(e) => setQuery(e.target.value)}
-              className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-emerald-400"
+              className="w-full pl-9 pr-4 py-2 text-sm border border-slate-200 rounded-full bg-white focus:outline-none focus:ring-2 focus:ring-brand-green"
               aria-label="Rechercher un article"
             />
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {CATEGORIES.map((cat) => (
+            {ARTICLE_CATEGORIES.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                   activeCategory === cat
-                    ? "bg-emerald-500 text-white"
-                    : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                    ? "bg-brand-green text-white"
+                    : "bg-brand-surface text-slate-600 hover:bg-slate-200"
                 }`}
               >
                 {cat}
@@ -176,7 +92,7 @@ export default function ActualitesPage() {
 
         {/* Article à la une */}
         {featured && activeCategory === "Toutes" && !query && (
-          <div className="mb-10 bg-gradient-to-br from-emerald-50 to-teal-50 rounded-2xl border border-emerald-100 p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start">
+          <div className="mb-10 bg-gradient-to-br from-brand-green-soft to-brand-green-soft rounded-2xl border border-brand-green-soft-strong p-6 sm:p-8 flex flex-col sm:flex-row gap-6 items-start">
             <div className="flex-1">
               <span
                 className={`inline-block text-[10px] font-bold px-2.5 py-0.5 rounded-full mb-3 ${featured.categoryColor}`}
@@ -199,15 +115,22 @@ export default function ActualitesPage() {
                 </span>
               </div>
               <Link
-                href={`/actualites/${featured.id}`}
-                className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 transition-colors text-white font-semibold text-sm px-5 py-2.5 rounded-full"
+                href={`/actualites/${featured.slug}`}
+                className="inline-flex items-center gap-2 bg-brand-green hover:bg-brand-green-hover transition-colors text-white font-semibold text-sm px-5 py-2.5 rounded-full"
               >
                 Lire l&apos;article
                 <ArrowRight className="w-4 h-4" aria-hidden="true" />
               </Link>
             </div>
-            <div className="w-full sm:w-48 h-36 rounded-xl bg-gradient-to-br from-emerald-200 to-teal-300 shrink-0 flex items-center justify-center">
-              <Tag className="w-10 h-10 text-white opacity-40" aria-hidden="true" />
+            <div className="relative w-full sm:w-56 h-40 rounded-xl overflow-hidden border border-brand-green-soft-strong shrink-0">
+              <Image
+                src={featured.coverImage}
+                alt={featured.title}
+                fill
+                className="object-cover"
+                sizes="(max-width: 640px) 100vw, 224px"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 via-transparent to-transparent" />
             </div>
           </div>
         )}
@@ -218,39 +141,86 @@ export default function ActualitesPage() {
             Aucun article trouvé.
           </p>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {(activeCategory === "Toutes" && !query ? rest : filtered).map(
-              (article) => (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {displayedArticles.map((article) => (
                 <article
                   key={article.id}
-                  className="bg-white rounded-2xl border border-slate-100 p-6 flex flex-col gap-3 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+                  onClick={() => openArticle(article.slug)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openArticle(article.slug);
+                    }
+                  }}
+                  tabIndex={0}
+                  role="link"
+                  aria-label={`Lire l'article ${article.title}`}
+                  className="bg-white rounded-2xl border border-slate-100 overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer outline-none"
                 >
-                  <span
-                    className={`self-start text-[10px] font-bold px-2.5 py-0.5 rounded-full ${article.categoryColor}`}
-                  >
-                    {article.category}
-                  </span>
-                  <h3 className="font-bold text-slate-900 text-sm leading-snug">
-                    {article.title}
-                  </h3>
-                  <p className="text-slate-500 text-xs leading-relaxed flex-1">
-                    {article.excerpt}
-                  </p>
-                  <div className="flex items-center gap-3 text-xs text-slate-400 mt-auto pt-2 border-t border-slate-50">
-                    <span className="font-medium text-slate-600">
-                      {article.author}
+                  <div className="relative h-40">
+                    <Image
+                      src={article.coverImage}
+                      alt={article.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 1024px) 50vw, 33vw"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-[#0A2540]/65 via-[#0A2540]/5 to-transparent" />
+                  </div>
+
+                  <div className="p-6 flex flex-col gap-3 flex-1">
+                    <span
+                      className={`self-start text-[10px] font-bold px-2.5 py-0.5 rounded-full ${article.categoryColor}`}
+                    >
+                      {article.category}
                     </span>
-                    <span>·</span>
-                    <span>{article.date}</span>
-                    <span className="flex items-center gap-1 ml-auto">
-                      <Clock className="w-3 h-3" aria-hidden="true" />
-                      {article.readTime}
-                    </span>
+                    <h3 className="font-bold text-slate-900 text-sm leading-snug">
+                      {article.title}
+                    </h3>
+                    <p className="text-slate-500 text-xs leading-relaxed flex-1">
+                      {article.excerpt}
+                    </p>
+
+                    <div className="flex items-center gap-3 text-xs text-slate-400 mt-auto pt-2 border-t border-slate-50">
+                      <span className="font-medium text-slate-600">
+                        {article.author}
+                      </span>
+                      <span>·</span>
+                      <span>{article.date}</span>
+                      <span className="flex items-center gap-1 ml-auto">
+                        <Clock className="w-3 h-3" aria-hidden="true" />
+                        {article.readTime}
+                      </span>
+                    </div>
+
+                    <Link
+                      href={`/actualites/${article.slug}`}
+                      onClick={(event) => event.stopPropagation()}
+                      className="inline-flex items-center gap-1.5 text-sm font-semibold text-brand-green-hover hover:text-brand-green-hover transition-colors"
+                    >
+                      Lire l&apos;article
+                      <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+                    </Link>
                   </div>
                 </article>
-              )
+              ))}
+            </div>
+
+            {visibleArticles < sourceArticles.length && (
+              <div className="mt-10 flex justify-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setVisibleArticles((current) => current + LOAD_MORE_STEP);
+                  }}
+                  className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-6 py-3 text-sm font-semibold text-slate-700 transition-colors hover:border-brand-green-soft-strong hover:text-brand-green-hover"
+                >
+                  Charger plus d&apos;articles
+                </button>
+              </div>
             )}
-          </div>
+          </>
         )}
 
         {/* Newsletter */}
@@ -270,12 +240,12 @@ export default function ActualitesPage() {
             <input
               type="email"
               placeholder="Votre adresse email"
-              className="flex-1 sm:w-60 px-4 py-2.5 text-sm rounded-full bg-white/10 text-white placeholder:text-slate-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-emerald-500"
+              className="flex-1 sm:w-60 px-4 py-2.5 text-sm rounded-full bg-white/10 text-white placeholder:text-slate-400 border border-white/10 focus:outline-none focus:ring-2 focus:ring-brand-green"
               aria-label="Adresse email pour la newsletter"
             />
             <button
               type="submit"
-              className="bg-emerald-500 hover:bg-emerald-600 transition-colors text-white text-sm font-semibold px-5 py-2.5 rounded-full shrink-0"
+              className="bg-brand-green hover:bg-brand-green-hover transition-colors text-white text-sm font-semibold px-5 py-2.5 rounded-full shrink-0"
             >
               S&apos;inscrire
             </button>
@@ -285,3 +255,5 @@ export default function ActualitesPage() {
     </section>
   );
 }
+
+

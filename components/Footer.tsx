@@ -1,5 +1,6 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Linkedin, Twitter, Github, Mail, MapPin, Network } from "lucide-react";
+import { Linkedin, Twitter, Github, Mail, MapPin } from "lucide-react";
 
 const LE_RESEAU = [
   { label: "À propos", href: "/a-propos" },
@@ -25,17 +26,22 @@ const SOCIALS = [
 
 export default function Footer() {
   return (
-    <footer className="bg-[#0b1825] text-slate-400" role="contentinfo">
+    <footer className="bg-[#0a2e4a] text-slate-300" role="contentinfo">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
 
           {/* Marque */}
           <div className="flex flex-col gap-4 sm:col-span-2 lg:col-span-1">
             <div className="flex items-center gap-2">
-              <div className="w-8 h-8 bg-emerald-500 rounded-full flex items-center justify-center shrink-0">
-                <Network className="w-4 h-4 text-white" aria-hidden="true" />
+              <div className="relative h-14 w-[168px] overflow-hidden rounded-lg border border-white/20 bg-white/95 shadow-sm">
+                <Image
+                  src="/logos/Logo_saien.png"
+                  alt="Logo SAIEN"
+                  fill
+                  sizes="168px"
+                  className="object-cover [object-position:center_50%]"
+                />
               </div>
-              <span className="text-white font-bold text-base">SAIEN</span>
             </div>
             <p className="text-sm leading-relaxed max-w-xs">
               Le réseau international fédérant l&apos;expertise et
@@ -48,7 +54,7 @@ export default function Footer() {
                   key={label}
                   href={href}
                   aria-label={label}
-                  className="w-8 h-8 rounded-lg bg-slate-700/50 hover:bg-slate-600/60 transition-colors flex items-center justify-center"
+                  className="w-8 h-8 rounded-lg bg-white/10 hover:bg-[#0e6f5c] transition-colors flex items-center justify-center"
                 >
                   <Icon className="w-4 h-4" aria-hidden="true" />
                 </a>
@@ -62,7 +68,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               {LE_RESEAU.map(({ label, href }) => (
                 <li key={label}>
-                  <Link href={href} className="text-sm hover:text-white transition-colors">
+                  <Link href={href} className="text-sm hover:text-[#fdfef6] transition-colors">
                     {label}
                   </Link>
                 </li>
@@ -76,7 +82,7 @@ export default function Footer() {
             <ul className="flex flex-col gap-3">
               {RESSOURCES.map(({ label, href }) => (
                 <li key={label}>
-                  <Link href={href} className="text-sm hover:text-white transition-colors">
+                  <Link href={href} className="text-sm hover:text-[#fdfef6] transition-colors">
                     {label}
                   </Link>
                 </li>
@@ -89,20 +95,20 @@ export default function Footer() {
             <h3 className="text-white font-semibold text-sm mb-4">Contact</h3>
             <ul className="flex flex-col gap-3">
               <li className="flex items-center gap-2 text-sm">
-                <Mail className="w-4 h-4 shrink-0 text-emerald-500" aria-hidden="true" />
+                <Mail className="w-4 h-4 shrink-0 text-[#0e6f5c]" aria-hidden="true" />
                 <a
                   href="mailto:contact@saien-network.org"
-                  className="hover:text-white transition-colors break-all"
+                  className="hover:text-[#fdfef6] transition-colors break-all"
                 >
                   contact@saien-network.org
                 </a>
               </li>
               <li className="flex items-start gap-2 text-sm">
-                <MapPin className="w-4 h-4 shrink-0 text-emerald-500 mt-0.5" aria-hidden="true" />
+                <MapPin className="w-4 h-4 shrink-0 text-[#0e6f5c] mt-0.5" aria-hidden="true" />
                 <span>
                   Paris, France
                   <br />
-                  <span className="text-xs text-slate-500">Présence globale</span>
+                  <span className="text-xs text-slate-400">Présence globale</span>
                 </span>
               </li>
             </ul>
@@ -111,13 +117,13 @@ export default function Footer() {
         </div>
 
         {/* Bas de page */}
-        <div className="border-t border-slate-700/40 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-xs text-slate-500">© 2026 SAIEN Network. Tous droits réservés.</p>
+        <div className="border-t border-white/15 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-xs text-slate-400">© 2026 SAIEN Network. Tous droits réservés.</p>
           <div className="flex items-center gap-4">
-            <Link href="/mentions-legales" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+            <Link href="/mentions-legales" className="text-xs text-slate-400 hover:text-[#fdfef6] transition-colors">
               Mentions légales
             </Link>
-            <Link href="/confidentialite" className="text-xs text-slate-500 hover:text-slate-300 transition-colors">
+            <Link href="/confidentialite" className="text-xs text-slate-400 hover:text-[#fdfef6] transition-colors">
               Politique de confidentialité
             </Link>
           </div>

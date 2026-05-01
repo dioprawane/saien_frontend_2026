@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import ContactPage from "@/components/contact/ContactPage";
 
 export const metadata: Metadata = {
@@ -8,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function ContactRoute() {
-  return <ContactPage />;
+  return (
+    <>
+      <Navbar />
+      <main>
+        <ContactPage />
+      </main>
+      <Footer />
+    </>
+  );
 }

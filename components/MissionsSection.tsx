@@ -1,36 +1,13 @@
 import { GraduationCap, Network, Handshake, ShieldCheck } from "lucide-react";
 import MissionCard from "@/components/MissionCard";
+import { MISSIONS } from "@/lib/missions-data";
 
-const MISSIONS = [
-  {
-    icon: GraduationCap,
-    title: "Formation",
-    description:
-      "Développer les compétences locales à travers des programmes d'excellence en data science, machine learning et ingénierie IA.",
-    href: "#",
-  },
-  {
-    icon: Network,
-    title: "Réseau Diaspora",
-    description:
-      "Connecter les talents africains de la diaspora mondiale pour faciliter le transfert de connaissances et le mentorat.",
-    href: "#",
-  },
-  {
-    icon: Handshake,
-    title: "Partenariats",
-    description:
-      "Créer des synergies entre universités, entreprises tech et institutions publiques pour financer et soutenir l'innovation.",
-    href: "#",
-  },
-  {
-    icon: ShieldCheck,
-    title: "IA Responsable",
-    description:
-      "Promouvoir une intelligence artificielle éthique, non biaisée et adaptée aux contextes culturels et économiques locaux.",
-    href: "#",
-  },
-];
+const ICON_MAP = {
+  GraduationCap,
+  Network,
+  Handshake,
+  ShieldCheck,
+};
 
 export default function MissionsSection() {
   return (
@@ -56,11 +33,21 @@ export default function MissionsSection() {
 
         {/* Grille */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          {MISSIONS.map((mission) => (
-            <MissionCard key={mission.title} {...mission} />
-          ))}
+          {MISSIONS.map((mission) => {
+            const Icon = ICON_MAP[mission.iconName];
+            return (
+              <MissionCard
+                key={mission.slug}
+                icon={Icon}
+                title={mission.title}
+                description={mission.shortDescription}
+                href={`/missions/${mission.slug}`}
+              />
+            );
+          })}
         </div>
       </div>
     </section>
   );
 }
+

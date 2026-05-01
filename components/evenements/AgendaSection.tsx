@@ -56,7 +56,7 @@ const EVENTS: AgendaEvent[] = [
     format: "Hybride",
     tags: [
       { label: "Conférence", color: "text-blue-600", bgColor: "bg-blue-50", icon: Video },
-      { label: "Hybride", color: "text-emerald-600", bgColor: "bg-emerald-50", icon: MonitorPlay },
+      { label: "Hybride", color: "text-brand-green-hover", bgColor: "bg-brand-green-soft", icon: MonitorPlay },
     ],
     title: "Sommet Africain de l'IA 2024",
     description: "Rejoignez les leaders de la tech et décideurs politiques pour discuter de l'avenir de l'intelligence artificielle en Afrique et de son impact sur le développement économique.",
@@ -101,7 +101,7 @@ const EVENTS: AgendaEvent[] = [
     format: "Présentiel",
     tags: [
       { label: "Meetup", color: "text-pink-600", bgColor: "bg-pink-50" },
-      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-slate-100" },
+      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-brand-surface" },
     ],
     title: "Meetup SAIEN Paris — IA et Finance",
     description: "Une soirée de networking autour des applications de l'IA dans le secteur financier, avec des présentations courtes et des tables rondes thématiques. ",
@@ -124,7 +124,7 @@ const EVENTS: AgendaEvent[] = [
     format: "Présentiel",
     tags: [
       { label: "Conférence", color: "text-orange-600", bgColor: "bg-orange-50" },
-      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-slate-100" },
+      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-brand-surface" },
     ],
     title: "Forum Innovation Diaspora Africaine",
     description: "Trois jours de rencontres, pitchs de startups et ateliers autour des enjeux de l'IA et du transfert technologique vers l'Afrique.",
@@ -141,7 +141,7 @@ const EVENTS: AgendaEvent[] = [
     thematique: "Réseaux & Sécurité",
     format: "En ligne",
     tags: [
-      { label: "Webinaire", color: "text-teal-600", bgColor: "bg-teal-50" },
+      { label: "Webinaire", color: "text-brand-green-hover", bgColor: "bg-brand-green-soft" },
       { label: "En ligne", color: "text-blue-600", bgColor: "bg-blue-50" },
     ],
     title: "Cybersécurité à l'ère de l'IA générative",
@@ -207,7 +207,7 @@ export default function AgendaSection() {
   };
 
   return (
-    <section className="bg-[#F8FAFC] min-h-screen py-12 lg:py-16" aria-labelledby="agenda-heading">
+    <section className="bg-brand-surface min-h-screen py-12 lg:py-16" aria-labelledby="agenda-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* ── Onglets ── */}
@@ -216,7 +216,7 @@ export default function AgendaSection() {
             onClick={() => switchTab("evenements")}
             className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-colors -mb-px ${
               tab === "evenements"
-                ? "border-[#00A859] text-[#00A859]"
+                ? "border-brand-green text-brand-green"
                 : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
@@ -227,7 +227,7 @@ export default function AgendaSection() {
             onClick={() => switchTab("webinaires")}
             className={`flex items-center gap-2 px-5 py-3 text-sm font-semibold border-b-2 transition-colors -mb-px ${
               tab === "webinaires"
-                ? "border-[#00A859] text-[#00A859]"
+                ? "border-brand-green text-brand-green"
                 : "border-transparent text-slate-500 hover:text-slate-700"
             }`}
           >
@@ -251,7 +251,7 @@ export default function AgendaSection() {
                 placeholder="Rechercher..."
                 value={search}
                 onChange={(e) => { setSearch(e.target.value); setPage(1); }}
-                className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#00A859]/40 focus:border-[#00A859]"
+                className="w-full pl-9 pr-3 py-2.5 text-sm border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-brand-green/40 focus:border-brand-green"
               />
             </div>
 
@@ -265,11 +265,11 @@ export default function AgendaSection() {
                         type="checkbox"
                         checked={selectedThematiques.includes(t.name)}
                         onChange={() => toggleThematique(t.name)}
-                        className="w-4 h-4 rounded border-gray-300 text-[#00A859] focus:ring-[#00A859]"
+                        className="w-4 h-4 rounded border-gray-300 text-brand-green focus:ring-brand-green"
                       />
                       <span className="text-sm text-slate-600 group-hover:text-slate-900 transition-colors">{t.name}</span>
                     </div>
-                    <span className="text-[10px] font-semibold text-slate-400 bg-slate-50 px-2 py-0.5 rounded-full">{t.count}</span>
+                    <span className="text-[10px] font-semibold text-slate-400 bg-brand-surface px-2 py-0.5 rounded-full">{t.count}</span>
                   </label>
                 ))}
               </div>
@@ -285,7 +285,7 @@ export default function AgendaSection() {
                       name="format"
                       checked={format === f}
                       onChange={() => { setFormat(f); setPage(1); }}
-                      className="w-4 h-4 text-[#00A859] border-gray-300 focus:ring-[#00A859]"
+                      className="w-4 h-4 text-brand-green border-gray-300 focus:ring-brand-green"
                     />
                     <span className={`text-sm transition-colors group-hover:text-slate-900 ${format === f ? "text-[#0A2540] font-semibold" : "text-slate-500"}`}>{f}</span>
                   </label>
@@ -298,7 +298,7 @@ export default function AgendaSection() {
             <div className="flex items-center justify-between mb-6">
               <h1 id="agenda-heading" className="text-2xl font-bold text-[#0A2540]">
                 {tab === "webinaires" ? "Webinaires" : "Événements"} à venir{" "}
-                <span className="text-[#00A859]">({filtered.length})</span>
+                <span className="text-brand-green">({filtered.length})</span>
               </h1>
               <p className="hidden sm:block text-sm text-slate-400">
                 Trier par : <span className="font-semibold text-[#0A2540]">Date (plus proche)</span>
@@ -309,15 +309,15 @@ export default function AgendaSection() {
               {displayed.length === 0 ? (
                 <div className="bg-white p-12 text-center rounded-2xl border border-slate-100 shadow-sm">
                   <p className="text-slate-500 text-sm">Aucun résultat trouvé pour ces filtres.</p>
-                  <button onClick={clearFilters} className="mt-4 text-sm text-[#00A859] font-semibold hover:underline">Réinitialiser les filtres</button>
+                  <button onClick={clearFilters} className="mt-4 text-sm text-brand-green font-semibold hover:underline">Réinitialiser les filtres</button>
                 </div>
               ) : (
                 displayed.map((event) => (
-                  <div key={event.id} className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row overflow-hidden hover:shadow-md hover:border-[#00A859]/20 transition-all duration-200">
+                  <div key={event.id} className="group relative bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col md:flex-row overflow-hidden hover:shadow-md hover:border-brand-green/20 transition-all duration-200">
 
                     {/* Bloc date */}
                     <div className="w-full md:w-28 bg-gradient-to-b from-[#0A2540] to-[#0d2f4d] flex flex-col items-center justify-center py-6 px-4 shrink-0">
-                      <span className="text-[10px] font-bold text-[#00A859] uppercase tracking-[0.2em]">{event.month}</span>
+                      <span className="text-[10px] font-bold text-brand-green uppercase tracking-[0.2em]">{event.month}</span>
                       <span className="text-[2.8rem] leading-none font-black text-white my-1">{event.day}</span>
                       <span className="text-[10px] text-white/50 font-medium">{event.year}</span>
                     </div>
@@ -335,21 +335,21 @@ export default function AgendaSection() {
                           );
                         })}
                       </div>
-                      <h3 className="text-lg font-bold text-[#0A2540] mb-1.5 group-hover:text-[#00A859] transition-colors line-clamp-1">{event.title}</h3>
+                      <h3 className="text-lg font-bold text-[#0A2540] mb-1.5 group-hover:text-brand-green transition-colors line-clamp-1">{event.title}</h3>
                       <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-4">{event.description}</p>
                       <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500 font-medium">
-                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-[#00A859] shrink-0" />{event.time}</span>
-                        <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-[#00A859] shrink-0" />{event.location}</span>
-                        {event.seats && <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-[#00A859] shrink-0" />{event.seats}</span>}
+                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.time}</span>
+                        <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.location}</span>
+                        {event.seats && <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.seats}</span>}
                       </div>
                     </div>
 
                     {/* Actions */}
                     <div className="px-5 py-5 md:px-6 flex md:flex-col items-center md:justify-center gap-3 border-t md:border-t-0 md:border-l border-gray-100 shrink-0 relative z-10">
-                      <button aria-label="Ajouter au calendrier" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 flex items-center justify-center hover:bg-gray-50 hover:text-[#00A859] hover:border-[#00A859]/30 transition-all shadow-sm">
+                      <button aria-label="Ajouter au calendrier" onClick={(e) => e.preventDefault()} className="w-10 h-10 rounded-xl border border-gray-200 bg-white text-gray-400 flex items-center justify-center hover:bg-brand-surface hover:text-brand-green hover:border-brand-green/30 transition-all shadow-sm">
                         <Calendar className="w-4 h-4" />
                       </button>
-                      <Link href={`/evenements/${event.id}`} className="relative z-10 flex items-center gap-2 px-5 py-2.5 bg-[#00A859] hover:bg-[#008f4c] text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm whitespace-nowrap">
+                      <Link href={`/evenements/${event.id}`} className="relative z-10 flex items-center gap-2 px-5 py-2.5 bg-brand-green hover:bg-brand-green-hover text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm whitespace-nowrap">
                         Voir <ArrowRight className="w-4 h-4" />
                       </Link>
                     </div>
@@ -366,7 +366,7 @@ export default function AgendaSection() {
                   <ChevronLeft className="w-5 h-5" />
                 </button>
                 {Array.from({ length: totalPages }).map((_, i) => (
-                  <button key={i} onClick={() => setPage(i + 1)} className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all ${page === i + 1 ? "bg-[#00A859] text-white shadow-md" : "bg-white text-slate-600 border border-slate-200 hover:bg-slate-50"}`}>
+                  <button key={i} onClick={() => setPage(i + 1)} className={`w-10 h-10 flex items-center justify-center rounded-xl font-bold text-sm transition-all ${page === i + 1 ? "bg-brand-green text-white shadow-md" : "bg-white text-slate-600 border border-slate-200 hover:bg-brand-surface"}`}>
                     {i + 1}
                   </button>
                 ))}
@@ -381,3 +381,5 @@ export default function AgendaSection() {
     </section>
   );
 }
+
+

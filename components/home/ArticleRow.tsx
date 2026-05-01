@@ -5,7 +5,8 @@ interface ArticleRowProps {
   category: string;
   categoryColor: string;
   date: string;
-  imageBg: string;
+  imageBg?: string;
+  imageUrl?: string;
   title: string;
   description: string;
   href?: string;
@@ -16,43 +17,46 @@ export default function ArticleRow({
   categoryColor,
   date,
   imageBg,
+  imageUrl,
   title,
   description,
-  href = "#",
+  href = "/actualites",
 }: ArticleRowProps) {
   return (
-    <article className="flex gap-4 py-5 border-b border-slate-100 last:border-0">
-      {/* Vignette */}
-      <div
-        className={`shrink-0 w-20 h-20 sm:w-24 sm:h-24 rounded-xl ${imageBg}`}
-        aria-hidden="true"
-      />
+    <article className="group relative flex gap-4 sm:gap-5 rounded-2xl border border-slate-200 bg-white p-4 sm:p-5 shadow-[0_10px_34px_-26px_rgba(10,37,64,0.65)] transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_34px_-22px_rgba(10,37,64,0.75)]">
+      <div className="relative h-20 w-28 shrink-0 overflow-hidden rounded-xl bg-brand-surface sm:h-24 sm:w-32">
+        {imageUrl ? (
+          <img src={imageUrl} alt={title} className="h-full w-full object-cover" />
+        ) : (
+          <div
+            className={`h-full w-full ${imageBg ?? "bg-gradient-to-br from-slate-600 to-slate-900"}`}
+            aria-hidden="true"
+          />
+        )}
+      </div>
 
-      {/* Contenu */}
-      <div className="flex flex-col gap-1.5 min-w-0 flex-1">
-        <div className="flex items-center gap-2 flex-wrap">
-          <span
-            className={`text-xs font-semibold px-2.5 py-0.5 rounded-full ${categoryColor}`}
-          >
+      <div className="flex min-w-0 flex-1 flex-col gap-2">
+        <div className="flex flex-wrap items-center gap-2 text-xs">
+          <span className={`rounded-full px-2.5 py-1 font-semibold ${categoryColor}`}>
             {category}
           </span>
-          <span className="text-xs text-slate-400">{date}</span>
+          <span className="font-medium text-slate-400">{date}</span>
         </div>
 
-        <h3 className="font-bold text-slate-900 text-sm sm:text-base leading-snug line-clamp-2">
+        <h3 className="line-clamp-2 text-base font-extrabold leading-snug text-[#0A2540] sm:text-[1.35rem]">
           {title}
         </h3>
 
-        <p className="hidden sm:block text-slate-500 text-sm leading-relaxed line-clamp-2">
+        <p className="line-clamp-2 text-sm leading-relaxed text-slate-600 sm:text-[15px]">
           {description}
         </p>
 
         <Link
           href={href}
-          className="inline-flex items-center gap-1 text-emerald-500 hover:text-emerald-600 transition-colors text-xs sm:text-sm font-medium mt-auto"
+          className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-brand-green transition-colors hover:text-brand-green-hover"
         >
           Lire l&apos;article
-          <ArrowRight className="w-3 h-3" aria-hidden="true" />
+          <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
         </Link>
       </div>
     </article>

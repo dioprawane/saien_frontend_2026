@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import ConfidentialitePage from "@/components/legal/ConfidentialitePage";
 
 export const metadata: Metadata = {
@@ -8,5 +10,13 @@ export const metadata: Metadata = {
 };
 
 export default function ConfidentialiteRoute() {
-  return <ConfidentialitePage />;
+  return (
+    <>
+      <Navbar />
+      <main>
+        <ConfidentialitePage />
+      </main>
+      <Footer />
+    </>
+  );
 }

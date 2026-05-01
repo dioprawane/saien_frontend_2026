@@ -1,5 +1,4 @@
 import { Clock, type LucideIcon } from "lucide-react";
-import Image from "next/image";
 
 interface EventCardProps {
   dateBadge: string;
@@ -23,7 +22,7 @@ export default function EventCard({
   return (
     <article className="bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
       {/* Image */}
-      <div className="relative h-48 sm:h-52 shrink-0 bg-slate-100">
+      <div className="relative h-48 sm:h-52 shrink-0 bg-brand-surface">
         <img
           src={imageUrl}
           alt={title}
@@ -37,7 +36,7 @@ export default function EventCard({
 
       {/* Contenu */}
       <div className="p-6 flex flex-col gap-4 flex-1">
-        <span className="flex items-center gap-1.5 text-emerald-500 text-xs font-semibold">
+        <span className="flex items-center gap-1.5 text-brand-green text-xs font-semibold">
           <CategoryIcon className="w-4 h-4" aria-hidden="true" />
           {category}
         </span>

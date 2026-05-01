@@ -25,7 +25,7 @@ const TIMELINE = [
 export default function HistoireSection() {
   return (
     <section
-      className="bg-slate-50 py-20 lg:py-28"
+      className="bg-brand-surface py-20 lg:py-28"
       aria-labelledby="histoire-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,7 +45,7 @@ export default function HistoireSection() {
         {/* Timeline desktop */}
         <div className="relative max-w-3xl mx-auto hidden sm:block">
           <div
-            className="absolute left-1/2 top-0 bottom-0 w-px bg-emerald-200 -translate-x-1/2"
+            className="absolute left-1/2 top-0 bottom-0 w-px bg-brand-green-soft-strong -translate-x-1/2"
             aria-hidden="true"
           />
           <div className="flex flex-col gap-14">
@@ -62,7 +62,7 @@ export default function HistoireSection() {
                   }`}
                 >
                   <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <span className="text-xs font-bold text-emerald-500 mb-2 block">
+                    <span className="text-xs font-bold text-brand-green mb-2 block">
                       {item.year}
                     </span>
                     <h3 className="text-base font-bold text-slate-900 mb-2">
@@ -74,7 +74,7 @@ export default function HistoireSection() {
                   </div>
                 </div>
                 <div
-                  className="absolute left-1/2 -translate-x-1/2 top-6 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white z-10"
+                  className="absolute left-1/2 -translate-x-1/2 top-6 w-3 h-3 rounded-full bg-brand-green ring-4 ring-white z-10"
                   aria-hidden="true"
                 />
                 <div className="w-5/12" />
@@ -90,7 +90,7 @@ export default function HistoireSection() {
               key={item.year}
               className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm"
             >
-              <span className="text-xs font-bold text-emerald-500 mb-1 block">
+              <span className="text-xs font-bold text-brand-green mb-1 block">
                 {item.year}
               </span>
               <h3 className="text-base font-bold text-slate-900 mb-2">

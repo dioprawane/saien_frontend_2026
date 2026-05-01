@@ -1,95 +1,95 @@
 import Link from "next/link";
-import { Users, Building2 } from "lucide-react";
+import { Building2 } from "lucide-react";
 import InitiativeCard from "@/components/InitiativeCard";
+import { PROJECTS, type ProjectData } from "@/lib/projects-data";
 
-const INITIATIVES = [
-  {
-    badge: "Éducation",
-    imageBg:
-      "bg-gradient-to-br from-amber-700 via-orange-800 to-slate-900",
-    title: "Bootcamp IA Dakar 2026",
-    description:
-      "Un programme intensif de 12 semaines formant 100 jeunes talents sénégalais aux fondamentaux du Machine Learning, encadrés par des experts de la diaspora.",
-    footer: (
-      <span className="flex items-center gap-1.5">
-        <Users className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-        +15 Mentors
-      </span>
-    ),
-    href: "#",
-  },
-  {
-    badge: "Plateforme",
-    imageBg:
-      "bg-gradient-to-br from-teal-600 via-cyan-800 to-slate-900",
-    title: "SAIEN Connect Hub",
-    description:
-      "Lancement de notre plateforme numérique propriétaire facilitant le matching entre porteurs de projets IA locaux et chercheurs de la diaspora internationale.",
-    footer: (
-      <span className="inline-flex items-center gap-1.5 bg-emerald-50 text-emerald-600 px-2.5 py-0.5 rounded-full text-[11px] font-semibold">
+const INITIATIVES = PROJECTS.filter((project) => project.featuredOnVision);
+
+function renderProjectFooter(project: ProjectData) {
+  if (project.footerType === "mentors") {
+    return (
+      <div className="flex items-center gap-2">
+        <span className="flex -space-x-2">
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-brand-green text-[9px] font-bold text-white">
+            AD
+          </span>
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-sky-500 text-[9px] font-bold text-white">
+            FM
+          </span>
+          <span className="inline-flex h-6 w-6 items-center justify-center rounded-full border-2 border-white bg-violet-500 text-[9px] font-bold text-white">
+            MK
+          </span>
+        </span>
+        <span className="text-slate-500">{project.footerValue}</span>
+      </div>
+    );
+  }
+
+  if (project.footerType === "status") {
+    return (
+      <span className="inline-flex items-center gap-1.5 bg-brand-green-soft text-brand-green-hover px-2.5 py-1 rounded-md text-[11px] font-semibold">
         <span
-          className="w-1.5 h-1.5 bg-emerald-500 rounded-full animate-pulse"
+          className="w-1.5 h-1.5 bg-brand-green rounded-full animate-pulse"
           aria-hidden="true"
         />
-        En cours
+        {project.footerValue}
       </span>
-    ),
-    href: "#",
-  },
-  {
-    badge: "Recherche",
-    imageBg:
-      "bg-gradient-to-br from-green-700 via-teal-800 to-slate-900",
-    title: "AgriTech IA Lab",
-    description:
-      "Consortium de recherche appliquant la vision par ordinateur pour l'optimisation des rendements agricoles face aux défis climatiques régionaux.",
-    footer: (
-      <span className="flex items-center gap-1.5">
-        <Building2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
-        3 Partenaires
-      </span>
-    ),
-    href: "#",
-  },
-];
+    );
+  }
+
+  return (
+    <span className="flex items-center gap-1.5">
+      <Building2 className="w-3.5 h-3.5 shrink-0" aria-hidden="true" />
+      {project.footerValue}
+    </span>
+  );
+}
 
 export default function InitiativesSection() {
   return (
     <section
       id="initiatives"
-      className="py-16 lg:py-24 bg-slate-50"
+      className="bg-brand-surface py-16 lg:py-24"
       aria-labelledby="initiatives-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* En-tête */}
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-10 lg:mb-12">
           <div className="max-w-lg">
             <h2
               id="initiatives-heading"
-              className="text-2xl sm:text-3xl font-bold text-slate-900 mb-2"
+              className="text-3xl sm:text-[2.2rem] font-extrabold text-[#163a5a] mb-2"
             >
               Initiatives Stratégiques
             </h2>
-            <p className="text-slate-500 text-sm sm:text-base leading-relaxed">
+            <p className="text-slate-500 text-base leading-relaxed">
               Découvrez les projets concrets que nous déployons pour transformer
               notre vision en réalité sur le terrain.
             </p>
           </div>
           <Link
             href="/projets"
-            className="shrink-0 self-start sm:self-auto inline-flex items-center gap-1.5 text-sm font-medium text-slate-700 bg-white border border-slate-200 hover:bg-slate-50 transition-colors px-4 py-2 rounded-full"
+            className="shrink-0 self-start sm:self-auto inline-flex items-center gap-1.5 text-sm font-semibold text-[#3f6585] bg-white border border-slate-200 hover:bg-brand-surface transition-colors px-5 py-2.5 rounded-xl"
           >
             Voir tous les projets
           </Link>
         </div>
 
-        {/* Grille */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {INITIATIVES.map((initiative) => (
-            <InitiativeCard key={initiative.title} {...initiative} />
+            <InitiativeCard
+              key={initiative.slug}
+              badge={initiative.badge}
+              imageUrl={initiative.imageUrl}
+              title={initiative.title}
+              description={initiative.description}
+              footer={renderProjectFooter(initiative)}
+              href={`/projets/${initiative.slug}`}
+            />
           ))}
         </div>
       </div>
     </section>
   );
 }
+
+

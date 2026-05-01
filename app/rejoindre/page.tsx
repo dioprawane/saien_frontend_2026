@@ -2,6 +2,8 @@ import AdhesionHero from "@/components/adhesion/AdhesionHero";
 import TarifsSection from "@/components/adhesion/TarifsSection";
 import AdhesionForm from "@/components/adhesion/AdhesionForm";
 import FAQSection from "@/components/adhesion/FAQSection";
+import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 import type { Metadata } from "next";
 
 export const metadata: Metadata = {
@@ -12,11 +14,16 @@ export const metadata: Metadata = {
 
 export default function RejoindreePage() {
   return (
-    <main>
-      <AdhesionHero />
-      <TarifsSection />
-      <AdhesionForm />
-      <FAQSection />
-    </main>
+    <>
+      <Navbar />
+      <main>
+        <AdhesionHero />
+        <TarifsSection />
+        <AdhesionForm />
+        <FAQSection />
+      </main>
+      <Footer />
+    </>
   );
 }
+

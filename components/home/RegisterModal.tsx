@@ -47,7 +47,7 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
         className="animate-modal-in relative w-full max-w-md bg-white rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden focus:outline-none"
       >
         {/* Bandeau émeraude */}
-        <div className="bg-gradient-to-br from-emerald-500 to-teal-600 px-6 pt-8 pb-10">
+        <div className="bg-gradient-to-br from-brand-green to-brand-green-hover px-6 pt-8 pb-10">
           <button
             onClick={onClose}
             aria-label="Fermer"
@@ -61,20 +61,20 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
           >
             Rejoignez le réseau SAIEN
           </h2>
-          <p className="text-emerald-100 text-sm mt-2">
+          <p className="text-brand-green-soft text-sm mt-2">
             500+ experts IA · 45 pays · 120 projets
           </p>
         </div>
 
         {/* Mini-stats visuelles */}
-        <div className="flex divide-x divide-slate-100 bg-slate-50 border-b border-slate-100">
+        <div className="flex divide-x divide-slate-100 bg-brand-surface border-b border-slate-100">
           {[
             { icon: Users2, value: "500+", label: "Membres" },
             { icon: Globe,  value: "45",   label: "Pays" },
             { icon: Layers, value: "120",  label: "Projets" },
           ].map(({ icon: Icon, value, label }) => (
             <div key={label} className="flex-1 flex flex-col items-center py-3 gap-0.5">
-              <Icon className="w-4 h-4 text-emerald-500 mb-0.5" aria-hidden="true" />
+              <Icon className="w-4 h-4 text-brand-green mb-0.5" aria-hidden="true" />
               <span className="font-bold text-slate-900 text-base leading-none">{value}</span>
               <span className="text-[10px] text-slate-400 uppercase tracking-wider">{label}</span>
             </div>
@@ -96,7 +96,7 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 type="text"
                 required
                 placeholder="Aminata"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-green transition-colors"
               />
             </div>
             <div className="flex flex-col gap-1.5">
@@ -108,7 +108,7 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
                 type="text"
                 required
                 placeholder="Diallo"
-                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors"
+                className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-green transition-colors"
               />
             </div>
           </div>
@@ -122,7 +122,7 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
               type="email"
               required
               placeholder="vous@exemple.com"
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-emerald-500 transition-colors"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:border-brand-green transition-colors"
             />
           </div>
 
@@ -132,7 +132,7 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
             </label>
             <select
               id="reg-expertise"
-              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-emerald-500 transition-colors bg-white"
+              className="w-full border border-slate-200 rounded-xl px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:border-brand-green transition-colors bg-white"
             >
               <option value="">Choisir…</option>
               <option>Machine Learning</option>
@@ -146,7 +146,7 @@ export default function RegisterModal({ open, onClose }: RegisterModalProps) {
 
           <button
             type="submit"
-            className="w-full flex items-center justify-center gap-2 bg-emerald-500 hover:bg-emerald-600 active:scale-[0.97] transition-all text-white font-semibold text-sm px-5 py-3.5 rounded-xl mt-1"
+            className="w-full flex items-center justify-center gap-2 bg-brand-green hover:bg-brand-green-hover active:scale-[0.97] transition-all text-white font-semibold text-sm px-5 py-3.5 rounded-xl mt-1"
           >
             Rejoindre le réseau
             <ArrowRight className="w-4 h-4" aria-hidden="true" />

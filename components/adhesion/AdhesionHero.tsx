@@ -31,7 +31,7 @@ export default function AdhesionHero() {
             className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 leading-tight"
           >
             Rejoignez le réseau{" "}
-            <span className="text-emerald-500">SAIEN</span>
+            <span className="text-brand-green">SAIEN</span>
           </h1>
           <p className="text-slate-500 text-base sm:text-lg leading-relaxed">
             Connectez-vous à la diaspora de l&apos;intelligence artificielle.
@@ -44,10 +44,10 @@ export default function AdhesionHero() {
           {BENEFITS.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="bg-slate-50 rounded-2xl border border-slate-100 p-6 flex flex-col items-center text-center gap-4"
+              className="bg-brand-surface rounded-2xl border border-slate-100 p-6 flex flex-col items-center text-center gap-4"
             >
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 flex items-center justify-center">
-                <Icon className="w-6 h-6 text-emerald-500" aria-hidden="true" />
+              <div className="w-12 h-12 rounded-xl bg-brand-green-soft flex items-center justify-center">
+                <Icon className="w-6 h-6 text-brand-green" aria-hidden="true" />
               </div>
               <h2 className="font-bold text-slate-900 text-sm">{title}</h2>
               <p className="text-slate-500 text-sm leading-relaxed">{description}</p>
@@ -58,3 +58,5 @@ export default function AdhesionHero() {
     </section>
   );
 }
+
+
