@@ -4,7 +4,8 @@ import Image from "next/image";
 import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Menu, X, ArrowRight } from "lucide-react";
+import { ArrowRight, Menu, X } from "lucide-react";
+import { useUserSession } from "@/components/auth/UserSessionContext";
 
 const NAV_LINKS = [
   { label: "Accueil", href: "/" },
@@ -18,6 +19,9 @@ const NAV_LINKS = [
 export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
+  const { session, isAuthenticated } = useUserSession();
+
+  const shouldShowJoin = !isAuthenticated || !session?.isMember;
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -62,19 +66,25 @@ export default function Navbar() {
 
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
-            <Link
-              href="/connexion"
-              className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
-            >
-              Connexion
-            </Link>
-            <Link
-              href="/rejoindre"
-              className="flex items-center gap-1.5 bg-[#0e6f5c] hover:bg-[#0c5f50] transition-colors text-white text-sm font-semibold px-4 py-2 rounded-full"
-            >
-              Rejoindre le réseau
-              <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-            </Link>
+            {!isAuthenticated && (
+              <Link
+                href="/connexion"
+                className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+              >
+                Connexion
+              </Link>
+            )}
+
+            {shouldShowJoin && (
+              <Link
+                href="/rejoindre"
+                className="flex items-center gap-1.5 bg-[#0e6f5c] hover:bg-[#0c5f50] transition-colors text-white text-sm font-semibold px-4 py-2 rounded-full"
+              >
+                Rejoindre le réseau
+                <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+              </Link>
+            )}
+
           </div>
 
           {/* Mobile burger */}
@@ -110,21 +120,27 @@ export default function Navbar() {
               {label}
             </Link>
           ))}
-          <Link
-            href="/connexion"
-            className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
-            onClick={() => setOpen(false)}
-          >
-            Connexion
-          </Link>
-          <Link
-            href="/rejoindre"
-            className="mt-1 flex items-center justify-center gap-1.5 bg-[#0e6f5c] hover:bg-[#0c5f50] transition-colors text-white text-sm font-semibold px-4 py-3 rounded-full"
-            onClick={() => setOpen(false)}
-          >
-            Rejoindre le réseau
-            <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
-          </Link>
+
+          {!isAuthenticated && (
+            <Link
+              href="/connexion"
+              className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+              onClick={() => setOpen(false)}
+            >
+              Connexion
+            </Link>
+          )}
+
+          {shouldShowJoin && (
+            <Link
+              href="/rejoindre"
+              className="mt-1 flex items-center justify-center gap-1.5 bg-[#0e6f5c] hover:bg-[#0c5f50] transition-colors text-white text-sm font-semibold px-4 py-3 rounded-full"
+              onClick={() => setOpen(false)}
+            >
+              Rejoindre le réseau
+              <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
+            </Link>
+          )}
         </div>
       )}
     </header>

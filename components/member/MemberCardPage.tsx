@@ -42,7 +42,9 @@ export default function MemberCardPage() {
   const [photoUrl, setPhotoUrl] = useState<string | null>(null);
   const [showPhotoOnCard, setShowPhotoOnCard] = useState(false);
   const [photoError, setPhotoError] = useState<string | null>(null);
+  const [scanHint, setScanHint] = useState<string | null>(null);
   const memberTypeBadgeLabel = MEMBER.memberType.replace(/^membre\s+/i, "").trim() || MEMBER.memberType;
+  const memberVerificationToken = MEMBER.memberId.replace(/^SAIEN-/i, "").trim() || MEMBER.memberId;
 
   const releaseUploadedPhotoUrl = () => {
     if (!uploadedPhotoUrlRef.current) return;
@@ -53,23 +55,36 @@ export default function MemberCardPage() {
   useEffect(() => {
     if (!barcodeRef.current) return;
 
-    const verificationPath = `/v/${encodeURIComponent(MEMBER.memberId)}`;
+    const verificationPath = `/c/${encodeURIComponent(memberVerificationToken)}`;
     const configuredSiteUrl = process.env.NEXT_PUBLIC_SITE_URL?.trim().replace(/\/$/, "");
     const runtimeOrigin = window.location.origin;
     const verificationUrl = configuredSiteUrl
       ? `${configuredSiteUrl}${verificationPath}`
       : `${runtimeOrigin}${verificationPath}`;
 
+    try {
+      const verificationHostname = new URL(verificationUrl).hostname.toLowerCase();
+      if (verificationHostname === "localhost" || verificationHostname === "127.0.0.1") {
+        setScanHint(
+          "Pour scanner depuis un téléphone, configurez NEXT_PUBLIC_SITE_URL avec une URL publique (pas localhost).",
+        );
+      } else {
+        setScanHint(null);
+      }
+    } catch {
+      setScanHint("URL de vérification invalide. Vérifiez NEXT_PUBLIC_SITE_URL.");
+    }
+
     JsBarcode(barcodeRef.current, verificationUrl, {
       format: "CODE128",
       lineColor: "#0a2e4a",
-      width: 0.9,
-      height: 52,
-      margin: 0,
+      width: 0.85,
+      height: 58,
+      margin: 2,
       displayValue: false,
       background: "transparent",
     });
-  }, []);
+  }, [memberVerificationToken]);
 
   useEffect(() => {
     return () => {
@@ -127,7 +142,6 @@ export default function MemberCardPage() {
     return toPng(cardRef.current, {
       cacheBust: true,
       pixelRatio: 4,
-      backgroundColor: "#ffffff",
     });
   };
 
@@ -137,33 +151,17 @@ export default function MemberCardPage() {
       setExportError(null);
 
       const imageData = await captureCardPng();
-      const pdf = new jsPDF({
-        orientation: "portrait",
-        unit: "mm",
-        format: "a4",
-      });
-
       const cardElement = cardRef.current;
       if (!cardElement) throw new Error("Carte introuvable.");
 
       const cardWidth = cardElement.offsetWidth;
       const cardHeight = cardElement.offsetHeight;
-      const ratio = cardHeight / cardWidth;
 
-      const pageWidth = pdf.internal.pageSize.getWidth();
-      const pageHeight = pdf.internal.pageSize.getHeight();
-      const margin = 12;
-
-      let renderWidth = pageWidth - margin * 2;
-      let renderHeight = renderWidth * ratio;
-
-      if (renderHeight > pageHeight - margin * 2) {
-        renderHeight = pageHeight - margin * 2;
-        renderWidth = renderHeight / ratio;
-      }
-
-      const x = (pageWidth - renderWidth) / 2;
-      const y = (pageHeight - renderHeight) / 2;
+      const pdf = new jsPDF({
+        orientation: cardWidth > cardHeight ? "landscape" : "portrait",
+        unit: "px",
+        format: [cardHeight, cardWidth],
+      });
 
       pdf.setProperties({
         title: `Carte Membre ${MEMBER.fullName}`,
@@ -171,7 +169,7 @@ export default function MemberCardPage() {
         author: "SAIEN",
       });
 
-      pdf.addImage(imageData, "PNG", x, y, renderWidth, renderHeight, undefined, "SLOW");
+      pdf.addImage(imageData, "PNG", 0, 0, cardWidth, cardHeight, undefined, "SLOW");
       pdf.save(`carte-membre-${MEMBER.memberId}.pdf`);
     } catch (error) {
       setExportError(
@@ -366,14 +364,18 @@ export default function MemberCardPage() {
                         className="object-contain"
                       />
                     </div>
-                    <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-[#fdfef6]/80">Réseau d&apos;excellence</p>
                   </div>
-                  <span className="rounded-full border border-white/40 bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em]">
-                    Premium
-                  </span>
+                  <div className="flex flex-col items-end gap-1">
+                    <span className="rounded-full border border-white/40 bg-white/15 px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.1em]">
+                      Premium
+                    </span>
+                    <p className="text-[10px] uppercase tracking-[0.2em] text-[#fdfef6]/80 text-right">
+                      Réseau d&apos;excellence
+                    </p>
+                  </div>
                 </div>
 
-                <div className="mt-5 rounded-xl border border-white/20 bg-white/10 p-3">
+                <div className="mt-3 rounded-xl border border-white/20 bg-white/10 p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
@@ -411,7 +413,7 @@ export default function MemberCardPage() {
                 <div className="mx-auto mt-4 rounded-lg bg-white p-2.5 text-slate-800">
                   <svg
                     ref={barcodeRef}
-                    className="h-[52px] w-full"
+                    className="h-[58px] w-full"
                     aria-label={`Code barre du membre ${MEMBER.memberId}`}
                   />
                   <p className="mt-1 text-center text-[10px] font-semibold tracking-[0.12em] text-[#0A3458]">
@@ -419,10 +421,14 @@ export default function MemberCardPage() {
                   </p>
                 </div>
 
-                <div className="mt-4 border-t border-white/20 pt-2 text-[10px] uppercase tracking-[0.16em] text-cyan-100 text-center">
-                  Valid for SAIEN events & network access
-                </div>
+                <div className="mt-4 border-t border-white/20" />
               </div>
+
+              {scanHint && (
+                <p className="mt-2 rounded-lg border border-amber-200 bg-amber-50 px-2.5 py-2 text-[11px] text-amber-700">
+                  {scanHint}
+                </p>
+              )}
 
               <div className="mt-3 grid grid-cols-2 gap-2">
                 <button type="button" className="rounded-lg bg-black py-2 text-xs font-semibold text-white">
