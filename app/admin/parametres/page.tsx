@@ -260,7 +260,7 @@ function ToggleRow({
   onChange: (checked: boolean) => void;
 }) {
   return (
-    <div className="flex items-start justify-between gap-4 rounded-lg border border-gray-100 p-4">
+    <div className="flex flex-col gap-3 rounded-lg border border-gray-100 p-4 sm:flex-row sm:items-start sm:justify-between">
       <div>
         <p className="font-semibold text-gray-900">{title}</p>
         <p className="text-sm text-gray-500 mt-1">{description}</p>
@@ -270,7 +270,7 @@ function ToggleRow({
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative inline-flex h-7 w-12 items-center rounded-full transition-colors ${
+        className={`relative inline-flex h-7 w-12 self-end items-center rounded-full transition-colors sm:self-auto ${
           checked ? "bg-[#16A34A]" : "bg-gray-300"
         }`}
       >

@@ -143,7 +143,7 @@ export default function HonorSection() {
             onScroll={updateActiveFromScroll}
             className="overflow-x-auto pt-3 pb-3 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
-            <div className="flex w-max gap-6 pr-8">
+            <div className="flex w-max gap-6 pl-4 sm:pl-0 pr-8">
               {HONOR_MEMBERS.map((member, index) => (
                 <article
                   key={member.name}

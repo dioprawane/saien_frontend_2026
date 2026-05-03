@@ -190,7 +190,7 @@ export default function MembresAdminPage() {
             placeholder="Ville"
             className="h-10 rounded-lg border border-gray-200 px-3 text-sm"
           />
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <select
               value={newMember.role}
               onChange={(event) =>
@@ -275,7 +275,28 @@ export default function MembresAdminPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="space-y-3 p-4 md:hidden">
+          {pageRows.map((member) => (
+            <MemberCard
+              key={member.id}
+              member={member}
+              onToggleStatus={() =>
+                updateMemberStatus(member.id, member.status === "active" ? "suspended" : "active")
+              }
+              onTypeChange={(type) => updateMemberType(member.id, type)}
+              onRoleChange={(role) => updateMemberRole(member.id, role)}
+              onDelete={() => removeMember(member.id)}
+            />
+          ))}
+
+          {pageRows.length === 0 && (
+            <p className="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
+              Aucun membre ne correspond aux criteres actuels.
+            </p>
+          )}
+        </div>
+
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full text-left">
             <thead>
               <tr className="bg-gray-50 text-gray-500 text-xs uppercase tracking-wider">
@@ -316,8 +337,8 @@ export default function MembresAdminPage() {
           </table>
         </div>
 
-        <div className="p-4 border-t border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm text-gray-500">
-          <div className="flex items-center gap-3">
+        <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-500">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
             <p>
               Affichage {filteredMembers.length === 0 ? 0 : firstIndex + 1} a{" "}
               {Math.min(firstIndex + itemsPerPage, filteredMembers.length)} sur {filteredMembers.length}
@@ -371,6 +392,87 @@ export default function MembresAdminPage() {
   );
 }
 
+function MemberCard({
+  member,
+  onToggleStatus,
+  onTypeChange,
+  onRoleChange,
+  onDelete,
+}: {
+  member: AdminMember;
+  onToggleStatus: () => void;
+  onTypeChange: (type: MemberType) => void;
+  onRoleChange: (role: AdminRole) => void;
+  onDelete: () => void;
+}) {
+  return (
+    <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex items-start justify-between gap-3">
+        <div className="min-w-0">
+          <p className="font-semibold text-gray-900">{member.fullName}</p>
+          <p className="truncate text-sm text-gray-600">{member.email}</p>
+        </div>
+
+        <MemberActionsMenu
+          member={member}
+          onToggleStatus={onToggleStatus}
+          onDelete={onDelete}
+        />
+      </div>
+
+      <div className="mt-3 grid grid-cols-1 gap-2 text-xs sm:grid-cols-2">
+        <label className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Type</p>
+          <select
+            value={member.type}
+            onChange={(event) => onTypeChange(event.target.value as MemberType)}
+            className="mt-1 h-8 w-full rounded-md border border-gray-200 px-2 text-xs"
+          >
+            <option value="active">{typeLabel.active}</option>
+            <option value="adherent">{typeLabel.adherent}</option>
+            <option value="honor">{typeLabel.honor}</option>
+            <option value="benefactor">{typeLabel.benefactor}</option>
+          </select>
+        </label>
+
+        <label className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Role</p>
+          <select
+            value={member.role}
+            onChange={(event) => onRoleChange(event.target.value as AdminRole)}
+            className="mt-1 h-8 w-full rounded-md border border-gray-200 px-2 text-xs"
+          >
+            <option value="member">{roleLabel.member}</option>
+            <option value="admin">{roleLabel.admin}</option>
+            <option value="super-admin">{roleLabel["super-admin"]}</option>
+          </select>
+        </label>
+
+        <div className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Statut</p>
+          <span
+            className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
+              member.status === "active"
+                ? "bg-green-100 text-green-700"
+                : "bg-orange-100 text-orange-700"
+            }`}
+          >
+            {member.status === "active" ? <Shield size={12} /> : <ShieldAlert size={12} />}
+            {statusLabel[member.status]}
+          </span>
+        </div>
+
+        <div className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Ville</p>
+          <p className="mt-1 font-medium text-gray-700">{member.city}</p>
+        </div>
+      </div>
+
+      <p className="mt-3 text-xs text-gray-500">Adhesion: {formatDate(member.joinedAt)}</p>
+    </article>
+  );
+}
+
 function MemberRow({
   member,
   onToggleStatus,
@@ -384,11 +486,6 @@ function MemberRow({
   onRoleChange: (role: AdminRole) => void;
   onDelete: () => void;
 }) {
-  const closeMenu = (target: EventTarget | null) => {
-    if (!(target instanceof HTMLElement)) return;
-    target.closest("details")?.removeAttribute("open");
-  };
-
   return (
     <tr className="hover:bg-gray-50">
       <td className="px-4 py-4">
@@ -433,38 +530,61 @@ function MemberRow({
       <td className="px-4 py-4 text-sm text-gray-600">{member.city}</td>
       <td className="px-4 py-4 text-sm text-gray-500">{formatDate(member.joinedAt)}</td>
       <td className="px-4 py-4 text-right">
-        <details className="relative inline-block text-left">
-          <summary className="list-none inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:bg-gray-100 [&::-webkit-details-marker]:hidden">
-            <MoreHorizontal size={16} />
-          </summary>
-
-          <div className="absolute right-0 z-20 mt-2 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
-            <button
-              type="button"
-              onClick={(event) => {
-                onToggleStatus();
-                closeMenu(event.currentTarget);
-              }}
-              className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
-            >
-              <UserCog size={13} />
-              {member.status === "active" ? "Suspendre" : "Activer"}
-            </button>
-
-            <button
-              type="button"
-              onClick={(event) => {
-                onDelete();
-                closeMenu(event.currentTarget);
-              }}
-              className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-semibold text-red-700 hover:bg-red-50"
-            >
-              <Trash2 size={13} />
-              Supprimer
-            </button>
-          </div>
-        </details>
+        <MemberActionsMenu
+          member={member}
+          onToggleStatus={onToggleStatus}
+          onDelete={onDelete}
+        />
       </td>
     </tr>
+  );
+}
+
+function MemberActionsMenu({
+  member,
+  onToggleStatus,
+  onDelete,
+}: {
+  member: AdminMember;
+  onToggleStatus: () => void;
+  onDelete: () => void;
+}) {
+  const closeMenu = (target: EventTarget | null) => {
+    if (!(target instanceof HTMLElement)) return;
+    target.closest("details")?.removeAttribute("open");
+  };
+
+  return (
+    <details className="relative inline-block text-left">
+      <summary className="list-none inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-md border border-gray-200 text-gray-600 hover:bg-gray-100 [&::-webkit-details-marker]:hidden">
+        <MoreHorizontal size={16} />
+      </summary>
+
+      <div className="absolute right-0 z-20 mt-2 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
+        <button
+          type="button"
+          onClick={(event) => {
+            onToggleStatus();
+            closeMenu(event.currentTarget);
+          }}
+          className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
+        >
+          <UserCog size={13} />
+          {member.status === "active" ? "Suspendre" : "Activer"}
+        </button>
+
+        <button
+          type="button"
+          onClick={(event) => {
+            onDelete();
+            closeMenu(event.currentTarget);
+          }}
+          className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-semibold text-red-700 hover:bg-red-50"
+        >
+          <Trash2 size={13} />
+          Supprimer
+        </button>
+      </div>
+    </details>
   );
 }

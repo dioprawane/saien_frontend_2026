@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/evenements/layout,_N_T_/evenements/[id]/layout,_N_T_/evenements/[id]/page,_N_T_/evenements/5"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/evenements/$d$id/__PAGE__",
+    "/evenements/$d$id",
+    "/evenements",
+    "/_index",
+    "/_head"
+  ]
+}

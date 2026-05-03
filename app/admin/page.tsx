@@ -106,7 +106,7 @@ export default function AdminDashboardPage() {
 
       <section className="grid grid-cols-1 xl:grid-cols-[1.2fr_0.8fr] gap-6">
         <div className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
-          <div className="p-5 border-b border-gray-100 flex items-center justify-between gap-4">
+          <div className="p-5 border-b border-gray-100 flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
             <div>
               <h3 className="text-lg font-bold text-[#0A2540]">Inscriptions recentes</h3>
               <p className="text-xs text-gray-500 mt-1">Decisions rapides depuis le dashboard</p>
@@ -131,7 +131,7 @@ export default function AdminDashboardPage() {
                   </p>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   {registration.status === "pending" ? (
                     <>
                       <button

@@ -196,7 +196,7 @@ export default function InscriptionsAdminPage() {
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
             <h2 className="text-lg font-bold text-[#0A2540]">Demandes d'inscription</h2>
 
-            <div className="flex flex-col sm:flex-row gap-3">
+            <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={16} />
                 <input
@@ -207,7 +207,7 @@ export default function InscriptionsAdminPage() {
                     setPage(1);
                   }}
                   placeholder="Rechercher nom, email, ID"
-                  className="h-10 w-64 rounded-lg border border-gray-200 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/40"
+                  className="h-10 w-full sm:w-64 rounded-lg border border-gray-200 pl-9 pr-3 text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A]/40"
                 />
               </div>
 
@@ -247,7 +247,7 @@ export default function InscriptionsAdminPage() {
             </div>
           </div>
 
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <button
               type="button"
               onClick={() => runBulkAction("approved")}
@@ -279,7 +279,7 @@ export default function InscriptionsAdminPage() {
               <p className="text-xs text-gray-500">{selectedIds.length} element(s) selectionne(s)</p>
             )}
 
-            <div className="ml-auto inline-flex items-center gap-2">
+            <div className="inline-flex items-center gap-2 sm:ml-auto">
               <label htmlFor="inscriptions-page-size" className="text-xs text-gray-500">
                 Lignes
               </label>
@@ -303,7 +303,28 @@ export default function InscriptionsAdminPage() {
           </div>
         </div>
 
-        <div className="overflow-x-auto">
+        <div className="space-y-3 p-4 md:hidden">
+          {pageRows.map((registration) => (
+            <MobileRegistrationCard
+              key={registration.id}
+              registration={registration}
+              isSelected={selectedIds.includes(registration.id)}
+              onToggleSelect={() => toggleRow(registration.id)}
+              onApprove={() => approveRegistration(registration.id, "Jean Dupont")}
+              onReject={() => rejectRegistration(registration.id, "Jean Dupont", "Refus administratif")}
+              onSetPending={() => setRegistrationPending(registration.id)}
+              onDelete={() => deleteRegistration(registration.id)}
+            />
+          ))}
+
+          {pageRows.length === 0 && (
+            <p className="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
+              Aucune inscription ne correspond aux filtres.
+            </p>
+          )}
+        </div>
+
+        <div className="hidden overflow-x-auto md:block">
           <table className="w-full text-left border-collapse">
             <thead>
               <tr className="bg-gray-50 text-gray-500 text-xs font-semibold uppercase tracking-wider">
@@ -375,7 +396,7 @@ export default function InscriptionsAdminPage() {
           </table>
         </div>
 
-        <div className="p-4 border-t border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm text-gray-500">
+        <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-500">
           <p>
             Affichage {filteredRegistrations.length === 0 ? 0 : firstIndex + 1} a{" "}
             {Math.min(firstIndex + itemsPerPage, filteredRegistrations.length)} sur {filteredRegistrations.length}
@@ -411,6 +432,78 @@ export default function InscriptionsAdminPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+function MobileRegistrationCard({
+  registration,
+  isSelected,
+  onToggleSelect,
+  onApprove,
+  onReject,
+  onSetPending,
+  onDelete,
+}: {
+  registration: AdminRegistration;
+  isSelected: boolean;
+  onToggleSelect: () => void;
+  onApprove: () => void;
+  onReject: () => void;
+  onSetPending: () => void;
+  onDelete: () => void;
+}) {
+  return (
+    <article className="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
+      <div className="flex items-start gap-3">
+        <input
+          type="checkbox"
+          checked={isSelected}
+          onChange={onToggleSelect}
+          aria-label={`Selectionner ${registration.fullName}`}
+          className="mt-1"
+        />
+
+        <div className="min-w-0 flex-1">
+          <p className="font-semibold text-gray-900">{registration.fullName}</p>
+          <p className="truncate text-sm text-gray-600">{registration.email}</p>
+          <p className="mt-1 text-xs text-gray-400">{registration.id}</p>
+        </div>
+
+        <RegistrationRowActions
+          registration={registration}
+          onApprove={onApprove}
+          onReject={onReject}
+          onSetPending={onSetPending}
+          onDelete={onDelete}
+        />
+      </div>
+
+      <div className="mt-3 grid grid-cols-2 gap-2 text-xs">
+        <div className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Statut</p>
+          <span
+            className={`mt-1 inline-flex items-center rounded-full px-2 py-0.5 font-semibold ${statusClassName[registration.status]}`}
+          >
+            {statusLabel[registration.status]}
+          </span>
+        </div>
+
+        <div className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Type</p>
+          <p className="mt-1 font-medium text-gray-700">{typeLabel[registration.type]}</p>
+        </div>
+
+        <div className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Source</p>
+          <p className="mt-1 font-medium text-gray-700">{sourceLabel[registration.source]}</p>
+        </div>
+
+        <div className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Date</p>
+          <p className="mt-1 font-medium text-gray-700">{formatDate(registration.submittedAt)}</p>
+        </div>
+      </div>
+    </article>
   );
 }
 

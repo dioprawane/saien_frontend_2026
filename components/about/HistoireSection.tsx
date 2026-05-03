@@ -83,24 +83,35 @@ export default function HistoireSection() {
           </div>
         </div>
 
-        {/* Timeline mobile (stack) */}
-        <div className="sm:hidden flex flex-col gap-6">
-          {TIMELINE.map((item) => (
-            <div
-              key={item.year}
-              className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm"
-            >
-              <span className="text-xs font-bold text-brand-green mb-1 block">
-                {item.year}
-              </span>
-              <h3 className="text-base font-bold text-slate-900 mb-2">
-                {item.title}
-              </h3>
-              <p className="text-sm text-slate-500 leading-relaxed">
-                {item.description}
-              </p>
-            </div>
-          ))}
+        {/* Timeline mobile */}
+        <div className="sm:hidden relative">
+          <div
+            className="absolute left-4 top-1 bottom-1 w-px bg-brand-green-soft-strong"
+            aria-hidden="true"
+          />
+
+          <div className="flex flex-col gap-5">
+            {TIMELINE.map((item) => (
+              <div key={item.year} className="relative pl-9">
+                <div
+                  className="absolute left-[11px] top-6 h-3 w-3 rounded-full bg-brand-green ring-4 ring-brand-surface"
+                  aria-hidden="true"
+                />
+
+                <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+                  <span className="text-xs font-bold text-brand-green mb-1 block">
+                    {item.year}
+                  </span>
+                  <h3 className="text-base font-bold text-slate-900 mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

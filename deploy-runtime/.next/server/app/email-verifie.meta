@@ -1,0 +1,15 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/email-verifie/layout,_N_T_/email-verifie/page,_N_T_/email-verifie"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/email-verifie/__PAGE__",
+    "/email-verifie",
+    "/_index",
+    "/_head"
+  ]
+}

@@ -198,7 +198,7 @@ export default function EvenementsAdminPage() {
             <option value="online">En ligne</option>
             <option value="hybrid">Hybride</option>
           </select>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <input
               type="number"
               min={10}
@@ -209,12 +209,12 @@ export default function EvenementsAdminPage() {
                   capacity: Number(event.target.value) || 10,
                 }))
               }
-              className="h-10 w-24 rounded-lg border border-gray-200 px-3 text-sm"
+              className="h-10 w-full rounded-lg border border-gray-200 px-3 text-sm sm:w-24"
             />
             <button
               type="button"
               onClick={createNewEvent}
-              className="h-10 inline-flex items-center gap-2 rounded-lg bg-[#0A2540] px-4 text-sm font-semibold text-white hover:bg-[#12385a]"
+              className="h-10 inline-flex w-full items-center justify-center gap-2 rounded-lg bg-[#0A2540] px-4 text-sm font-semibold text-white hover:bg-[#12385a] sm:w-auto"
             >
               <Plus size={14} />
               Creer
@@ -291,8 +291,8 @@ export default function EvenementsAdminPage() {
           )}
         </div>
 
-        <div className="p-4 border-t border-gray-100 flex flex-col md:flex-row md:items-center md:justify-between gap-3 text-sm text-gray-500">
-          <div className="flex items-center gap-3">
+        <div className="p-4 border-t border-gray-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 text-sm text-gray-500">
+          <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center sm:gap-3">
             <p>
               Affichage {filteredEvents.length === 0 ? 0 : firstIndex + 1} a{" "}
               {Math.min(firstIndex + itemsPerPage, filteredEvents.length)} sur {filteredEvents.length}
@@ -405,7 +405,7 @@ function EventCard({
       </div>
 
       <div className="flex flex-col gap-3 xl:items-end xl:text-right">
-        <div className="inline-flex items-center gap-2">
+        <div className="inline-flex flex-wrap items-center gap-2">
           <button
             type="button"
             onClick={onDecrementRegistrations}

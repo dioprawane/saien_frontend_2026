@@ -1,0 +1,17 @@
+{
+  "status": 307,
+  "headers": {
+    "location": "/espace-membre/carte",
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/ma-carte/layout,_N_T_/ma-carte/page,_N_T_/ma-carte"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/ma-carte/__PAGE__",
+    "/ma-carte",
+    "/_index",
+    "/_head"
+  ]
+}

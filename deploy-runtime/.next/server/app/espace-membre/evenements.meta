@@ -1,0 +1,16 @@
+{
+  "headers": {
+    "x-nextjs-stale-time": "300",
+    "x-nextjs-prerender": "1",
+    "x-next-cache-tags": "_N_T_/layout,_N_T_/espace-membre/layout,_N_T_/espace-membre/evenements/layout,_N_T_/espace-membre/evenements/page,_N_T_/espace-membre/evenements"
+  },
+  "segmentPaths": [
+    "/_tree",
+    "/_full",
+    "/espace-membre/evenements/__PAGE__",
+    "/espace-membre/evenements",
+    "/espace-membre",
+    "/_index",
+    "/_head"
+  ]
+}

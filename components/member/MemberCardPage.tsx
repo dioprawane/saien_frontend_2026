@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { type ChangeEvent, useEffect, useRef, useState } from "react";
 import JsBarcode from "jsbarcode";
@@ -32,6 +31,23 @@ const MEMBER = {
 
 const TEST_MEMBER_PHOTO = "/cartes-membre/diop.jpg";
 const MAX_PHOTO_SIZE_MB = 5;
+
+const waitForImageReady = (image: HTMLImageElement) => {
+  if (image.complete && image.naturalWidth > 0) {
+    return Promise.resolve();
+  }
+
+  return new Promise<void>((resolve) => {
+    const done = () => {
+      image.removeEventListener("load", done);
+      image.removeEventListener("error", done);
+      resolve();
+    };
+
+    image.addEventListener("load", done, { once: true });
+    image.addEventListener("error", done, { once: true });
+  });
+};
 
 export default function MemberCardPage() {
   const cardRef = useRef<HTMLDivElement>(null);
@@ -139,9 +155,22 @@ export default function MemberCardPage() {
       throw new Error("Carte non disponible pour l'export.");
     }
 
+    const cardImages = Array.from(cardRef.current.querySelectorAll("img"));
+    await Promise.all(cardImages.map((image) => waitForImageReady(image)));
+
+    if (typeof document !== "undefined" && "fonts" in document) {
+      await document.fonts.ready;
+    }
+
+    const mobileLikeDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    const exportPixelRatio = mobileLikeDevice ? 2 : 4;
+
     return toPng(cardRef.current, {
       cacheBust: true,
-      pixelRatio: 4,
+      pixelRatio: exportPixelRatio,
+      fetchRequestInit: {
+        mode: "cors",
+      },
     });
   };
 
@@ -356,12 +385,15 @@ export default function MemberCardPage() {
                 <div className="flex items-start justify-between">
                   <div>
                     <div className="relative h-12 w-[104px] overflow-hidden rounded-md border border-white/35 bg-white shadow-sm">
-                      <Image
+                      <img
                         src="/logos/Logo_saien_cartemembre.png"
                         alt="Logo SAIEN"
-                        fill
-                        sizes="104px"
-                        className="object-contain"
+                        width={104}
+                        height={48}
+                        loading="eager"
+                        decoding="sync"
+                        crossOrigin="anonymous"
+                        className="h-full w-full object-contain"
                       />
                     </div>
                   </div>
@@ -392,6 +424,9 @@ export default function MemberCardPage() {
                         <img
                           src={photoUrl}
                           alt={`Photo de ${MEMBER.fullName}`}
+                          loading="eager"
+                          decoding="sync"
+                          crossOrigin="anonymous"
                           className="h-full w-full object-cover"
                         />
                       </div>
