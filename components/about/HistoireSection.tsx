@@ -1,23 +1,23 @@
 const TIMELINE = [
   {
-    year: "2021",
-    title: "La Genèse",
+    year: "Novembre 2025",
+    title: "La Fondation",
     description:
-      "Création de SAIEN avec la vision de réunir les talents technologiques de la diaspora pour structurer une réponse africaine aux défis de l'IA.",
+      "Constitution officielle de SAIEN à Nice (France) le 30 novembre 2025, sous le régime de la loi 1901, par un collectif de Sénégalais passionnés d'IA, de Data et de Cybersécurité.",
     side: "left",
   },
   {
-    year: "2022",
-    title: "Premier Hub",
+    year: "2026",
+    title: "Le Lancement",
     description:
-      "Lancement du premier programme de mentorat croisé entre Paris et Dakar, impliquant plus de 50 experts en Machine Learning.",
+      "Elargissement du bureau, lancement du site web, premières adhésions et structuration des axes d'action : wébinaires, formation, mentorat, vulgarisation et représentation institutionnelle.",
     side: "right",
   },
   {
-    year: "2024",
-    title: "Réseau Global",
+    year: "Demain",
+    title: "Notre Ambition",
     description:
-      "Extension des initiatives avec des partenariats institutionnels et naissance de nouveaux nœuds de recherche collaboratifs.",
+      "Faire de SAIEN la référence de l'expertise sénégalaise en IA, en construisant des ponts durables entre le Sénégal et la diaspora mondiale.",
     side: "left",
   },
 ];
@@ -25,7 +25,7 @@ const TIMELINE = [
 export default function HistoireSection() {
   return (
     <section
-      className="bg-slate-50 py-20 lg:py-28"
+      className="bg-brand-surface py-20 lg:py-28"
       aria-labelledby="histoire-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -45,7 +45,7 @@ export default function HistoireSection() {
         {/* Timeline desktop */}
         <div className="relative max-w-3xl mx-auto hidden sm:block">
           <div
-            className="absolute left-1/2 top-0 bottom-0 w-px bg-emerald-200 -translate-x-1/2"
+            className="absolute left-1/2 top-0 bottom-0 w-px bg-brand-green-soft-strong -translate-x-1/2"
             aria-hidden="true"
           />
           <div className="flex flex-col gap-14">
@@ -62,7 +62,7 @@ export default function HistoireSection() {
                   }`}
                 >
                   <div className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm hover:shadow-md transition-shadow">
-                    <span className="text-xs font-bold text-emerald-500 mb-2 block">
+                    <span className="text-xs font-bold text-brand-green mb-2 block">
                       {item.year}
                     </span>
                     <h3 className="text-base font-bold text-slate-900 mb-2">
@@ -74,7 +74,7 @@ export default function HistoireSection() {
                   </div>
                 </div>
                 <div
-                  className="absolute left-1/2 -translate-x-1/2 top-6 w-3 h-3 rounded-full bg-emerald-500 ring-4 ring-white z-10"
+                  className="absolute left-1/2 -translate-x-1/2 top-6 w-3 h-3 rounded-full bg-brand-green ring-4 ring-white z-10"
                   aria-hidden="true"
                 />
                 <div className="w-5/12" />
@@ -83,24 +83,35 @@ export default function HistoireSection() {
           </div>
         </div>
 
-        {/* Timeline mobile (stack) */}
-        <div className="sm:hidden flex flex-col gap-6">
-          {TIMELINE.map((item) => (
-            <div
-              key={item.year}
-              className="bg-white rounded-2xl border border-slate-100 p-6 shadow-sm"
-            >
-              <span className="text-xs font-bold text-emerald-500 mb-1 block">
-                {item.year}
-              </span>
-              <h3 className="text-base font-bold text-slate-900 mb-2">
-                {item.title}
-              </h3>
-              <p className="text-sm text-slate-500 leading-relaxed">
-                {item.description}
-              </p>
-            </div>
-          ))}
+        {/* Timeline mobile */}
+        <div className="sm:hidden relative">
+          <div
+            className="absolute left-4 top-1 bottom-1 w-px bg-brand-green-soft-strong"
+            aria-hidden="true"
+          />
+
+          <div className="flex flex-col gap-5">
+            {TIMELINE.map((item) => (
+              <div key={item.year} className="relative pl-9">
+                <div
+                  className="absolute left-[11px] top-6 h-3 w-3 rounded-full bg-brand-green ring-4 ring-brand-surface"
+                  aria-hidden="true"
+                />
+
+                <div className="bg-white rounded-2xl border border-slate-100 p-5 shadow-sm">
+                  <span className="text-xs font-bold text-brand-green mb-1 block">
+                    {item.year}
+                  </span>
+                  <h3 className="text-base font-bold text-slate-900 mb-2">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-slate-500 leading-relaxed">
+                    {item.description}
+                  </p>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>

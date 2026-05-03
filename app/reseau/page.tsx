@@ -20,11 +20,12 @@ export default function ReseauPage() {
       <main>
         <ReseauHero />
         <BureauSection />
-        <AnnuaireSection />
         <HonorSection />
+        <AnnuaireSection />
         <ReseauCTA />
       </main>
       <Footer />
     </>
   );
 }
+

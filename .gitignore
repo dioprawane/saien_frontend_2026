@@ -63,3 +63,9 @@ desktop.ini
 # ── Docker (volumes locaux) ────────────────────────────────
 # Les volumes nommés sont gérés par Docker, pas Git
 # Aucun fichier Docker à ignorer côté source
+
+# Ignore les fichiers .zip générés par les builds et les fichiers deploy-runtime
+*.zip
+deploy-runtime-*.zip
+deploy-runtime-*
+deploy-runtime

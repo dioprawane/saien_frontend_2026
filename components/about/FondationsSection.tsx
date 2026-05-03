@@ -5,25 +5,25 @@ const FONDATIONS = [
     icon: Star,
     title: "Excellence",
     description:
-      "Poursuivre rigoureusement la qualité technique et scientifique dans chaque projet d'IA que nous accompagnons.",
+      "Promouvoir une expertise sénégalaise rigoureuse, reconnue à l'international en IA, Data et Cybersécurité.",
   },
   {
     icon: Users,
     title: "Inclusion",
     description:
-      "Démocratisation de l'accès aux technologies de pointe et valorisation de la diversité des talents.",
+      "Vulgariser l'IA et la rendre accessible à tous : étudiants, jeunes, professionnels en reconversion.",
   },
   {
     icon: Globe,
     title: "Impact",
     description:
-      "Développement de solutions tangibles répondant aux enjeux socio-économiques spécifiques au continent.",
+      "Accompagner des projets concrets qui répondent aux défis du Sénégal, de l'Afrique et du monde.",
   },
   {
     icon: Heart,
     title: "Solidarité",
     description:
-      "Création d'un écosystème d'entraide où le transfert de compétences prime sur la compétition.",
+      "Faire de l'entraide, du mentorat et du transfert de compétences le ciment de notre communauté.",
   },
 ];
 
@@ -50,10 +50,10 @@ export default function FondationsSection() {
           {FONDATIONS.map(({ icon: Icon, title, description }) => (
             <div
               key={title}
-              className="bg-slate-50 rounded-2xl border border-slate-100 p-6 flex flex-col gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
+              className="bg-brand-surface rounded-2xl border border-slate-100 p-6 flex flex-col gap-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
-              <div className="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center">
-                <Icon className="w-5 h-5 text-emerald-500" aria-hidden="true" />
+              <div className="w-10 h-10 rounded-xl bg-brand-green-soft flex items-center justify-center">
+                <Icon className="w-5 h-5 text-brand-green" aria-hidden="true" />
               </div>
               <h3 className="font-bold text-slate-900 text-sm">{title}</h3>
               <p className="text-slate-500 text-sm leading-relaxed">

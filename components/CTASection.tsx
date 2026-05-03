@@ -2,42 +2,41 @@ import Link from "next/link";
 
 export default function CTASection() {
   return (
-    <section className="py-8 lg:py-12 bg-white" aria-labelledby="cta-heading">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden bg-[#0c1f2e] rounded-3xl px-6 py-14 sm:px-12 sm:py-20 text-center flex flex-col items-center gap-6">
-          {/* Halos décoratifs */}
+    <section className="bg-slate-50 py-12 sm:py-16 lg:py-20" aria-labelledby="cta-heading">
+      <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
+        <div className="relative mx-auto max-w-5xl overflow-hidden rounded-[28px] bg-gradient-to-br from-[#153f66] via-[#0f3256] to-[#0b2c4b] px-6 py-14 text-center shadow-[0_42px_68px_-42px_rgba(15,23,42,0.85)] sm:px-12 sm:py-16 lg:px-16 lg:py-20">
           <div
-            className="absolute -top-20 -left-20 w-64 h-64 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none"
+            className="pointer-events-none absolute -bottom-24 -left-20 h-72 w-72 rounded-full bg-emerald-500/20 blur-3xl"
             aria-hidden="true"
           />
           <div
-            className="absolute -bottom-20 -right-20 w-64 h-64 bg-teal-600/10 rounded-full blur-3xl pointer-events-none"
+            className="pointer-events-none absolute -top-20 right-8 h-72 w-72 rounded-full bg-cyan-500/12 blur-3xl"
             aria-hidden="true"
           />
 
           <h2
             id="cta-heading"
-            className="relative text-2xl sm:text-3xl lg:text-4xl font-bold text-white max-w-lg leading-tight"
+            className="relative mx-auto max-w-3xl text-4xl font-extrabold leading-tight text-white sm:text-5xl"
           >
             Prêt à rejoindre le mouvement ?
           </h2>
 
-          <p className="relative text-slate-300 text-sm sm:text-base leading-relaxed max-w-md">
+          <p className="relative mx-auto mt-4 max-w-3xl text-base leading-relaxed text-slate-200 sm:text-lg sm:leading-relaxed lg:text-[1.55rem] lg:leading-[1.45]">
             Que vous soyez un expert de la diaspora, une entreprise tech ou un
             étudiant passionné, votre contribution est essentielle pour bâtir
             l&apos;avenir de l&apos;IA en Afrique.
           </p>
 
-          <div className="relative flex flex-col sm:flex-row gap-3">
+          <div className="relative mt-8 flex flex-col gap-4 sm:flex-row sm:justify-center">
             <Link
               href="/rejoindre"
-              className="inline-flex items-center justify-center bg-emerald-500 hover:bg-emerald-600 transition-colors text-white font-semibold text-sm px-7 py-3 rounded-full"
+              className="inline-flex min-w-[220px] items-center justify-center rounded-2xl bg-emerald-500 px-9 py-4 text-lg font-bold text-white transition-colors hover:bg-emerald-600"
             >
               Devenir Membre
             </Link>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center border border-slate-500 hover:border-slate-300 hover:bg-white/5 transition-colors text-white font-semibold text-sm px-7 py-3 rounded-full"
+              className="inline-flex min-w-[220px] items-center justify-center rounded-2xl border border-white/20 bg-transparent px-9 py-4 text-lg font-bold text-white transition-colors hover:bg-white/10"
             >
               Nous Contacter
             </Link>

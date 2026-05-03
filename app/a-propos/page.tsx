@@ -6,7 +6,6 @@ import HistoireSection from "@/components/about/HistoireSection";
 import FondationsSection from "@/components/about/FondationsSection";
 import PontSection from "@/components/about/PontSection";
 import JoinCTASection from "@/components/about/JoinCTASection";
-import LegalSection from "@/components/about/LegalSection";
 
 export const metadata: Metadata = {
   title: "À propos — SAIEN",
@@ -24,7 +23,6 @@ export default function AProposPage() {
         <FondationsSection />
         <PontSection />
         <JoinCTASection />
-        <LegalSection />
       </main>
       <Footer />
     </>

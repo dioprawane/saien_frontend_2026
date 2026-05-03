@@ -18,14 +18,14 @@ export default function MissionCard({
     <article className="relative flex flex-col gap-4 p-6 bg-white rounded-2xl border border-slate-100 hover:shadow-lg hover:border-slate-200 transition-all overflow-hidden group">
       {/* Décoration coin haut-droit */}
       <div
-        className="absolute -top-8 -right-8 w-28 h-28 bg-slate-50 rounded-full group-hover:bg-emerald-50/50 transition-colors"
+        className="absolute -top-8 -right-8 w-28 h-28 bg-brand-surface rounded-full group-hover:bg-brand-green-soft/50 transition-colors"
         aria-hidden="true"
       />
 
       {/* Icône */}
-      <div className="relative w-10 h-10 rounded-xl bg-slate-100 group-hover:bg-emerald-100 transition-colors flex items-center justify-center shrink-0">
+      <div className="relative w-10 h-10 rounded-xl bg-brand-surface group-hover:bg-brand-green-soft-strong transition-colors flex items-center justify-center shrink-0">
         <Icon
-          className="w-5 h-5 text-slate-600 group-hover:text-emerald-600 transition-colors"
+          className="w-5 h-5 text-slate-600 group-hover:text-brand-green-hover transition-colors"
           aria-hidden="true"
         />
       </div>
@@ -39,7 +39,7 @@ export default function MissionCard({
 
       <Link
         href={href}
-        className="inline-flex items-center gap-1 text-emerald-500 text-sm font-medium group/link hover:gap-2 transition-all"
+        className="inline-flex items-center gap-1 text-brand-green text-sm font-medium group/link hover:gap-2 transition-all"
       >
         En savoir plus
         <ArrowRight
@@ -50,3 +50,5 @@ export default function MissionCard({
     </article>
   );
 }
+
+

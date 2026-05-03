@@ -26,7 +26,7 @@ export default function FAQSection() {
   const [open, setOpen] = useState<number | null>(null);
 
   return (
-    <section className="bg-slate-50 py-20 lg:py-28" aria-labelledby="faq-heading">
+    <section className="bg-brand-surface py-20 lg:py-28" aria-labelledby="faq-heading">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
           <h2
@@ -46,12 +46,12 @@ export default function FAQSection() {
               <button
                 onClick={() => setOpen(open === i ? null : i)}
                 aria-expanded={open === i}
-                className="w-full flex items-center justify-between gap-4 py-5 text-left text-sm font-medium text-slate-800 hover:text-emerald-600 transition-colors"
+                className="w-full flex items-center justify-between gap-4 py-5 text-left text-sm font-medium text-slate-800 hover:text-brand-green-hover transition-colors"
               >
                 {faq.q}
                 <ChevronDown
                   className={`w-4 h-4 shrink-0 transition-transform duration-200 ${
-                    open === i ? "rotate-180 text-emerald-500" : "text-slate-400"
+                    open === i ? "rotate-180 text-brand-green" : "text-slate-400"
                   }`}
                   aria-hidden="true"
                 />
@@ -68,3 +68,5 @@ export default function FAQSection() {
     </section>
   );
 }
+
+

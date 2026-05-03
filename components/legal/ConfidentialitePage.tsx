@@ -2,169 +2,37 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { Shield, Check, ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  BadgeCheck,
+  BookOpenText,
+  Check,
+  CircleCheck,
+  Clock4,
+  Gavel,
+  Lock,
+  Shield,
+  UserRound,
+} from "lucide-react";
 
 const SECTIONS = [
-  {
-    id: "donnees",
-    title: "Données collectées",
-    content: (
-      <>
-        <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-          Nous collectons uniquement les données nécessaires à la fourniture de
-          nos services et à l&apos;amélioration de votre expérience.
-        </p>
-        <ul className="flex flex-col gap-2">
-          {[
-            "Données d'identité (nom, prénom, email)",
-            "Données professionnelles (entreprise, poste, domaine)",
-            "Données de paiement (traitées via prestataire certifié PCI-DSS)",
-            "Données de navigation (cookies, adresse IP anonymisée)",
-          ].map((item) => (
-            <li key={item} className="flex items-start gap-2.5 text-sm text-slate-600">
-              <Check className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5" aria-hidden="true" />
-              {item}
-            </li>
-          ))}
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "finalite",
-    title: "Finalité des traitements",
-    content: (
-      <>
-        <p className="text-sm text-slate-500 mb-4 leading-relaxed">
-          Vos données sont traitées pour les finalités suivantes&nbsp;:
-        </p>
-        <ul className="list-disc list-inside flex flex-col gap-1.5 text-sm text-slate-600">
-          <li>Gestion de votre espace membre et de votre adhésion</li>
-          <li>Communication sur les événements et actualités SAIEN</li>
-          <li>Amélioration des services et fonctionnalités de la plateforme</li>
-          <li>Facturation et suivi des cotisations</li>
-          <li>Respect de nos obligations légales et réglementaires</li>
-        </ul>
-      </>
-    ),
-  },
-  {
-    id: "base-legale",
-    title: "Base légale",
-    content: (
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-        {[
-          {
-            label: "Consentement",
-            desc: "Pour les cookies non essentiels et les communications marketing.",
-            color: "bg-emerald-50 border-emerald-100",
-            labelColor: "text-emerald-700",
-          },
-          {
-            label: "Exécution Contrat",
-            desc: "Pour la gestion de l'adhésion et des services membres.",
-            color: "bg-blue-50 border-blue-100",
-            labelColor: "text-blue-700",
-          },
-          {
-            label: "Intérêt Légitime",
-            desc: "Pour l'amélioration de nos services et la sécurité du site.",
-            color: "bg-purple-50 border-purple-100",
-            labelColor: "text-purple-700",
-          },
-          {
-            label: "Obligation Légale",
-            desc: "Pour la conservation des données de facturation.",
-            color: "bg-orange-50 border-orange-100",
-            labelColor: "text-orange-700",
-          },
-        ].map(({ label, desc, color, labelColor }) => (
-          <div key={label} className={`rounded-xl border p-4 ${color}`}>
-            <p className={`text-xs font-bold mb-1 ${labelColor}`}>{label}</p>
-            <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
-          </div>
-        ))}
-      </div>
-    ),
-  },
-  {
-    id: "duree",
-    title: "Durée de conservation",
-    content: (
-      <div className="overflow-x-auto">
-        <table className="w-full text-sm">
-          <thead>
-            <tr className="border-b border-slate-100">
-              <th className="text-left py-2 pr-4 font-semibold text-slate-700">
-                Catégorie
-              </th>
-              <th className="text-left py-2 font-semibold text-slate-700">
-                Durée
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-slate-50">
-            {[
-              ["Données de compte", "Durée de l'adhésion + 3 ans"],
-              ["Données de facturation", "10 ans (obligation légale)"],
-              ["Logs de connexion", "12 mois"],
-              ["Interactions avec l'IA", "6 mois"],
-            ].map(([cat, dur]) => (
-              <tr key={cat}>
-                <td className="py-2.5 pr-4 text-slate-600">{cat}</td>
-                <td className="py-2.5 text-slate-500">{dur}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    ),
-  },
-  {
-    id: "droits",
-    title: "Vos droits utilisateurs",
-    content: (
-      <div className="flex flex-col gap-4">
-        <p className="text-sm text-slate-500 leading-relaxed">
-          Conformément au RGPD, vous disposez des droits suivants&nbsp;:
-        </p>
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
-          {[
-            {
-              title: "Accès & Rectification",
-              desc: "Obtenez une copie de vos données et signalez toute inexactitude.",
-            },
-            {
-              title: "Effacement & Oubli",
-              desc: "Demandez la suppression de vos données dans les cas prévus par la loi.",
-            },
-            {
-              title: "Portabilité",
-              desc: "Recevez vos données dans un format structuré et lisible par machine.",
-            },
-          ].map(({ title, desc }) => (
-            <div key={title} className="bg-slate-50 rounded-xl p-4 border border-slate-100">
-              <p className="text-xs font-bold text-slate-800 mb-1.5">{title}</p>
-              <p className="text-xs text-slate-500 leading-relaxed">{desc}</p>
-            </div>
-          ))}
-        </div>
-      </div>
-    ),
-  },
-];
-
-const NAV_ITEMS = [
   { id: "donnees", label: "Données collectées" },
-  { id: "finalite", label: "Finalité" },
+  { id: "finalite", label: "Finalité des traitements" },
   { id: "base-legale", label: "Base légale" },
-  { id: "duree", label: "Durée conservation" },
-  { id: "droits", label: "Droits utilisateurs" },
+  { id: "duree", label: "Durée de conservation" },
+  { id: "droits", label: "Vos droits utilisateurs" },
   { id: "dpo", label: "Contact RGPD" },
 ];
 
+const RETENTION_ROWS = [
+  ["Données de compte", "Durée de la relation contractuelle + 3 ans"],
+  ["Données de facturation", "10 ans (obligation légale comptable)"],
+  ["Logs de connexion", "1 an maximum"],
+  ["Données d'interaction IA", "Anonymisées après 6 mois"],
+];
+
 export default function ConfidentialitePage() {
-  const [activeId, setActiveId] = useState<string>(NAV_ITEMS[0].id);
+  const [activeId, setActiveId] = useState<string>(SECTIONS[0].id);
   const observerRef = useRef<IntersectionObserver | null>(null);
 
   useEffect(() => {
@@ -178,7 +46,7 @@ export default function ConfidentialitePage() {
       { rootMargin: "-30% 0px -60% 0px" }
     );
 
-    NAV_ITEMS.forEach(({ id }) => {
+    SECTIONS.forEach(({ id }) => {
       const el = document.getElementById(id);
       if (el) observerRef.current?.observe(el);
     });
@@ -187,108 +55,213 @@ export default function ConfidentialitePage() {
   }, []);
 
   return (
-    <main>
-      {/* Hero */}
-      <section className="bg-white pt-16 pb-12">
+    <>
+      <section className="bg-[#fdfef6] pt-14 pb-10 border-b border-[#0a2e4a]/10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="w-14 h-14 rounded-2xl bg-emerald-50 flex items-center justify-center mx-auto mb-5">
-            <Shield className="w-7 h-7 text-emerald-500" aria-hidden="true" />
+          <div className="mx-auto mb-4 h-14 w-14 rounded-2xl bg-white border border-slate-200 text-[#0e6f5c] inline-flex items-center justify-center">
+            <Lock className="w-7 h-7" aria-hidden="true" />
           </div>
-          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-extrabold text-slate-900 mb-4 leading-tight">
+          <h1 className="text-4xl sm:text-5xl font-extrabold text-[#0a2e4a] leading-[1.05]">
             Politique de confidentialité
           </h1>
-          <p className="text-slate-500 max-w-lg mx-auto text-sm sm:text-base leading-relaxed mb-2">
-            Nous nous engageons à protéger vos données personnelles conformément
-            au RGPD.
+          <p className="mt-3 text-slate-500 max-w-3xl mx-auto leading-relaxed">
+            SAIEN s&apos;engage à protéger vos données personnelles. Cette politique explique
+            comment nous collectons, utilisons et protégeons vos informations dans le cadre
+            de nos services d&apos;intelligence artificielle et de réseau.
           </p>
-          <span className="text-xs text-slate-400">
-            Dernière mise à jour : 15 Avril 2026
-          </span>
+          <p className="mt-4 text-xs text-slate-400">Dernière mise à jour : 15 Avril 2026</p>
         </div>
       </section>
 
-      {/* Contenu principal */}
-      <section className="bg-slate-50 py-16 lg:py-24">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-[220px_1fr] gap-10 items-start">
-            {/* Sidebar sticky */}
-            <nav
-              aria-label="Sommaire"
-              className="hidden lg:flex flex-col gap-1 sticky top-24"
-            >
-              <p className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-2 px-3">
-                Sommaire
-              </p>
-              {NAV_ITEMS.map(({ id, label }) => (
+      <section className="bg-[#fdfef6] py-8 lg:py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-[240px_minmax(0,1fr)] gap-8 items-start">
+          <aside className="lg:sticky lg:top-24 rounded-xl border border-slate-200 bg-white p-4">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-slate-400 mb-3">Sommaire</p>
+            <nav aria-label="Sommaire confidentialité" className="space-y-1">
+              {SECTIONS.map(({ id, label }) => (
                 <a
                   key={id}
                   href={`#${id}`}
-                  className={`text-sm px-3 py-2 rounded-xl transition-all ${
+                  className={`block rounded-md px-3 py-2 text-sm transition-colors ${
                     activeId === id
-                      ? "bg-emerald-50 text-emerald-700 font-semibold"
-                      : "text-slate-500 hover:text-slate-800"
+                      ? "bg-[#0e6f5c]/10 text-[#0e6f5c] font-semibold"
+                      : "text-slate-500 hover:text-slate-700"
                   }`}
                 >
                   {label}
                 </a>
               ))}
             </nav>
+          </aside>
 
-            {/* Sections */}
-            <div className="flex flex-col gap-8">
-              {SECTIONS.map(({ id, title, content }) => (
-                <div
-                  key={id}
-                  id={id}
-                  className="bg-white rounded-2xl border border-slate-100 shadow-sm p-7"
-                >
-                  <h2 className="font-bold text-slate-900 text-base mb-5">
-                    {title}
-                  </h2>
-                  {content}
+          <article className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
+            <section id="donnees" className="border-b border-slate-100 pb-8">
+              <h2 className="text-3xl font-bold text-[#0a2e4a] inline-flex items-center gap-2 mb-4">
+                <BookOpenText className="h-5 w-5 text-[#0e6f5c]" aria-hidden="true" />
+                1. Données collectées
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+                Dans le cadre de l&apos;utilisation de la plateforme SAIEN, nous sommes amenés à collecter
+                différentes catégories de données personnelles. Cette collecte se fait de manière
+                transparente et limitée à ce qui est strictement nécessaire.
+              </p>
+              <ul className="space-y-2.5 text-sm sm:text-base text-slate-600">
+                {[
+                  "Données d'identification : nom, prénom, adresse email professionnelle, numéro de téléphone.",
+                  "Données de connexion : adresse IP, logs de connexion, type de navigateur, identifiants de session.",
+                  "Données professionnelles : fonction, entreprise, secteur d'activité, profil LinkedIn (si connecté).",
+                  "Données d'interaction IA : requêtes formulées, préférences de configuration, retours d'utilisation.",
+                ].map((line) => (
+                  <li key={line} className="inline-flex items-start gap-2.5">
+                    <Check className="w-4 h-4 text-[#0e6f5c] mt-0.5 shrink-0" aria-hidden="true" />
+                    <span>{line}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+
+            <section id="finalite" className="border-b border-slate-100 py-8">
+              <h2 className="text-3xl font-bold text-[#0a2e4a] inline-flex items-center gap-2 mb-4">
+                <CircleCheck className="h-5 w-5 text-[#0e6f5c]" aria-hidden="true" />
+                2. Finalité des traitements
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+                Les données collectées par SAIEN sont utilisées pour des finalités explicites,
+                légitimes et déterminées. Nous ne traitons pas vos données de manière incompatible
+                avec ces finalités.
+              </p>
+              <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
+                <p className="text-sm font-semibold text-[#0a2e4a] mb-2">Principales finalités :</p>
+                <ul className="space-y-1.5 text-sm text-slate-600">
+                  <li>Fourniture et maintien des services d&apos;intelligence artificielle</li>
+                  <li>Gestion des comptes utilisateurs et de l&apos;authentification</li>
+                  <li>Amélioration continue de nos algorithmes et modèles prédictifs</li>
+                  <li>Communication technique et administrative</li>
+                  <li>Sécurisation de la plateforme contre les accès non autorisés</li>
+                </ul>
+              </div>
+            </section>
+
+            <section id="base-legale" className="border-b border-slate-100 py-8">
+              <h2 className="text-3xl font-bold text-[#0a2e4a] inline-flex items-center gap-2 mb-4">
+                <Gavel className="h-5 w-5 text-[#0e6f5c]" aria-hidden="true" />
+                3. Base légale
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+                Conformément au Règlement Général sur la Protection des Données (RGPD), chaque
+                traitement effectué par SAIEN repose sur une base légale valide.
+              </p>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm">
+                <article className="rounded-xl border border-slate-200 p-3.5">
+                  <p className="font-semibold text-[#0a2e4a]">Le Consentement</p>
+                  <p className="mt-1 text-slate-500">Pour l&apos;envoi de newsletters, le dépôt de cookies analytiques et l&apos;utilisation de certaines fonctionnalités IA optionnelles.</p>
+                </article>
+                <article className="rounded-xl border border-slate-200 p-3.5">
+                  <p className="font-semibold text-[#0a2e4a]">L&apos;Exécution du Contrat</p>
+                  <p className="mt-1 text-slate-500">Pour la création de votre compte, la facturation et la fourniture des services souscrits.</p>
+                </article>
+                <article className="rounded-xl border border-slate-200 p-3.5">
+                  <p className="font-semibold text-[#0a2e4a]">L&apos;Intérêt Légitime</p>
+                  <p className="mt-1 text-slate-500">Pour la sécurité du réseau, la prévention de la fraude et l&apos;amélioration globale de nos services.</p>
+                </article>
+                <article className="rounded-xl border border-slate-200 p-3.5">
+                  <p className="font-semibold text-[#0a2e4a]">Obligation Légale</p>
+                  <p className="mt-1 text-slate-500">Pour la conservation des données de facturation et la réponse aux réquisitions judiciaires.</p>
+                </article>
+              </div>
+            </section>
+
+            <section id="duree" className="border-b border-slate-100 py-8">
+              <h2 className="text-3xl font-bold text-[#0a2e4a] inline-flex items-center gap-2 mb-4">
+                <Clock4 className="h-5 w-5 text-[#0e6f5c]" aria-hidden="true" />
+                4. Durée de conservation
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+                SAIEN ne conserve vos données que le temps nécessaire aux opérations pour lesquelles
+                elles ont été collectées, dans le respect de la législation en vigueur.
+              </p>
+              <div className="overflow-x-auto rounded-xl border border-slate-200">
+                <table className="w-full text-sm">
+                  <thead className="bg-slate-50 text-slate-700">
+                    <tr>
+                      <th className="text-left px-4 py-3 font-semibold">Catégorie de données</th>
+                      <th className="text-left px-4 py-3 font-semibold">Durée de conservation</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-slate-100 text-slate-600">
+                    {RETENTION_ROWS.map(([category, duration]) => (
+                      <tr key={category}>
+                        <td className="px-4 py-3">{category}</td>
+                        <td className="px-4 py-3">{duration}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </section>
+
+            <section id="droits" className="py-8">
+              <h2 className="text-3xl font-bold text-[#0a2e4a] inline-flex items-center gap-2 mb-4">
+                <UserRound className="h-5 w-5 text-[#0e6f5c]" aria-hidden="true" />
+                5. Vos droits utilisateurs
+              </h2>
+              <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
+                Vous disposez de droits stricts concernant vos données personnelles. Vous pouvez les
+                exercer à tout moment en contactant notre Délégué à la Protection des Données (DPO).
+              </p>
+
+              <div className="space-y-3 text-sm">
+                <article className="rounded-xl border border-slate-200 p-4">
+                  <p className="font-semibold text-[#0a2e4a] inline-flex items-center gap-2">
+                    <BadgeCheck className="h-4 w-4 text-[#0e6f5c]" aria-hidden="true" />
+                    Droit d&apos;accès et de rectification
+                  </p>
+                  <p className="mt-1 text-slate-500">Vous pouvez demander à consulter les données que nous détenons sur vous et exiger leur modification si elles sont inexactes.</p>
+                </article>
+                <article className="rounded-xl border border-slate-200 p-4">
+                  <p className="font-semibold text-[#0a2e4a] inline-flex items-center gap-2">
+                    <Shield className="h-4 w-4 text-[#0e6f5c]" aria-hidden="true" />
+                    Droit à l&apos;effacement (Droit à l&apos;oubli)
+                  </p>
+                  <p className="mt-1 text-slate-500">Vous pouvez demander la suppression de vos données personnelles, sous réserve de nos obligations légales de conservation.</p>
+                </article>
+                <article className="rounded-xl border border-slate-200 p-4">
+                  <p className="font-semibold text-[#0a2e4a] inline-flex items-center gap-2">
+                    <BookOpenText className="h-4 w-4 text-[#0e6f5c]" aria-hidden="true" />
+                    Droit à la portabilité
+                  </p>
+                  <p className="mt-1 text-slate-500">Vous pouvez récupérer vos données dans un format structuré et lisible par machine pour les transmettre à un autre prestataire.</p>
+                </article>
+              </div>
+            </section>
+
+            <section id="dpo" className="rounded-2xl bg-[#0a2e4a] text-white p-5 sm:p-6 mt-2">
+              <h2 className="text-2xl font-bold inline-flex items-center gap-2">
+                <Shield className="h-5 w-5 text-[#0e6f5c]" aria-hidden="true" />
+                Contactez notre DPO
+              </h2>
+              <p className="mt-3 text-sm text-slate-200 max-w-2xl leading-relaxed">
+                Pour toute question relative à cette politique de confidentialité ou pour exercer vos droits,
+                notre Délégué à la Protection des Données est à votre disposition.
+              </p>
+
+              <div className="mt-4 rounded-xl border border-white/20 bg-white/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div>
+                  <p className="text-[11px] uppercase tracking-[0.14em] text-slate-300">Email direct</p>
+                  <p className="text-sm font-semibold">dpo@saien.com</p>
                 </div>
-              ))}
-
-              {/* CTA DPO */}
-              <div
-                id="dpo"
-                className="bg-[#0b1825] rounded-2xl p-7 sm:p-9 text-white"
-              >
-                <div className="flex items-start gap-4 mb-6">
-                  <div className="w-10 h-10 rounded-full bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center shrink-0">
-                    <Shield className="w-5 h-5 text-emerald-400" aria-hidden="true" />
-                  </div>
-                  <div>
-                    <h2 className="font-bold text-white text-base">
-                      Contactez notre DPO
-                    </h2>
-                    <p className="text-slate-300 text-sm mt-1 leading-relaxed">
-                      Pour toute question relative à vos données personnelles ou
-                      pour exercer vos droits, contactez notre Délégué à la
-                      Protection des Données.
-                    </p>
-                  </div>
-                </div>
-
-                <a
-                  href="mailto:dpo@saien.com"
-                  className="block text-emerald-400 text-sm font-medium mb-6 hover:text-emerald-300 transition-colors"
-                >
-                  dpo@saien.com
-                </a>
-
                 <Link
                   href="/contact"
-                  className="inline-flex items-center gap-2 bg-emerald-500 hover:bg-emerald-600 text-white text-sm font-semibold px-5 py-3 rounded-full transition-colors"
+                  className="inline-flex items-center justify-center gap-2 rounded-lg bg-[#0e6f5c] px-4 py-2.5 text-sm font-semibold text-white hover:bg-[#0c5f50] transition-colors"
                 >
                   Contacter le DPO
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                  <ArrowRight className="h-4 w-4" aria-hidden="true" />
                 </Link>
               </div>
-            </div>
-          </div>
+            </section>
+          </article>
         </div>
       </section>
-    </main>
+    </>
   );
 }

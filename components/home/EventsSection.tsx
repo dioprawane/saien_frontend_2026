@@ -4,6 +4,7 @@ import EventCard from "./EventCard";
 
 const EVENTS = [
   {
+    id: 2,
     dateBadge: "15 Nov",
     imageUrl: "/event-1.png", // <- Image de la présentation (personnes en salle)
     category: "Webinaire",
@@ -14,6 +15,7 @@ const EVENTS = [
     time: "14:00 – 15:30 (CET)",
   },
   {
+    id: 3,
     dateBadge: "28 Nov",
     imageUrl: "/event-2.png", // <- Image du groupe de personnes en networking
     category: "Paris, France",
@@ -24,6 +26,7 @@ const EVENTS = [
     time: "18:30 – 21:00 (CET)",
   },
   {
+    id: 1,
     dateBadge: "05 Déc",
     imageUrl: "/event-3.png", // <- Image de la personne avec deux écrans
     category: "Workshop En Ligne",
@@ -57,7 +60,7 @@ export default function EventsSection() {
           </div>
           <Link
             href="/evenements"
-            className="shrink-0 self-start sm:self-auto inline-flex items-center gap-1.5 text-emerald-500 hover:text-emerald-600 transition-colors text-sm font-medium"
+            className="shrink-0 self-start sm:self-auto inline-flex items-center gap-1.5 text-brand-green hover:text-brand-green-hover transition-colors text-sm font-medium"
           >
             Voir tout l&apos;agenda
             <ArrowRight className="w-3.5 h-3.5" aria-hidden="true" />
@@ -67,7 +70,13 @@ export default function EventsSection() {
         {/* Grille */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {EVENTS.map((event) => (
-            <EventCard key={event.title} {...event} />
+            <Link
+              key={event.title}
+              href={`/evenements/${event.id}`}
+              className="group block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2"
+            >
+              <EventCard {...event} />
+            </Link>
           ))}
         </div>
       </div>

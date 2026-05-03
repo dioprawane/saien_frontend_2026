@@ -4,7 +4,7 @@ services:
       context: .
       target: dev
     container_name: saien-front-dev
-    command: npm run dev
+    command: sh -lc "rm -rf /app/.next/* && npm run dev"
     environment:
       NODE_ENV: development
       NEXT_TELEMETRY_DISABLED: "1"

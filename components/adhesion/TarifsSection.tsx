@@ -31,7 +31,7 @@ const PLANS = [
 
 export default function TarifsSection() {
   return (
-    <section className="bg-slate-50 py-20 lg:py-28" aria-labelledby="tarifs-heading">
+    <section className="bg-brand-surface py-20 lg:py-28" aria-labelledby="tarifs-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-14">
           <h2
@@ -57,7 +57,7 @@ export default function TarifsSection() {
               }`}
             >
               {plan.featured && (
-                <span className="absolute top-4 right-4 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-emerald-500 text-white">
+                <span className="absolute top-4 right-4 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-brand-green text-white">
                   RECOMMANDÉ
                 </span>
               )}
@@ -102,7 +102,7 @@ export default function TarifsSection() {
                 {plan.features.map((f) => (
                   <li key={f} className="flex items-start gap-2.5 text-sm">
                     <Check
-                      className="w-4 h-4 text-emerald-500 shrink-0 mt-0.5"
+                      className="w-4 h-4 text-brand-green shrink-0 mt-0.5"
                       aria-hidden="true"
                     />
                     <span
@@ -117,8 +117,8 @@ export default function TarifsSection() {
               <button
                 className={`mt-auto w-full py-3 rounded-full font-semibold text-sm transition-all ${
                   plan.featured
-                    ? "bg-emerald-500 hover:bg-emerald-600 text-white"
-                    : "border border-slate-300 hover:border-emerald-400 hover:text-emerald-600 text-slate-700"
+                    ? "bg-brand-green hover:bg-brand-green-hover text-white"
+                    : "border border-slate-300 hover:border-brand-green hover:text-brand-green-hover text-slate-700"
                 }`}
               >
                 {plan.cta}
@@ -130,3 +130,5 @@ export default function TarifsSection() {
     </section>
   );
 }
+
+
