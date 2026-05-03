@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { ChevronLeft, ChevronRight, Linkedin, Twitter } from "lucide-react";
+import { ChevronLeft, ChevronRight, Info, Linkedin, Twitter } from "lucide-react";
 
 interface BureauMember {
   name: string;
@@ -14,56 +14,44 @@ interface BureauMember {
 
 const BUREAU: BureauMember[] = [
   {
-    name: "Amadou Diallo",
+    name: "Serigne Rawane DIOP",
     role: "Président",
     badge: "Fondateur",
-    bio: "Expert en Machine Learning avec plus de 15 ans d'expérience dans l'écosystème tech franco-africain.",
-    initials: "AD",
+    bio: "Spécialiste en Intelligence Artificielle. Gouvernance et stratégie organisationnelle.",
+    initials: "SRD",
     tone: "from-brand-green to-brand-green-hover",
   },
   {
-    name: "Fatou Sow",
+    name: "Dr. Moustapha DIAW",
     role: "Vice-Présidente",
     badge: "Fondateur",
-    bio: "Directrice de la stratégie Data et IA, spécialiste de l'Afrique dans les politiques numériques internationales.",
-    initials: "FS",
+    bio: "Docteur en traitement du signal, consultant et ingénieur en vision par ordinateur et traitement d'images.",
+    initials: "MD",
     tone: "from-sky-400 to-blue-500",
   },
   {
-    name: "Jean-Marc Kone",
+    name: "Sidy Mouhamed DIENG",
     role: "Secrétaire Général",
-    bio: "Architecte Cloud et spécialiste en infrastructure de données pour les systèmes distribués à grande échelle.",
-    initials: "JK",
+    badge: "Fondateur",
+    bio: "Ingénieur en Informatique et mathématiques appliquées, datascientist.",
+    initials: "SMD",
     tone: "from-amber-400 to-orange-500",
   },
   {
-    name: "Awa Ndiaye",
+    name: "Lamine TOURE",
     role: "Trésorière",
-    badge: "Nouveau",
-    bio: "Analyste financière et experte en levée de fonds pour les startups deep tech en Afrique subsaharienne.",
-    initials: "AN",
+    badge: "Fondateur",
+    bio: "Spécialiste en Intelligence Artificielle. Double parcours UniCA Nice et Laval Canada.",
+    initials: "LT",
     tone: "from-violet-400 to-purple-500",
   },
   {
-    name: "Ibrahima Koné",
-    role: "Responsable Partenariats",
-    bio: "Pilote les collaborations stratégiques entre institutions publiques, universités et entreprises technologiques.",
-    initials: "IK",
+    name: "Sergne Modou DIOP",
+    role: "Adjoint Trésorier",
+    badge: "Fondateur",
+    bio: "Etudiant en BUT Sciences des données, passionné par l'IA et la Data Science.",
+    initials: "SMD",
     tone: "from-cyan-400 to-brand-green-hover",
-  },
-  {
-    name: "Mariame Touré",
-    role: "Directrice Programmes",
-    bio: "Coordonne l'exécution des initiatives SAIEN et le suivi d'impact de chaque programme sur le terrain.",
-    initials: "MT",
-    tone: "from-rose-400 to-pink-500",
-  },
-  {
-    name: "Youssef Alaoui",
-    role: "Responsable Technique",
-    bio: "Supervise les standards technologiques, l'architecture des plateformes et la qualité des livrables IA.",
-    initials: "YA",
-    tone: "from-indigo-400 to-blue-600",
   },
 ];
 
@@ -127,11 +115,24 @@ export default function BureauSection() {
             Le Bureau SAIEN
           </h2>
           <p className="text-slate-500 text-sm sm:text-base leading-relaxed">
-            Découvrez l&apos;équipe dirigeante qui façonne l&apos;avenir de
-            notre réseau. Des experts passionnés par l&apos;intelligence
-            artificielle, dédiés à l&apos;innovation et au rayonnement de la
-            diaspora.
+            Une équipe fondatrice engagée pour structurer la communauté et
+            porter ses ambitions auprès des institutions en France, au Sénégal
+            et à l&apos;international.
           </p>
+
+          <div className="mt-6 rounded-2xl border border-brand-green-soft-strong bg-white px-4 py-4 text-left shadow-sm">
+            <div className="flex items-start gap-3">
+              <span className="mt-0.5 inline-flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-green-soft text-brand-green-hover">
+                <Info className="h-4 w-4" aria-hidden="true" />
+              </span>
+              <p className="text-slate-600 text-xs sm:text-sm leading-relaxed">
+                Le Conseil d&apos;administration est composé de 6 membres élus pour
+                3 ans, renouvellement par tiers chaque année (article 13 des
+                statuts). Le bureau est élu parmi ses membres et se compose au
+                minimum d&apos;un Président, d&apos;un Secrétaire et d&apos;un Trésorier.
+              </p>
+            </div>
+          </div>
         </div>
 
         <div className="flex justify-end gap-2 mb-5">
@@ -154,15 +155,14 @@ export default function BureauSection() {
         </div>
 
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-brand-surface to-transparent z-10" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-brand-surface to-transparent z-10" />
 
           <div
             ref={railRef}
             onScroll={updateActiveFromScroll}
-            className="overflow-x-auto pt-3 pb-3 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="overflow-x-auto overflow-y-visible pt-3 pb-3 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
-            <div className="flex w-max gap-6 pl-4 sm:pl-0 pr-8">
+            <div className="flex w-max gap-6 pl-3 pr-8">
               {BUREAU.map((member, index) => (
                 <article
                   key={member.name}

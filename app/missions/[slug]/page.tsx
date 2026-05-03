@@ -3,20 +3,29 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { MISSIONS } from "@/lib/missions-data";
+import { MISSIONS } from "../../../lib/missions-data";
 import {
   ArrowLeft,
+  ArrowRight,
+  ArrowUpRight,
+  BookOpen,
   CheckCircle2,
+  Construction,
+  Globe2,
   GraduationCap,
   Handshake,
   Network,
+  Rocket,
   ShieldCheck,
 } from "lucide-react";
 
 const ICON_MAP = {
+  BookOpen,
+  Globe2,
   GraduationCap,
   Network,
   Handshake,
+  Rocket,
   ShieldCheck,
 };
 
@@ -114,7 +123,7 @@ export default async function MissionDetailPage({
 
                 <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
                   <h2 className="text-xl font-bold text-[#0A2540] mb-4">
-                    Programmes phares
+                    Programmes & Initiatives
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     {mission.flagshipPrograms.map((program) => (
@@ -136,25 +145,75 @@ export default async function MissionDetailPage({
                   </h3>
                   <ul className="space-y-3">
                     {mission.impactTargets.map((impact) => (
-                      <li key={impact} className="text-sm text-slate-600 leading-relaxed">
-                        • {impact}
+                      <li
+                        key={impact}
+                        className="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"
+                      >
+                        <CheckCircle2
+                          className="w-4 h-4 text-brand-green mt-0.5 shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span>{impact}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
 
-                <div className="bg-[#0A2540] rounded-2xl p-6 text-white">
-                  <p className="text-sm text-white/80 mb-4">
-                    Vous souhaitez contribuer à cette mission ?
+                <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">
+                  <h3 className="text-lg font-bold text-[#0A2540] mb-3">
+                    Comment contribuer
+                  </h3>
+                  <ul className="space-y-3">
+                    {mission.contributeActions.map((action) => (
+                      <li
+                        key={action}
+                        className="flex items-start gap-2.5 text-sm text-slate-600 leading-relaxed"
+                      >
+                        <ArrowRight
+                          className="w-4 h-4 text-brand-green mt-0.5 shrink-0"
+                          aria-hidden="true"
+                        />
+                        <span>{action}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </aside>
+            </div>
+          </div>
+        </section>
+
+        <section className="pb-12 lg:pb-16">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="relative overflow-hidden rounded-2xl border border-white/30 bg-[#1c1e22] px-6 py-7 sm:px-8 sm:py-9 text-slate-100 shadow-lg">
+              <div className="relative space-y-5">
+                <p className="inline-flex items-center gap-2.5 text-xl sm:text-2xl font-semibold tracking-tight">
+                  <Construction
+                    className="w-5 h-5 text-brand-green-soft-strong shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>Cette mission est en construction.</span>
+                </p>
+
+                <p className="max-w-4xl text-sm sm:text-base leading-relaxed text-slate-300">
+                  SAIEN est une jeune association fondée fin 2025. Nos
+                  programmes et initiatives prennent forme grâce à
+                  l&apos;engagement de chacun.
+                </p>
+
+                <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+                  <p className="text-lg sm:text-xl font-semibold">
+                    Vous voulez contribuer à cette mission ?
                   </p>
                   <Link
                     href="/rejoindre"
-                    className="inline-flex items-center justify-center w-full rounded-xl bg-brand-green hover:bg-brand-green-hover transition-colors font-semibold py-3"
+                    className="inline-flex items-center justify-center gap-2 rounded-xl border border-white/50 px-4 py-2.5 text-sm font-semibold text-white hover:bg-white/10 transition-colors"
                   >
-                    Rejoindre la mission
+                    Nous rejoindre
+                    <ArrowUpRight className="w-4 h-4" aria-hidden="true" />
                   </Link>
                 </div>
-              </aside>
+              </div>
             </div>
           </div>
         </section>

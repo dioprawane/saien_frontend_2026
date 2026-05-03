@@ -12,15 +12,12 @@ const MembersWorldMap = dynamic(() => import("./MembersWorldMap"), {
 });
 
 const MEMBER_LOCATIONS: MemberLocation[] = [
-  { country: "France", city: "Paris", members: 42, lat: 48.8566, lon: 2.3522, featured: true },
-  { country: "Sénégal", city: "Dakar", members: 31, lat: 14.7167, lon: -17.4677, featured: true },
-  { country: "Canada", city: "Montréal", members: 16, lat: 45.5017, lon: -73.5673 },
-  { country: "États-Unis", city: "New York", members: 14, lat: 40.7128, lon: -74.006 },
-  { country: "Royaume-Uni", city: "Londres", members: 11, lat: 51.5074, lon: -0.1278 },
-  { country: "Maroc", city: "Casablanca", members: 9, lat: 33.5731, lon: -7.5898 },
-  { country: "Côte d'Ivoire", city: "Abidjan", members: 8, lat: 5.35995, lon: -4.0083 },
-  { country: "Émirats arabes unis", city: "Dubaï", members: 7, lat: 25.2048, lon: 55.2708 },
-  { country: "Afrique du Sud", city: "Johannesburg", members: 6, lat: -26.2041, lon: 28.0473 },
+  { country: "France", city: "Paris", members: 18, lat: 48.8566, lon: 2.3522, featured: true },
+  { country: "Sénégal", city: "Dakar", members: 20, lat: 14.7167, lon: -17.4677, featured: true },
+  { country: "Canada", city: "Montréal", members: 2, lat: 45.5017, lon: -73.5673 },
+  { country: "États-Unis", city: "New York", members: 1, lat: 40.7128, lon: -74.006 },
+  { country: "Royaume-Uni", city: "Londres", members: 1, lat: 51.5074, lon: -0.1278 },
+  { country: "Maroc", city: "Casablanca", members: 1, lat: 33.5731, lon: -7.5898 },
 ];
 
 const TOTAL_MEMBERS = MEMBER_LOCATIONS.reduce((sum, location) => sum + location.members, 0);
@@ -38,12 +35,12 @@ export default function PontSection() {
               id="pont-heading"
               className="text-2xl sm:text-3xl font-bold text-slate-900 mb-5"
             >
-              Un Réseau Mondial
+              Un Réseau International
             </h2>
             <p className="text-slate-500 text-sm sm:text-base leading-relaxed mb-8">
-              SAIEN relie des talents sur plusieurs continents pour accélérer
-              le partage de compétences, les projets collaboratifs et
-              l&apos;innovation en intelligence artificielle.
+              La diaspora sénégalaise compte des talents technologiques
+              sur tous les continents. SAIEN les fédère autour d'une mission
+              commune : faire rayonner l&apos;IA sénégalaise dans le monde.
             </p>
 
             <div className="flex flex-wrap gap-3 mb-6">

@@ -5,42 +5,42 @@ import { ChevronLeft, ChevronRight, Linkedin } from "lucide-react";
 
 const HONOR_MEMBERS = [
   {
-    name: "Prof. Marie Desroches",
+    name: "Donnees de test",
     title: "Pionnière en IA Éthique",
     bio: "Professeure émérite, ses travaux ont façonné les régulations européennes sur l'intelligence artificielle responsable.",
     initials: "MD",
     tone: "from-cyan-400 to-blue-500",
   },
   {
-    name: "Dr. Jean Dupont",
+    name: "Test 2",
     title: "Fondateur de TechForGood",
     bio: "A créé de multiples initiatives utilisant le Deep Learning pour résoudre des défis environnementaux majeurs.",
     initials: "JD",
     tone: "from-brand-green to-brand-green-hover",
   },
   {
-    name: "Elena Rostova",
+    name: "Test 3",
     title: "Auteure & Visionnaire",
     bio: "Conférencière internationale et auteure de best-sellers sur l'impact sociétal de l'automatisation cognitive.",
     initials: "ER",
     tone: "from-violet-400 to-purple-500",
   },
   {
-    name: "Pr. Mamadou Sarr",
+    name: "Test 4",
     title: "Chercheur IA Médicale",
     bio: "Ses contributions en diagnostic assisté par IA ont ouvert de nouvelles approches pour les systèmes de santé en Afrique.",
     initials: "MS",
     tone: "from-rose-400 to-pink-500",
   },
   {
-    name: "Nadia El Idrissi",
+    name: "Test 5",
     title: "Leadership & Inclusion",
     bio: "Mentore internationale, engagée pour une gouvernance technologique plus inclusive et représentative des diasporas.",
     initials: "NE",
     tone: "from-amber-400 to-orange-500",
   },
   {
-    name: "Khaled Benali",
+    name: "Test 6",
     title: "Innovation Publique",
     bio: "Conseiller stratégique auprès d'institutions publiques, il facilite l'adoption d'IA responsable dans les services citoyens.",
     initials: "KB",
@@ -135,15 +135,14 @@ export default function HonorSection() {
         </div>
 
         <div className="relative">
-          <div className="pointer-events-none absolute inset-y-0 left-0 w-10 bg-gradient-to-r from-white to-transparent z-10" />
           <div className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-gradient-to-l from-white to-transparent z-10" />
 
           <div
             ref={railRef}
             onScroll={updateActiveFromScroll}
-            className="overflow-x-auto pt-3 pb-3 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
+            className="overflow-x-auto overflow-y-visible pt-3 pb-3 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
-            <div className="flex w-max gap-6 pl-4 sm:pl-0 pr-8">
+            <div className="flex w-max gap-6 pl-3 pr-8">
               {HONOR_MEMBERS.map((member, index) => (
                 <article
                   key={member.name}

@@ -111,21 +111,21 @@ function StatCard({
 const STATS = [
   {
     icon: Users2,
-    rawValue: 500,
+    rawValue: 40,
     suffix: "+",
     label: "Membres actifs",
-    description: "Experts en IA et data science répartis dans le monde entier.",
+    description: "Experts en IA, Data et Cyber répartis dans le monde entier.",
   },
   {
     icon: Globe,
-    rawValue: 45,
+    rawValue: 10,
     suffix: "",
     label: "Pays représentés",
     description: "Une présence internationale favorisant les échanges interculturels.",
   },
   {
     icon: Layers,
-    rawValue: 120,
+    rawValue: 5,
     suffix: "",
     label: "Projets collaboratifs",
     description: "Initiatives technologiques nées au sein de notre écosystème.",
@@ -161,7 +161,7 @@ export default function ImpactSection() {
             L&apos;impact du réseau SAIEN
           </h2>
           <p className="text-slate-500 text-sm sm:text-base">
-            Une communauté grandissante d&apos;experts dédiés à l&apos;avancement de l&apos;IA.
+            Une communauté grandissante d&apos;experts dédiés à l&apos;avancement de l&apos;IA, de la Data et de la Cybersécurité.
           </p>
         </div>
 

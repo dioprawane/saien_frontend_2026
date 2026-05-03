@@ -1,11 +1,20 @@
 import Link from "next/link";
-import { Building2 } from "lucide-react";
+import { Building2, Users } from "lucide-react";
 import InitiativeCard from "@/components/InitiativeCard";
-import { PROJECTS, type ProjectData } from "@/lib/projects-data";
+import { PROJECTS, type ProjectData } from "../lib/projects-data";
 
-const INITIATIVES = PROJECTS.filter((project) => project.featuredOnVision);
+const INITIATIVES = PROJECTS.filter((project) => project.featuredOnVision).slice(0, 3);
 
 function renderProjectFooter(project: ProjectData) {
+  if (project.footerType === "registrations") {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+        <Users className="h-3.5 w-3.5 text-brand-green" aria-hidden="true" />
+        {project.footerValue}
+      </span>
+    );
+  }
+
   if (project.footerType === "mentors") {
     return (
       <div className="flex items-center gap-2">
@@ -22,18 +31,6 @@ function renderProjectFooter(project: ProjectData) {
         </span>
         <span className="text-slate-500">{project.footerValue}</span>
       </div>
-    );
-  }
-
-  if (project.footerType === "status") {
-    return (
-      <span className="inline-flex items-center gap-1.5 bg-brand-green-soft text-brand-green-hover px-2.5 py-1 rounded-md text-[11px] font-semibold">
-        <span
-          className="w-1.5 h-1.5 bg-brand-green rounded-full animate-pulse"
-          aria-hidden="true"
-        />
-        {project.footerValue}
-      </span>
     );
   }
 
@@ -59,11 +56,11 @@ export default function InitiativesSection() {
               id="initiatives-heading"
               className="text-3xl sm:text-[2.2rem] font-extrabold text-[#163a5a] mb-2"
             >
-              Initiatives Stratégiques
+              Nos projets phares
             </h2>
             <p className="text-slate-500 text-base leading-relaxed">
-              Découvrez les projets concrets que nous déployons pour transformer
-              notre vision en réalité sur le terrain.
+              Les initiatives que nous bâtissons pour transformer notre vision en impact concret. 
+              Rejoignez-nous pour les rendre possibles.
             </p>
           </div>
           <Link

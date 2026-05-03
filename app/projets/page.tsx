@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Building2 } from "lucide-react";
+import { Building2, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InitiativeCard from "@/components/InitiativeCard";
@@ -12,6 +12,15 @@ export const metadata: Metadata = {
 };
 
 function renderProjectFooter(project: ProjectData) {
+  if (project.footerType === "registrations") {
+    return (
+      <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
+        <Users className="h-3.5 w-3.5 text-brand-green" aria-hidden="true" />
+        {project.footerValue}
+      </span>
+    );
+  }
+
   if (project.footerType === "mentors") {
     return (
       <div className="flex items-center gap-2">
@@ -28,15 +37,6 @@ function renderProjectFooter(project: ProjectData) {
         </span>
         <span className="text-slate-500">{project.footerValue}</span>
       </div>
-    );
-  }
-
-  if (project.footerType === "status") {
-    return (
-      <span className="inline-flex items-center gap-1.5 bg-brand-green-soft text-brand-green-hover px-2.5 py-1 rounded-md text-[11px] font-semibold">
-        <span className="w-1.5 h-1.5 bg-brand-green rounded-full animate-pulse" aria-hidden="true" />
-        {project.footerValue}
-      </span>
     );
   }
 

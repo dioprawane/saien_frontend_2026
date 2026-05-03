@@ -1,6 +1,13 @@
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight } from "lucide-react";
+import {
+  ArrowRight,
+  CheckCircle2,
+  Gem,
+  Pin,
+  Sparkles,
+  Trophy,
+} from "lucide-react";
 
 export default function ReseauCTA() {
   return (
@@ -9,57 +16,166 @@ export default function ReseauCTA() {
       aria-labelledby="reseau-cta-heading"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="relative overflow-hidden rounded-3xl border border-slate-200 bg-gradient-to-r from-[#0d2f4c] via-[#134a73] to-[#1b5e92]">
-          <div className="absolute inset-0 opacity-20 bg-[radial-gradient(circle_at_20%_20%,#ffffff_0%,transparent_42%)]" />
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_360px] gap-8 items-start">
+          <div className="rounded-3xl border border-slate-200 bg-brand-surface px-6 py-7 sm:px-8 sm:py-9">
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-brand-green mb-3">
+              Rejoindre la communauté
+            </p>
 
-          <div className="relative grid grid-cols-1 lg:grid-cols-5 gap-8 items-center p-8 sm:p-10 lg:p-12">
-            <div className="lg:col-span-3 text-white">
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-cyan-200 mb-3">
-                Rejoindre la communauté
-              </p>
-              <h2
-                id="reseau-cta-heading"
-                className="text-3xl sm:text-4xl font-extrabold leading-tight mb-4"
-              >
-                Rejoignez notre réseau
-                <br className="hidden sm:block" />
-                d&apos;experts IA
-              </h2>
-              <p className="text-cyan-50/90 text-sm sm:text-base leading-relaxed max-w-2xl">
-                Vous travaillez dans l&apos;intelligence artificielle et souhaitez
-                contribuer au développement de la communauté ? Le réseau SAIEN
-                est ouvert aux nouveaux talents, mentors et partenaires.
-              </p>
+            <h2
+              id="reseau-cta-heading"
+              className="text-3xl sm:text-4xl font-extrabold leading-tight text-[#123a5f]"
+            >
+              Trois façons de faire partie de SAIEN
+            </h2>
 
-              <div className="mt-7 flex flex-wrap gap-3 shrink-0">
-                <Link
-                  href="/rejoindre"
-                  className="inline-flex items-center gap-2 bg-white text-[#12476f] hover:bg-cyan-50 transition-colors font-semibold text-sm px-6 py-3 rounded-xl"
-                >
-                  Soumettre sa candidature
-                  <ArrowRight className="w-4 h-4" aria-hidden="true" />
-                </Link>
-                <Link
-                  href="/a-propos"
-                  className="inline-flex items-center border border-white/35 bg-white/10 hover:bg-white/20 transition-colors text-white font-semibold text-sm px-6 py-3 rounded-xl"
-                >
-                  En savoir plus
-                </Link>
-              </div>
-            </div>
+            <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed max-w-3xl">
+              Selon votre profil et votre engagement, vous pouvez rejoindre
+              l&apos;association à différents niveaux. (Article 5 des statuts)
+            </p>
 
-            <div className="lg:col-span-2">
-              <div className="relative h-56 sm:h-64 lg:h-72 rounded-2xl overflow-hidden border border-white/25 shadow-[0_24px_44px_-30px_rgba(2,8,23,0.9)]">
-                <Image
-                  src="/event-3.png"
-                  alt="Communauté SAIEN en collaboration"
-                  fill
-                  className="object-cover"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#05243c]/55 via-transparent to-transparent" />
-              </div>
+            <div className="mt-8 space-y-7">
+              <article className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+                <h3 className="inline-flex items-center gap-2 text-lg sm:text-xl font-bold text-[#123a5f]">
+                  <Sparkles className="h-5 w-5 text-amber-500" aria-hidden="true" />
+                  Membre Actif
+                </h3>
+                <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+                  Pour les Sénégalais (ou amis du Sénégal) travaillant ou se
+                  formant en IA, Data ou Cybersécurité, qui veulent contribuer
+                  activement.
+                </p>
+
+                <ul className="mt-4 space-y-2.5">
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Participer aux activités et programmes
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Voter à l&apos;Assemblée Générale
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Accéder à l&apos;annuaire et aux opportunités
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Contribuer aux missions de SAIEN
+                  </li>
+                </ul>
+
+                <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+                  <Pin className="h-4 w-4 text-brand-green" aria-hidden="true" />
+                  Cotisation annuelle : à définir par l&apos;AG
+                </p>
+
+                <div className="mt-5">
+                  <Link
+                    href="/rejoindre"
+                    className="inline-flex items-center gap-2 rounded-xl bg-brand-green hover:bg-brand-green-hover px-4 py-2.5 text-sm font-semibold text-white transition-colors"
+                  >
+                    Devenir membre actif
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </div>
+              </article>
+
+              <article className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+                <h3 className="inline-flex items-center gap-2 text-lg sm:text-xl font-bold text-[#123a5f]">
+                  <Gem className="h-5 w-5 text-cyan-500" aria-hidden="true" />
+                  Membre Bienfaiteur
+                </h3>
+                <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+                  Pour les particuliers ou structures souhaitant soutenir
+                  financièrement SAIEN au-delà de la cotisation standard.
+                </p>
+
+                <ul className="mt-4 space-y-2.5">
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Tous les avantages des membres actifs
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Reconnaissance publique en tant que soutien
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Invitations privilégiées aux événements
+                  </li>
+                </ul>
+
+                <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+                  <Pin className="h-4 w-4 text-brand-green" aria-hidden="true" />
+                  Droit d&apos;entrée + cotisation annuelle
+                </p>
+
+                <div className="mt-5">
+                  <Link
+                    href="/rejoindre"
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white hover:border-brand-green-soft-strong hover:text-brand-green-hover px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors"
+                  >
+                    Devenir bienfaiteur
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </div>
+              </article>
+
+              <article className="rounded-2xl border border-slate-200 bg-white p-5 sm:p-6">
+                <h3 className="inline-flex items-center gap-2 text-lg sm:text-xl font-bold text-[#123a5f]">
+                  <Trophy className="h-5 w-5 text-amber-500" aria-hidden="true" />
+                  Membre d&apos;Honneur
+                </h3>
+                <p className="mt-3 text-sm sm:text-base text-slate-600 leading-relaxed">
+                  Personnalités reconnues pour leur contribution exceptionnelle
+                  à l&apos;IA et à notre communauté.
+                </p>
+
+                <ul className="mt-4 space-y-2.5">
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Désigné par décision de l&apos;Assemblée Générale
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Dispense de cotisation
+                  </li>
+                  <li className="flex items-start gap-2 text-sm text-slate-600">
+                    <CheckCircle2 className="h-4 w-4 mt-0.5 shrink-0 text-brand-green" aria-hidden="true" />
+                    Voix consultative
+                  </li>
+                </ul>
+
+                <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
+                  <Pin className="h-4 w-4 text-brand-green" aria-hidden="true" />
+                  Sur invitation uniquement
+                </p>
+
+                <div className="mt-5">
+                  <Link
+                    href="/contact"
+                    className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white hover:border-brand-green-soft-strong hover:text-brand-green-hover px-4 py-2.5 text-sm font-semibold text-slate-700 transition-colors"
+                  >
+                    Recommander un membre d&apos;honneur
+                    <ArrowRight className="h-4 w-4" aria-hidden="true" />
+                  </Link>
+                </div>
+              </article>
             </div>
           </div>
+
+          <aside className="lg:sticky lg:top-24">
+            <div className="relative w-full aspect-[730/510] rounded-3xl overflow-hidden border border-slate-200 shadow-[0_28px_48px_-34px_rgba(15,23,42,0.8)]">
+              <Image
+                src="/saien_rejoindre_illustration.svg"
+                alt="Illustration pour rejoindre la communauté SAIEN"
+                fill
+                className="object-cover scale-[1.03]"
+                unoptimized
+              />
+            </div>
+          </aside>
         </div>
       </div>
     </section>

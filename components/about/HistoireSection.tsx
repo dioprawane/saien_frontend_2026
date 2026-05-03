@@ -1,23 +1,23 @@
 const TIMELINE = [
   {
-    year: "2021",
-    title: "La Genèse",
+    year: "Novembre 2025",
+    title: "La Fondation",
     description:
-      "Création de SAIEN avec la vision de réunir les talents technologiques de la diaspora pour structurer une réponse africaine aux défis de l'IA.",
+      "Constitution officielle de SAIEN à Nice (France) le 30 novembre 2025, sous le régime de la loi 1901, par un collectif de Sénégalais passionnés d'IA, de Data et de Cybersécurité.",
     side: "left",
   },
   {
-    year: "2022",
-    title: "Premier Hub",
+    year: "2026",
+    title: "Le Lancement",
     description:
-      "Lancement du premier programme de mentorat croisé entre Paris et Dakar, impliquant plus de 50 experts en Machine Learning.",
+      "Elargissement du bureau, lancement du site web, premières adhésions et structuration des axes d'action : wébinaires, formation, mentorat, vulgarisation et représentation institutionnelle.",
     side: "right",
   },
   {
-    year: "2024",
-    title: "Réseau Global",
+    year: "Demain",
+    title: "Notre Ambition",
     description:
-      "Extension des initiatives avec des partenariats institutionnels et naissance de nouveaux nœuds de recherche collaboratifs.",
+      "Faire de SAIEN la référence de l'expertise sénégalaise en IA, en construisant des ponts durables entre le Sénégal et la diaspora mondiale.",
     side: "left",
   },
 ];

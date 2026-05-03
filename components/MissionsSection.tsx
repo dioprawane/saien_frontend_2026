@@ -1,11 +1,22 @@
-import { GraduationCap, Network, Handshake, ShieldCheck } from "lucide-react";
+import {
+  BookOpen,
+  Globe2,
+  GraduationCap,
+  Handshake,
+  Network,
+  Rocket,
+  ShieldCheck,
+} from "lucide-react";
 import MissionCard from "@/components/MissionCard";
-import { MISSIONS } from "@/lib/missions-data";
+import { MISSIONS } from "../lib/missions-data";
 
 const ICON_MAP = {
+  BookOpen,
+  Globe2,
   GraduationCap,
   Network,
   Handshake,
+  Rocket,
   ShieldCheck,
 };
 
@@ -23,16 +34,16 @@ export default function MissionsSection() {
             id="missions-heading"
             className="text-2xl sm:text-3xl font-bold text-slate-900 mb-3"
           >
-            Nos Missions Fondamentales
+            Nos Missions
           </h2>
           <p className="text-slate-500 text-sm sm:text-base leading-relaxed">
-            Quatre piliers stratégiques pour structurer et accélérer le
-            développement de l&apos;intelligence artificielle en Afrique.
+            Six piliers d'action pour faire rayonner l&apos;expertise
+            sénégalaise en IA, Data et Cybersécurité.
           </p>
         </div>
 
         {/* Grille */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {MISSIONS.map((mission) => {
             const Icon = ICON_MAP[mission.iconName];
             return (

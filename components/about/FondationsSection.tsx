@@ -5,25 +5,25 @@ const FONDATIONS = [
     icon: Star,
     title: "Excellence",
     description:
-      "Poursuivre rigoureusement la qualité technique et scientifique dans chaque projet d'IA que nous accompagnons.",
+      "Promouvoir une expertise sénégalaise rigoureuse, reconnue à l'international en IA, Data et Cybersécurité.",
   },
   {
     icon: Users,
     title: "Inclusion",
     description:
-      "Démocratisation de l'accès aux technologies de pointe et valorisation de la diversité des talents.",
+      "Vulgariser l'IA et la rendre accessible à tous : étudiants, jeunes, professionnels en reconversion.",
   },
   {
     icon: Globe,
     title: "Impact",
     description:
-      "Développement de solutions tangibles répondant aux enjeux socio-économiques spécifiques au continent.",
+      "Accompagner des projets concrets qui répondent aux défis du Sénégal, de l'Afrique et du monde.",
   },
   {
     icon: Heart,
     title: "Solidarité",
     description:
-      "Création d'un écosystème d'entraide où le transfert de compétences prime sur la compétition.",
+      "Faire de l'entraide, du mentorat et du transfert de compétences le ciment de notre communauté.",
   },
 ];
 

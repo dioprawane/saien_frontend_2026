@@ -39,7 +39,7 @@ export default function InitiativeCard({
         <h3 className="text-[1.45rem] font-bold leading-snug text-[#1a3f63]">
           {title}
         </h3>
-        <p className="flex-1 text-sm leading-relaxed text-slate-500">
+        <p className="flex-1 text-sm leading-relaxed text-slate-500 line-clamp-2">
           {description}
         </p>
 

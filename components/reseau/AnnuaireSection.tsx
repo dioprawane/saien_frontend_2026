@@ -11,47 +11,47 @@ interface Member {
   featured?: boolean;
 }
 
-const SHARED_MEMBER_IMAGES = ["/members/avatar-1.png", "/members/avatar-2.png"];
+const SHARED_MEMBER_IMAGES = ["/members/avatar-1.png", "/members/avatar-2.svg"];
 
 const MEMBERS: Member[] = [
   {
-    name: "Amélie Dubois",
+    name: "Member Test 1",
     role: "Lead Data Scientist",
     location: "Paris, France",
   },
   {
-    name: "Thomas Laurent",
+    name: "Member Test 2",
     role: "AI Researcher",
     location: "Montréal, Canada",
   },
   {
-    name: "Sarah Benali",
+    name: "Member Test 3",
     role: "Directrice Innovation",
     location: "Genève, Suisse",
     featured: true,
   },
   {
-    name: "Marc Ndiaye",
+    name: "Member Test 4",
     role: "Architecte Cloud IA",
     location: "Dakar, Sénégal",
   },
   {
-    name: "Oumar Ba",
+    name: "Member Test 5",
     role: "ML Engineer",
     location: "Londres, Royaume-Uni",
   },
   {
-    name: "Aïcha Traoré",
+    name: "Member Test 6",
     role: "NLP Researcher",
     location: "Paris, France",
   },
   {
-    name: "Kofi Mensah",
+    name: "Member Test 7",
     role: "Data Engineer",
     location: "Accra, Ghana",
   },
   {
-    name: "Nadia Essomba",
+    name: "Member Test 8",
     role: "Product IA",
     location: "Lyon, France",
   },
@@ -88,8 +88,8 @@ export default function AnnuaireSection() {
               Annuaire des Membres
             </h2>
             <p className="text-slate-500 text-sm sm:text-base">
-              Explorez notre communauté d&apos;experts, de chercheurs et
-              d&apos;innovateurs.
+              Bientôt, retrouvez ici la cartographie des talents sénégalais en
+              IA, Data et Cybersécurité, partout dans le monde.
             </p>
           </div>
 
