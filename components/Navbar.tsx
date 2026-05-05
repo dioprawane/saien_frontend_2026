@@ -20,6 +20,10 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { session, isAuthenticated } = useUserSession();
+  const dashboardHref =
+    session?.role === "admin" || session?.role === "super-admin"
+      ? "/admin"
+      : "/espace-membre";
 
   const shouldShowJoin = !isAuthenticated || !session?.isMember;
 
@@ -73,6 +77,23 @@ export default function Navbar() {
               >
                 Connexion
               </Link>
+            )}
+
+            {isAuthenticated && (
+              <>
+                <Link
+                  href={dashboardHref}
+                  className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+                >
+                  Mon espace
+                </Link>
+                <Link
+                  href="/deconnexion"
+                  className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+                >
+                  Deconnexion
+                </Link>
+              </>
             )}
 
             {shouldShowJoin && (
@@ -129,6 +150,25 @@ export default function Navbar() {
             >
               Connexion
             </Link>
+          )}
+
+          {isAuthenticated && (
+            <>
+              <Link
+                href={dashboardHref}
+                className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Mon espace
+              </Link>
+              <Link
+                href="/deconnexion"
+                className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Deconnexion
+              </Link>
+            </>
           )}
 
           {shouldShowJoin && (

@@ -10,6 +10,10 @@ services:
       NEXT_TELEMETRY_DISABLED: "1"
       WATCHPACK_POLLING: "true"
       CHOKIDAR_USEPOLLING: "true"
+      NEXT_PUBLIC_BACK_API_TARGET: ${NEXT_PUBLIC_BACK_API_TARGET:-auto}
+      NEXT_PUBLIC_BACK_API_LOCAL_URL: ${NEXT_PUBLIC_BACK_API_LOCAL_URL:-http://localhost:8090}
+      NEXT_PUBLIC_BACK_API_PROD_URL: ${NEXT_PUBLIC_BACK_API_PROD_URL:-https://api.saien.org}
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-}
     ports:
       - "3000:3000"
     volumes:
@@ -26,6 +30,10 @@ services:
     environment:
       NODE_ENV: production
       NEXT_TELEMETRY_DISABLED: "1"
+      NEXT_PUBLIC_BACK_API_TARGET: ${NEXT_PUBLIC_BACK_API_TARGET:-prod}
+      NEXT_PUBLIC_BACK_API_LOCAL_URL: ${NEXT_PUBLIC_BACK_API_LOCAL_URL:-http://localhost:8090}
+      NEXT_PUBLIC_BACK_API_PROD_URL: ${NEXT_PUBLIC_BACK_API_PROD_URL:-https://api.saien.org}
+      NEXT_PUBLIC_API_BASE_URL: ${NEXT_PUBLIC_API_BASE_URL:-}
     expose:
       - "3000"
     restart: unless-stopped

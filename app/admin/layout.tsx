@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import {
   Bell,
@@ -16,6 +16,7 @@ import {
   X,
 } from "lucide-react";
 import { AdminProvider, useAdminContext } from "@/components/admin/AdminContext";
+import { useUserSession } from "@/components/auth/UserSessionContext";
 
 type AdminLayoutProps = {
   children: ReactNode;
@@ -41,8 +42,10 @@ const formatPendingCounter = (value: number) => {
 };
 
 function AdminLayoutShell({ children }: AdminLayoutProps) {
+  const router = useRouter();
   const pathname = usePathname();
   const { summary } = useAdminContext();
+  const { isHydrated, isAuthenticated, isAdmin, session, signOut } = useUserSession();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
 
   useEffect(() => {
@@ -60,6 +63,19 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
       document.body.style.overflow = "";
     };
   }, [mobileSidebarOpen]);
+
+  useEffect(() => {
+    if (!isHydrated) return;
+
+    if (!isAuthenticated) {
+      router.replace("/connexion?next=/admin");
+      return;
+    }
+
+    if (!isAdmin) {
+      router.replace("/espace-membre");
+    }
+  }, [isHydrated, isAuthenticated, isAdmin, router]);
 
   const isActive = (path: string) => {
     if (path === "/admin") return pathname === path;
@@ -82,6 +98,35 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
     pageTitle = "Parametres";
     pageDescription = "Configuration globale de la plateforme et des notifications.";
   }
+
+  const handleSignOut = () => {
+    signOut();
+    router.push("/");
+  };
+
+  if (!isHydrated || !isAuthenticated || !isAdmin) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#F8FAFC]">
+        <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600 shadow-sm">
+          Chargement de votre espace admin...
+        </p>
+      </div>
+    );
+  }
+
+  const initials = (session?.fullName ?? "SA")
+    .split(" ")
+    .map((chunk) => chunk[0])
+    .join("")
+    .slice(0, 2)
+    .toUpperCase();
+
+  const roleLabel =
+    session?.role === "super-admin"
+      ? "Super Admin"
+      : session?.role === "admin"
+        ? "Admin"
+        : "Membre";
 
   return (
     <div className="min-h-screen bg-[#F8FAFC] lg:flex lg:h-screen">
@@ -151,7 +196,11 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
           </div>
 
           <div className="p-4 border-t border-gray-200">
-            <button className="flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 w-full rounded-lg transition-colors border-l-4 border-transparent">
+            <button
+              type="button"
+              onClick={handleSignOut}
+              className="flex items-center gap-3 px-4 py-2 text-red-500 hover:bg-red-50 w-full rounded-lg transition-colors border-l-4 border-transparent"
+            >
               <LogOut size={20} />
               <span className="font-medium">Deconnexion</span>
             </button>
@@ -206,11 +255,11 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
 
             <div className="flex items-center gap-3 border-l border-gray-200 pl-6 cursor-pointer">
               <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold overflow-hidden">
-                JD
+                {initials}
               </div>
               <div>
-                <p className="text-sm font-bold text-gray-900">Jean Dupont</p>
-                <p className="text-xs text-gray-500">Super Admin</p>
+                <p className="text-sm font-bold text-gray-900">{session?.fullName ?? "Administrateur"}</p>
+                <p className="text-xs text-gray-500">{roleLabel}</p>
               </div>
             </div>
           </div>

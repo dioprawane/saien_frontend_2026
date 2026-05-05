@@ -100,7 +100,18 @@ Copier `.env.example` en `.env.local` :
 cp .env.example .env.local
 ```
 
-> Aucune variable requise pour le démarrage — le projet fonctionne sans configuration.
+Variables disponibles :
+
+- `NEXT_PUBLIC_BACK_API_TARGET` : `auto`, `local` ou `prod`
+- `NEXT_PUBLIC_BACK_API_LOCAL_URL` : URL API locale (par defaut `http://localhost:8090`)
+- `NEXT_PUBLIC_BACK_API_PROD_URL` : URL API production
+- `NEXT_PUBLIC_API_BASE_URL` : override explicite de l'URL API (prioritaire)
+
+Comportement :
+
+- En `auto`, le front utilise l'API locale sur `localhost/127.0.0.1` et l'API prod ailleurs.
+- En `local`, l'API locale est forcee.
+- En `prod`, l'API prod est forcee.
 
 ---
 
@@ -124,3 +135,9 @@ Le build de production utilise `output: "standalone"` de Next.js.
 4. Ouvrir une Pull Request vers `main`
 # saien_front_2026
 # saien_frontend_2026
+
+# Lancer le projet avec docker compose
+```
+PS C:\Projets\saien\front> docker compose up web 
+```
+
