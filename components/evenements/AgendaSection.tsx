@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
   Calendar,
@@ -14,174 +14,93 @@ import {
   MonitorPlay,
   ArrowRight,
 } from "lucide-react";
+import { listShowcaseEvents } from "@/lib/api/showcase";
+import {
+  compareEventsByChronology,
+  getEventChronology,
+  getFormatBadgeClass,
+} from "@/lib/event-display";
+import { EVENTS as FALLBACK_EVENTS, type AgendaEvent } from "@/lib/events-data";
 
-interface Intervenant {
-  name: string;
-  role: string;
-  initials: string;
-}
-
-interface EventTag {
-  label: string;
-  icon?: any;
-  color: string;
-  bgColor: string;
-}
-
-interface AgendaEvent {
-  id: number;
-  day: string;
-  month: string;
-  year: string;
-  tags: EventTag[];
-  thematique: string;
-  format: string;
-  title: string;
-  description: string;
-  time: string;
-  location: string;
-  seats?: string;
-  imageUrl?: string;
-  objectifs?: string[];
-  intervenants?: Intervenant[];
-}
-
-const EVENTS: AgendaEvent[] = [
-  {
-    id: 1,
-    day: "24",
-    month: "OCT",
-    year: "2024",
-    thematique: "Intelligence Artificielle",
-    format: "Hybride",
-    tags: [
-      { label: "Conférence", color: "text-blue-600", bgColor: "bg-blue-50", icon: Video },
-      { label: "Hybride", color: "text-brand-green-hover", bgColor: "bg-brand-green-soft", icon: MonitorPlay },
-    ],
-    title: "Sommet Africain de l'IA 2024",
-    description: "Rejoignez les leaders de la tech et décideurs politiques pour discuter de l'avenir de l'intelligence artificielle en Afrique et de son impact sur le développement économique.",
-    time: "09:00 – 18:00 (GMT)",
-    location: "Dakar, Sénégal & En ligne",
-    seats: "500+ participants",
-    imageUrl: "/event-1.png",
-    objectifs: ["Comprendre les enjeux de l'IA", "Créer des synergies", "Élaborer des politiques"],
-    intervenants: [
-      { name: "Dr. Aissatou Sow", role: "Chercheuse IA", initials: "AS" },
-      { name: "Marc Dupont", role: "Directeur Tech", initials: "MD" }
-    ]
-  },
-  {
-    id: 2,
-    day: "12",
-    month: "NOV",
-    year: "2024",
-    thematique: "Data Science",
-    format: "En ligne",
-    tags: [
-      { label: "Atelier Pratique", color: "text-purple-600", bgColor: "bg-purple-50", icon: Video },
-      { label: "En ligne", color: "text-blue-600", bgColor: "bg-blue-50", icon: MonitorPlay },
-    ],
-    title: "Déployer des modèles LLM en production",
-    description: "Un atelier technique intensif pour les ingénieurs data souhaitant maîtriser l'optimisation et le déploiement de modèles de langage à grande échelle.",
-    time: "14:00 – 17:00 (CET)",
-    location: "Zoom Meeting",
-    seats: "Limité à 50 places",
-    imageUrl: "/event-3.png",
-    objectifs: ["Optimiser les prompt", "Gérer les coûts d'inférence"],
-    intervenants: [
-      { name: "Youssef Alaoui", role: "ML Engineer", initials: "YA" }
-    ]
-  },
-  {
-    id: 3,
-    day: "05",
-    month: "DÉC",
-    year: "2024",
-    thematique: "Intelligence Artificielle",
-    format: "Présentiel",
-    tags: [
-      { label: "Meetup", color: "text-pink-600", bgColor: "bg-pink-50" },
-      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-brand-surface" },
-    ],
-    title: "Meetup SAIEN Paris — IA et Finance",
-    description: "Une soirée de networking autour des applications de l'IA dans le secteur financier, avec des présentations courtes et des tables rondes thématiques. ",
-    time: "18:30 – 21:30 (CET)",
-    location: "Station F, Paris",
-    seats: "80 places",
-    imageUrl: "/event-2.png",
-    intervenants: [
-      { name: "Sophie Martin", role: "Analyste Quant", initials: "SM" },
-      { name: "Amadou Diallo", role: "Data Scientist", initials: "AD" },
-      { name: "Lucie Bernard", role: "Investisseur", initials: "LB" }
-    ]
-  },
-  {
-    id: 4,
-    day: "20",
-    month: "JAN",
-    year: "2025",
-    thematique: "Innovation Diaspora",
-    format: "Présentiel",
-    tags: [
-      { label: "Conférence", color: "text-orange-600", bgColor: "bg-orange-50" },
-      { label: "Présentiel", color: "text-slate-600", bgColor: "bg-brand-surface" },
-    ],
-    title: "Forum Innovation Diaspora Africaine",
-    description: "Trois jours de rencontres, pitchs de startups et ateliers autour des enjeux de l'IA et du transfert technologique vers l'Afrique.",
-    time: "09:00 – 18:00 (CET)",
-    location: "Cité des Sciences, Paris",
-    seats: "200 places",
-    objectifs: ["Favoriser l'investissement", "Pitch de startups"],
-  },
-  {
-    id: 5,
-    day: "15",
-    month: "FÉV",
-    year: "2025",
-    thematique: "Réseaux & Sécurité",
-    format: "En ligne",
-    tags: [
-      { label: "Webinaire", color: "text-brand-green-hover", bgColor: "bg-brand-green-soft" },
-      { label: "En ligne", color: "text-blue-600", bgColor: "bg-blue-50" },
-    ],
-    title: "Cybersécurité à l'ère de l'IA générative",
-    description: "Analysez les nouvelles menaces posées par les deepfakes et les IA génératives, et comment s'en prémunir efficacement dans les entreprises.",
-    time: "10:00 – 12:00 (GMT)",
-    location: "Microsoft Teams",
-  },
-];
-
-const THEMATIQUES = [
-  { name: "Intelligence Artificielle", count: 12 },
-  { name: "Data Science", count: 8 },
-  { name: "Réseaux & Sécurité", count: 5 },
-  { name: "Innovation Diaspora", count: 14 },
-];
-
-const FORMATS = ["Tous les formats", "Présentiel", "En ligne", "Hybride"];
+const ICON_MAP = {
+  Video,
+  MonitorPlay,
+} as const;
 
 const PER_PAGE = 3;
 
 export default function AgendaSection() {
+  const [events, setEvents] = useState<AgendaEvent[]>(FALLBACK_EVENTS);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [tab, setTab] = useState<"evenements" | "webinaires">("evenements");
   const [search, setSearch] = useState("");
   const [format, setFormat] = useState("Tous les formats");
   const [selectedThematiques, setSelectedThematiques] = useState<string[]>([]);
   const [page, setPage] = useState(1);
 
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadEvents() {
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const remoteEvents = await listShowcaseEvents();
+        const visibleEvents = remoteEvents.filter((event) => event.status !== "draft");
+        if (!isCancelled && visibleEvents.length > 0) {
+          setEvents(visibleEvents);
+        }
+      } catch {
+        if (!isCancelled) {
+          setLoadError("Impossible de charger les evenements distants, affichage des donnees locales.");
+          setEvents(FALLBACK_EVENTS);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadEvents();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const thematiques = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const event of events) {
+      counts.set(event.thematique, (counts.get(event.thematique) ?? 0) + 1);
+    }
+    return Array.from(counts.entries()).map(([name, count]) => ({ name, count }));
+  }, [events]);
+
+  const formats = useMemo(() => {
+    const values = Array.from(new Set(events.map((event) => event.format)));
+    return ["Tous les formats", ...values];
+  }, [events]);
+
   const isWebinaire = (e: AgendaEvent) =>
     e.tags.some((t) => t.label.toLowerCase().includes("webinaire"));
 
-  const tabFiltered = EVENTS.filter((e) =>
+  const tabFiltered = events.filter((e) =>
     tab === "webinaires" ? isWebinaire(e) : !isWebinaire(e)
   );
 
-  const filtered = tabFiltered.filter((e) => {
-    if (search && !e.title.toLowerCase().includes(search.toLowerCase())) return false;
-    if (selectedThematiques.length > 0 && !selectedThematiques.includes(e.thematique)) return false;
-    if (format !== "Tous les formats" && e.format.toLowerCase() !== format.toLowerCase()) return false;
-    return true;
-  });
+  const filtered = useMemo(() => {
+    return tabFiltered
+      .filter((e) => {
+        if (search && !e.title.toLowerCase().includes(search.toLowerCase())) return false;
+        if (selectedThematiques.length > 0 && !selectedThematiques.includes(e.thematique)) return false;
+        if (format !== "Tous les formats" && e.format.toLowerCase() !== format.toLowerCase()) return false;
+        return true;
+      })
+      .sort(compareEventsByChronology);
+  }, [format, search, selectedThematiques, tabFiltered]);
 
   const totalPages = Math.max(1, Math.ceil(filtered.length / PER_PAGE));
   const displayed = filtered.slice((page - 1) * PER_PAGE, page * PER_PAGE);
@@ -258,7 +177,7 @@ export default function AgendaSection() {
             <div className="mb-8">
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#0A2540]/60 mb-4">Thématiques</p>
               <div className="flex flex-col gap-3">
-                {THEMATIQUES.map((t) => (
+                {thematiques.map((t) => (
                   <label key={t.name} className="flex items-center justify-between cursor-pointer group">
                     <div className="flex items-center gap-3">
                       <input
@@ -278,7 +197,7 @@ export default function AgendaSection() {
             <div>
               <p className="text-[10px] font-bold uppercase tracking-widest text-[#0A2540]/60 mb-4">Format</p>
               <div className="flex flex-col gap-3">
-                {FORMATS.map((f) => (
+                {formats.map((f) => (
                   <label key={f} className="flex items-center gap-3 cursor-pointer group">
                     <input
                       type="radio"
@@ -297,13 +216,23 @@ export default function AgendaSection() {
           <div className="flex-1 w-full min-w-0">
             <div className="flex items-center justify-between mb-6">
               <h1 id="agenda-heading" className="text-2xl font-bold text-[#0A2540]">
-                {tab === "webinaires" ? "Webinaires" : "Événements"} à venir{" "}
+                {tab === "webinaires" ? "Webinaires" : "Événements"}{" "}
                 <span className="text-brand-green">({filtered.length})</span>
               </h1>
               <p className="hidden sm:block text-sm text-slate-400">
                 Trier par : <span className="font-semibold text-[#0A2540]">Date (plus proche)</span>
               </p>
             </div>
+
+            {loadError ? (
+              <p className="mb-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800">
+                {loadError}
+              </p>
+            ) : null}
+
+            {isLoading ? (
+              <p className="mb-5 text-sm text-slate-500">Chargement des evenements...</p>
+            ) : null}
 
             <div className="flex flex-col gap-4">
               {displayed.length === 0 ? (
@@ -324,16 +253,30 @@ export default function AgendaSection() {
 
                     {/* Contenu */}
                     <div className="flex-1 p-5 md:p-6 flex flex-col min-w-0">
-                      <div className="flex flex-wrap items-center gap-2 mb-3">
-                        {event.tags.map((tag, i) => {
-                          const IconComponent = tag.icon;
+                      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+                        <div className="flex flex-wrap items-center gap-2">
+                          {(() => {
+                            const firstTag = event.tags[0];
+                            const IconComponent = firstTag?.iconName ? ICON_MAP[firstTag.iconName] : null;
+                            return (
+                              <span className="inline-flex items-center gap-1.5 rounded-full bg-slate-100 px-3 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-700">
+                                {IconComponent ? <IconComponent className="h-3.5 w-3.5" /> : null}
+                                {firstTag?.label ?? event.thematique}
+                              </span>
+                            );
+                          })()}
+                          <span className={`inline-flex items-center rounded-full px-3 py-1 text-[10px] font-bold uppercase tracking-wider ${getFormatBadgeClass(event.format)}`}>
+                            {event.format}
+                          </span>
+                        </div>
+                        {(() => {
+                          const chronology = getEventChronology(event);
                           return (
-                            <span key={i} className={`flex items-center gap-1.5 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${tag.color} ${tag.bgColor}`}>
-                              {IconComponent && <IconComponent className="w-3.5 h-3.5" />}
-                              {tag.label}
+                            <span className={`inline-flex rounded-full px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider ${chronology.className}`}>
+                              {chronology.label}
                             </span>
                           );
-                        })}
+                        })()}
                       </div>
                       <h3 className="text-lg font-bold text-[#0A2540] mb-1.5 group-hover:text-brand-green transition-colors line-clamp-1">{event.title}</h3>
                       <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-4">{event.description}</p>

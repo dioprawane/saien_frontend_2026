@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowRight, Bell, ChevronDown, LayoutDashboard, LogOut, Settings, Ticket, UserPlus, Users, WalletCards } from "lucide-react";
+import { ArrowRight, Bell, ChevronDown, LayoutDashboard, LogOut, Settings, Ticket, User, Users, WalletCards } from "lucide-react";
 import { useUserSession } from "@/components/auth/UserSessionContext";
 
 const PUBLIC_NAV_LINKS = [
@@ -17,19 +17,14 @@ const PUBLIC_NAV_LINKS = [
 
 const PROFILE_MENU_LINKS = [
   { label: "Tableau de bord", href: "/espace-membre", icon: LayoutDashboard },
+  { label: "Profil", href: "/espace-membre/profil", icon: User },
   { label: "Événements", href: "/espace-membre/evenements", icon: Ticket },
   { label: "Réseau", href: "/espace-membre/reseau", icon: Users },
   { label: "Ma Carte", href: "/espace-membre/carte", icon: WalletCards },
   { label: "Paramètres", href: "/espace-membre/parametres", icon: Settings },
 ];
 
-const ADMIN_MENU_LINKS = [
-  { label: "TDB Admin", href: "/admin", icon: LayoutDashboard },
-  { label: "Membres", href: "/admin/membres", icon: Users },
-  { label: "Inscriptions", href: "/admin/inscriptions", icon: UserPlus },
-  { label: "Événements", href: "/admin/evenements", icon: Ticket },
-  { label: "Paramètres", href: "/admin/parametres", icon: Settings },
-];
+const ADMIN_SHORTCUT = { label: "Admin", href: "/admin", icon: LayoutDashboard };
 
 export default function MemberHeader() {
   const router = useRouter();
@@ -156,20 +151,14 @@ export default function MemberHeader() {
               {isAdmin && (
                 <>
                   <div className="my-1 border-t border-slate-200" />
-                  <p className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0a2e4a]/45">
-                    Administration
-                  </p>
-                  {ADMIN_MENU_LINKS.map(({ label, href, icon: Icon }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={(event) => closeDetails(event.currentTarget)}
-                      className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-semibold text-[#0e6f5c] hover:bg-[#0e6f5c]/10"
-                    >
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                      {label}
-                    </Link>
-                  ))}
+                  <Link
+                    href={ADMIN_SHORTCUT.href}
+                    onClick={(event) => closeDetails(event.currentTarget)}
+                    className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-semibold text-[#0e6f5c] hover:bg-[#0e6f5c]/10"
+                  >
+                    <ADMIN_SHORTCUT.icon className="h-4 w-4" aria-hidden="true" />
+                    {ADMIN_SHORTCUT.label}
+                  </Link>
                 </>
               )}
 

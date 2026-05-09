@@ -3,7 +3,9 @@ import { Building2, Users } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import InitiativeCard from "@/components/InitiativeCard";
-import { PROJECTS, type ProjectData } from "@/lib/projects-data";
+import { listShowcaseProjects, type ShowcaseProject } from "@/lib/api/showcase";
+
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Tous les Projets — SAIEN",
@@ -11,7 +13,7 @@ export const metadata: Metadata = {
     "Découvrez l'ensemble des projets SAIEN déployés pour transformer la vision IA en réalisations concrètes.",
 };
 
-function renderProjectFooter(project: ProjectData) {
+function renderProjectFooter(project: ShowcaseProject) {
   if (project.footerType === "registrations") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
@@ -48,7 +50,16 @@ function renderProjectFooter(project: ProjectData) {
   );
 }
 
-export default function ProjetsPage() {
+export default async function ProjetsPage() {
+  let projects: ShowcaseProject[] = [];
+  let hasLoadingError = false;
+
+  try {
+    projects = await listShowcaseProjects();
+  } catch {
+    hasLoadingError = true;
+  }
+
   return (
     <>
       <Navbar />
@@ -69,11 +80,11 @@ export default function ProjetsPage() {
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {PROJECTS.map((project) => (
+              {projects.map((project) => (
                 <InitiativeCard
                   key={project.slug}
                   badge={project.badge}
-                  imageUrl={project.imageUrl}
+                  imageUrl={project.imageUrl ?? "/saien_vision_hero_illustration.svg"}
                   title={project.title}
                   description={project.description}
                   footer={renderProjectFooter(project)}
@@ -81,6 +92,18 @@ export default function ProjetsPage() {
                 />
               ))}
             </div>
+
+            {hasLoadingError && (
+              <p className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                Impossible de charger les projets depuis la base pour le moment.
+              </p>
+            )}
+
+            {!hasLoadingError && projects.length === 0 && (
+              <p className="mt-6 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+                Aucun projet public n'est disponible pour l'instant.
+              </p>
+            )}
           </div>
         </section>
       </main>

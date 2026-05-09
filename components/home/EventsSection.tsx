@@ -1,44 +1,88 @@
+"use client";
+
 import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Monitor, MapPin, GraduationCap } from "lucide-react";
 import EventCard from "./EventCard";
+import { listShowcaseEvents } from "@/lib/api/showcase";
+import { compareEventsByChronology, getEventChronology } from "@/lib/event-display";
+import { EVENTS as FALLBACK_EVENTS, type AgendaEvent } from "@/lib/events-data";
 
-const EVENTS = [
-  {
-    id: 2,
-    dateBadge: "15 Nov",
-    imageUrl: "/event-1.png", // <- Image de la présentation (personnes en salle)
-    category: "Webinaire",
-    CategoryIcon: Monitor,
-    title: "L'IA générative en entreprise",
-    description:
-      "Comment intégrer les LLMs dans vos processus métiers pour gagner en productivité.",
-    time: "14:00 – 15:30 (CET)",
-  },
-  {
-    id: 3,
-    dateBadge: "28 Nov",
-    imageUrl: "/event-2.png", // <- Image du groupe de personnes en networking
-    category: "Paris, France",
-    CategoryIcon: MapPin,
-    title: "Meetup Diaspora Tech",
-    description:
-      "Rencontre annuelle des membres SAIEN basés en Europe pour échanger sur les tendances IA.",
-    time: "18:30 – 21:00 (CET)",
-  },
-  {
-    id: 1,
-    dateBadge: "05 Déc",
-    imageUrl: "/event-3.png", // <- Image de la personne avec deux écrans
-    category: "Workshop En Ligne",
-    CategoryIcon: GraduationCap,
-    title: "Masterclass: Fine-tuning LLMs",
-    description:
-      "Atelier technique sur l'adaptation de modèles open-source à des cas d'usage spécifiques.",
-    time: "10:00 – 12:00 (EST)",
-  },
-];
+const toHomeEventCard = (event: AgendaEvent) => {
+  const chronology = getEventChronology(event);
+
+  const hasOnlineHint =
+    event.format.toLowerCase().includes("ligne") ||
+    event.location.toLowerCase().includes("ligne") ||
+    event.tags.some((tag) => tag.iconName === "MonitorPlay" || tag.iconName === "Video");
+
+  const hasLocationHint =
+    event.format.toLowerCase().includes("presentiel") ||
+    event.location.toLowerCase().includes("paris") ||
+    event.location.toLowerCase().includes("dakar");
+
+  const CategoryIcon = hasOnlineHint
+    ? Monitor
+    : hasLocationHint
+      ? MapPin
+      : GraduationCap;
+
+  // Le "type" est le premier tag distinct du format (ex: Webinaire, Conference),
+  // sinon on retombe sur la thematique pour eviter une zone vide.
+  const formatLower = event.format.trim().toLowerCase();
+  const typeLabel =
+    event.tags.find((tag) => tag.label.trim().toLowerCase() !== formatLower)?.label
+      ?? (event.thematique && event.thematique.trim().toLowerCase() !== formatLower
+        ? event.thematique
+        : undefined);
+
+  return {
+    id: event.id,
+    dateBadge: `${event.day} ${event.month}`,
+    imageUrl: event.imageUrl || "/event-1.png",
+    format: event.format,
+    type: typeLabel,
+    CategoryIcon,
+    chronologyLabel: chronology.label,
+    chronologyClassName: chronology.className,
+    title: event.title,
+    description: event.description,
+    time: event.time,
+    location: event.location,
+  };
+};
 
 export default function EventsSection() {
+  const [events, setEvents] = useState<AgendaEvent[]>(FALLBACK_EVENTS);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadEvents() {
+      try {
+        const remoteEvents = await listShowcaseEvents();
+        const visibleEvents = remoteEvents.filter((event) => event.status !== "draft");
+        if (!isCancelled && visibleEvents.length > 0) {
+          setEvents(visibleEvents);
+        }
+      } catch {
+        if (!isCancelled) {
+          setEvents(FALLBACK_EVENTS);
+        }
+      }
+    }
+
+    void loadEvents();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const displayedEvents = useMemo(() => {
+    return [...events].sort(compareEventsByChronology).slice(0, 3).map(toHomeEventCard);
+  }, [events]);
+
   return (
     <section
       className="py-16 lg:py-24 bg-white"
@@ -52,7 +96,7 @@ export default function EventsSection() {
               id="events-heading"
               className="text-2xl sm:text-3xl font-bold text-slate-900 mb-1"
             >
-              Événements à venir
+              Événements
             </h2>
             <p className="text-slate-500 text-sm">
               Participez à nos prochaines rencontres et webinaires.
@@ -68,10 +112,10 @@ export default function EventsSection() {
         </div>
 
         {/* Grille */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {EVENTS.map((event) => (
+        <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {displayedEvents.map((event) => (
             <Link
-              key={event.title}
+              key={event.id}
               href={`/evenements/${event.id}`}
               className="group block rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-green focus-visible:ring-offset-2"
             >

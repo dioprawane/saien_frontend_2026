@@ -13,6 +13,11 @@ export class ApiClientError extends Error {
 const stripTrailingSlash = (value: string) => value.replace(/\/+$/, "");
 
 const resolveApiBaseUrl = () => {
+  const internal = process.env.API_BASE_URL_INTERNAL?.trim();
+  if (typeof window === "undefined" && internal) {
+    return stripTrailingSlash(internal);
+  }
+
   const explicit = process.env.NEXT_PUBLIC_API_BASE_URL?.trim();
   if (explicit) return stripTrailingSlash(explicit);
 
@@ -33,9 +38,40 @@ const resolveApiBaseUrl = () => {
   return stripTrailingSlash(prodBaseUrl);
 };
 
+export function normalizeApiUrl(url: string | null | undefined): string | null {
+  if (!url) return null;
+
+  const trimmed = url.trim();
+  if (!trimmed) return null;
+
+  if (trimmed.startsWith("data:")) return trimmed;
+
+  if (trimmed.startsWith("/api/")) {
+    return `${resolveApiBaseUrl()}${trimmed}`;
+  }
+
+  if (/^https?:\/\//i.test(trimmed)) {
+    try {
+      const parsed = new URL(trimmed);
+      if (parsed.pathname.startsWith("/api/")) {
+        return `${resolveApiBaseUrl()}${parsed.pathname}${parsed.search}${parsed.hash}`;
+      }
+    } catch {
+      return trimmed;
+    }
+  }
+
+  return trimmed;
+}
+
 const toApiUrl = (path: string) => {
-  const normalized = path.startsWith("/") ? path : `/${path}`;
-  return `${resolveApiBaseUrl()}${normalized}`;
+  const normalized = normalizeApiUrl(path);
+  if (normalized && (/^https?:\/\//i.test(normalized) || normalized.startsWith("data:"))) {
+    return normalized;
+  }
+
+  const normalizedPath = path.startsWith("/") ? path : `/${path}`;
+  return `${resolveApiBaseUrl()}${normalizedPath}`;
 };
 
 const parsePayload = async (response: Response) => {

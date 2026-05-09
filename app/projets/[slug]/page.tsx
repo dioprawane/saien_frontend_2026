@@ -5,11 +5,10 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, Calendar, MapPin, Target, BriefcaseBusiness } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { PROJECTS } from "@/lib/projects-data";
+import { ApiClientError } from "@/lib/api/client";
+import { getShowcaseProjectBySlug, type ShowcaseProject } from "@/lib/api/showcase";
 
-export async function generateStaticParams() {
-  return PROJECTS.map((project) => ({ slug: project.slug }));
-}
+export const dynamic = "force-dynamic";
 
 export async function generateMetadata({
   params,
@@ -17,16 +16,19 @@ export async function generateMetadata({
   params: Promise<{ slug: string }>;
 }): Promise<Metadata> {
   const { slug } = await params;
-  const project = PROJECTS.find((item) => item.slug === slug);
-
-  if (!project) {
-    return { title: "Projet introuvable — SAIEN" };
+  try {
+    const project = await getShowcaseProjectBySlug(slug);
+    return {
+      title: `${project.title} — SAIEN`,
+      description: project.description,
+    };
+  } catch {
+    const normalized = slug.replace(/-/g, " ").trim();
+    return {
+      title: normalized ? `${normalized} — Projet SAIEN` : "Projet introuvable — SAIEN",
+      description: "Projet de la vitrine SAIEN.",
+    };
   }
-
-  return {
-    title: `${project.title} — SAIEN`,
-    description: project.description,
-  };
 }
 
 export default async function ProjectDetailPage({
@@ -35,9 +37,17 @@ export default async function ProjectDetailPage({
   params: Promise<{ slug: string }>;
 }) {
   const { slug } = await params;
-  const project = PROJECTS.find((item) => item.slug === slug);
+  let project: ShowcaseProject;
 
-  if (!project) notFound();
+  try {
+    project = await getShowcaseProjectBySlug(slug);
+  } catch (error) {
+    if (error instanceof ApiClientError && error.status === 404) {
+      notFound();
+    }
+
+    throw error;
+  }
 
   return (
     <>
@@ -45,7 +55,7 @@ export default async function ProjectDetailPage({
       <main className="bg-brand-surface min-h-screen">
         <div className="relative h-[360px] sm:h-[420px] overflow-hidden">
           <Image
-            src={project.imageUrl}
+            src={project.imageUrl ?? "/saien_vision_hero_illustration.svg"}
             alt={project.title}
             fill
             className="object-cover"
@@ -92,8 +102,8 @@ export default async function ProjectDetailPage({
                     Objectifs
                   </h2>
                   <ul className="space-y-3">
-                    {project.objectives.map((objective) => (
-                      <li key={objective} className="flex items-start gap-3 text-slate-600">
+                    {project.objectives.map((objective, index) => (
+                      <li key={`${objective}-${index}`} className="flex items-start gap-3 text-slate-600">
                         <Target className="w-5 h-5 text-brand-green mt-0.5 shrink-0" aria-hidden="true" />
                         <span>{objective}</span>
                       </li>
@@ -106,9 +116,9 @@ export default async function ProjectDetailPage({
                     Résultats et livrables
                   </h2>
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                    {project.outcomes.map((outcome) => (
+                    {project.outcomes.map((outcome, index) => (
                       <div
-                        key={outcome}
+                        key={`${outcome}-${index}`}
                         className="rounded-xl border border-slate-100 bg-brand-surface p-4 text-sm text-slate-700"
                       >
                         {outcome}
