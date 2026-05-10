@@ -3,69 +3,38 @@
 import Image from "next/image";
 import { useState } from "react";
 import { Search, SlidersHorizontal, MapPin, Linkedin } from "lucide-react";
+import type { ShowcaseNetworkMember } from "@/lib/api/showcase";
 
-interface Member {
-  name: string;
-  role: string;
-  location: string;
-  featured?: boolean;
+type AnnuaireSectionProps = {
+  members: ShowcaseNetworkMember[];
+};
+
+const DEFAULT_AVATAR_URL = "/members/avatar-1.png";
+
+function memberLocation(member: ShowcaseNetworkMember) {
+  const city = member.city?.trim();
+  const country = member.country?.trim();
+  if (city && country) {
+    return `${city}, ${country}`;
+  }
+  if (country) {
+    return country;
+  }
+  if (city) {
+    return city;
+  }
+  return "Localisation non renseignée";
 }
 
-const SHARED_MEMBER_IMAGES = ["/members/avatar-1.png", "/members/avatar-2.svg"];
-
-const MEMBERS: Member[] = [
-  {
-    name: "Member Test 1",
-    role: "Lead Data Scientist",
-    location: "Paris, France",
-  },
-  {
-    name: "Member Test 2",
-    role: "AI Researcher",
-    location: "Montréal, Canada",
-  },
-  {
-    name: "Member Test 3",
-    role: "Directrice Innovation",
-    location: "Genève, Suisse",
-    featured: true,
-  },
-  {
-    name: "Member Test 4",
-    role: "Architecte Cloud IA",
-    location: "Dakar, Sénégal",
-  },
-  {
-    name: "Member Test 5",
-    role: "ML Engineer",
-    location: "Londres, Royaume-Uni",
-  },
-  {
-    name: "Member Test 6",
-    role: "NLP Researcher",
-    location: "Paris, France",
-  },
-  {
-    name: "Member Test 7",
-    role: "Data Engineer",
-    location: "Accra, Ghana",
-  },
-  {
-    name: "Member Test 8",
-    role: "Product IA",
-    location: "Lyon, France",
-  },
-];
-
-export default function AnnuaireSection() {
+export default function AnnuaireSection({ members }: AnnuaireSectionProps) {
   const [query, setQuery] = useState("");
   const [visible, setVisible] = useState(6);
 
-  const filtered = MEMBERS.filter(
+  const filtered = members.filter(
     (m) =>
-      m.name.toLowerCase().includes(query.toLowerCase()) ||
+      m.fullName.toLowerCase().includes(query.toLowerCase()) ||
       m.role.toLowerCase().includes(query.toLowerCase()) ||
-      m.location.toLowerCase().includes(query.toLowerCase())
+      memberLocation(m).toLowerCase().includes(query.toLowerCase())
   );
   const displayed = filtered.slice(0, visible);
 
@@ -119,9 +88,9 @@ export default function AnnuaireSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-          {displayed.map((member, index) => (
+          {displayed.map((member) => (
             <div
-              key={member.name}
+              key={member.id}
               className="relative rounded-[28px] border border-slate-200 bg-brand-surface px-6 py-6 flex flex-col items-center text-center gap-2.5 hover:shadow-md hover:-translate-y-0.5 transition-all duration-300"
             >
               {member.featured && (
@@ -132,8 +101,8 @@ export default function AnnuaireSection() {
 
               <div className="relative h-24 w-24 overflow-hidden rounded-full border-4 border-white shadow-[0_10px_20px_-12px_rgba(15,23,42,0.8)]">
                 <Image
-                  src={SHARED_MEMBER_IMAGES[index % SHARED_MEMBER_IMAGES.length]}
-                  alt={member.name}
+                  src={member.avatarUrl || DEFAULT_AVATAR_URL}
+                  alt={member.fullName}
                   fill
                   className="object-cover"
                   sizes="96px"
@@ -142,7 +111,7 @@ export default function AnnuaireSection() {
 
               <div>
                 <p className="font-extrabold text-[#123a5f] text-2xl leading-tight">
-                  {member.name}
+                  {member.fullName}
                 </p>
                 <p
                   className={`text-base font-semibold mt-1 ${
@@ -155,16 +124,20 @@ export default function AnnuaireSection() {
 
               <div className="flex items-center gap-1 text-xs text-slate-400">
                 <MapPin className="w-3 h-3 shrink-0" aria-hidden="true" />
-                {member.location}
+                {memberLocation(member)}
               </div>
 
-              <a
-                href="#"
-                aria-label={`LinkedIn de ${member.name}`}
-                className="mt-1 w-7 h-7 rounded-lg bg-brand-surface hover:bg-brand-green-soft hover:text-brand-green-hover transition-colors flex items-center justify-center text-slate-500"
-              >
-                <Linkedin className="w-3.5 h-3.5" aria-hidden="true" />
-              </a>
+              {member.linkedinUrl ? (
+                <a
+                  href={member.linkedinUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`LinkedIn de ${member.fullName}`}
+                  className="mt-1 w-7 h-7 rounded-lg bg-brand-surface hover:bg-brand-green-soft hover:text-brand-green-hover transition-colors flex items-center justify-center text-slate-500"
+                >
+                  <Linkedin className="w-3.5 h-3.5" aria-hidden="true" />
+                </a>
+              ) : null}
             </div>
           ))}
         </div>
@@ -182,7 +155,9 @@ export default function AnnuaireSection() {
 
         {filtered.length === 0 && (
           <p className="text-center text-slate-400 text-sm py-12">
-            Aucun membre trouvé.
+            {members.length === 0
+              ? "Aucun membre disponible pour le moment."
+              : "Aucun membre trouvé."}
           </p>
         )}
       </div>

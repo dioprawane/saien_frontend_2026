@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type FormEvent } from "react";
+import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
 import {
   Ban,
   CheckCircle2,
@@ -15,11 +15,13 @@ import {
   RefreshCw,
   Search,
   Trash2,
+  Upload,
 } from "lucide-react";
 import { ApiClientError } from "@/lib/api/client";
 import {
   deleteShowcaseProject,
   listAdminShowcaseProjects,
+  uploadShowcaseProjectImage,
   upsertShowcaseProject,
   type ShowcaseProject,
   type UpsertShowcaseProjectInput,
@@ -45,6 +47,32 @@ type ProjectFormState = {
 
 const ITEMS_PER_PAGE = 8;
 const FOOTER_TYPES = ["registrations", "mentors", "partners"] as const;
+const BADGE_OPTIONS = ["Communaute", "Mentorat", "Media", "Reseau", "Formation", "Recherche", "Innovation", "Partenariat"] as const;
+const PERIOD_OPTIONS = ["Cycle mensuel", "Cohortes trimestrielles", "Publication continue", "Mise a jour continue", "Annuel", "Semestriel", "En preparation", "Prefiguration"] as const;
+const LOCATION_OPTIONS = [
+  "En ligne (Senegal et diaspora)",
+  "Hybride (en ligne + rencontres locales)",
+  "Dakar, Senegal",
+  "Plateformes numeriques",
+  "France, Senegal, diaspora internationale",
+  "Senegal et Afrique de l'Ouest",
+] as const;
+const LEAD_OPTIONS = [
+  "Pole Reseau & Communaute",
+  "Pole Formation & Talents",
+  "Pole Communication & Pedagogie",
+  "Pole Reseau Diaspora",
+  "Pole Formation SAIEN",
+  "Consortium Recherche SAIEN",
+] as const;
+const FOOTER_VALUE_EXAMPLE_BY_TYPE: Record<string, string> = {
+  registrations: "ex: 1 250 inscrits",
+  mentors: "ex: 42 mentors",
+  partners: "ex: 18 partenaires",
+};
+const MANUAL_OPTION = "__manual__";
+
+const isPresetValue = (value: string, presets: readonly string[]) => presets.includes(value);
 
 const createEmptyForm = (): ProjectFormState => ({
   slug: "",
@@ -57,8 +85,8 @@ const createEmptyForm = (): ProjectFormState => ({
   footerValue: "",
   featuredOnVision: true,
   publicVisible: true,
-  period: "",
-  location: "",
+  period: PERIOD_OPTIONS[0],
+  location: LOCATION_OPTIONS[0],
   lead: "",
   objectivesText: "",
   outcomesText: "",
@@ -112,8 +140,8 @@ const projectToForm = (project: ShowcaseProject): ProjectFormState => ({
   outcomesText: project.outcomes.join("\n"),
 });
 
-const toUpsertInput = (formState: ProjectFormState): UpsertShowcaseProjectInput => ({
-  slug: formState.slug.trim(),
+const toUpsertInput = (formState: ProjectFormState, slugOverride?: string): UpsertShowcaseProjectInput => ({
+  slug: (slugOverride ?? formState.slug).trim(),
   badge: formState.badge.trim(),
   imageUrl: formState.imageUrl.trim(),
   title: formState.title.trim(),
@@ -155,11 +183,13 @@ export default function ProjetsAdminPage() {
   const [projects, setProjects] = useState<ShowcaseProject[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingImage, setIsUploadingImage] = useState(false);
   const [deletingSlug, setDeletingSlug] = useState<string | null>(null);
   const [visibilityUpdatingSlug, setVisibilityUpdatingSlug] = useState<string | null>(null);
   const [searchValue, setSearchValue] = useState("");
   const [page, setPage] = useState(1);
   const [editingSlug, setEditingSlug] = useState<string | null>(null);
+  const [selectedImageFile, setSelectedImageFile] = useState<File | null>(null);
   const [formState, setFormState] = useState<ProjectFormState>(() => createEmptyForm());
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
@@ -230,6 +260,7 @@ export default function ProjetsAdminPage() {
 
   const resetToCreateMode = () => {
     setEditingSlug(null);
+    setSelectedImageFile(null);
     setFormState(createEmptyForm());
   };
 
@@ -247,17 +278,33 @@ export default function ProjetsAdminPage() {
     }
   };
 
-  const onCreateFromTitle = () => {
-    if (!formState.slug.trim() && formState.title.trim()) {
-      setFormState((previous) => ({
-        ...previous,
-        slug: slugify(previous.title),
-      }));
+  const onImageFileChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0] ?? null;
+    setSelectedImageFile(file);
+  };
+
+  const uploadSelectedImage = async () => {
+    if (!selectedImageFile) return;
+
+    setIsUploadingImage(true);
+    setErrorMessage(null);
+    setSuccessMessage(null);
+
+    try {
+      const uploaded = await uploadShowcaseProjectImage(selectedImageFile);
+      setFormState((previous) => ({ ...previous, imageUrl: uploaded.url }));
+      setSelectedImageFile(null);
+      setSuccessMessage("Image projet televersee avec succes.");
+    } catch (error) {
+      setErrorMessage(normalizeErrorMessage(error, "Impossible de televerser l'image du projet."));
+    } finally {
+      setIsUploadingImage(false);
     }
   };
 
   const onEdit = (project: ShowcaseProject) => {
     setEditingSlug(project.slug);
+    setSelectedImageFile(null);
     setFormState(projectToForm(project));
     setErrorMessage(null);
     setSuccessMessage(null);
@@ -336,9 +383,9 @@ export default function ProjetsAdminPage() {
     setErrorMessage(null);
     setSuccessMessage(null);
 
-    const slug = formState.slug.trim();
+    const slug = editingSlug ?? slugify(formState.title.trim());
     if (!slug) {
-      setErrorMessage("Le slug est obligatoire.");
+      setErrorMessage("Le titre est obligatoire pour generer le slug automatiquement.");
       return;
     }
 
@@ -347,9 +394,30 @@ export default function ProjetsAdminPage() {
       return;
     }
 
+    let nextImageUrl = formState.imageUrl.trim();
+
+    if (selectedImageFile) {
+      setIsUploadingImage(true);
+      try {
+        const uploaded = await uploadShowcaseProjectImage(selectedImageFile);
+        nextImageUrl = uploaded.url;
+        setFormState((previous) => ({ ...previous, imageUrl: uploaded.url }));
+        setSelectedImageFile(null);
+      } catch (error) {
+        setErrorMessage(normalizeErrorMessage(error, "Impossible de televerser l'image du projet."));
+        return;
+      } finally {
+        setIsUploadingImage(false);
+      }
+    }
+
+    if (!nextImageUrl) {
+      setErrorMessage("Merci de televerser une image pour le projet.");
+      return;
+    }
+
     if (
       !formState.badge.trim()
-      || !formState.imageUrl.trim()
       || !formState.title.trim()
       || !formState.description.trim()
       || !formState.fullDescription.trim()
@@ -363,19 +431,21 @@ export default function ProjetsAdminPage() {
       return;
     }
 
-    if (editingSlug !== null && slug !== editingSlug) {
-      setErrorMessage("Le slug ne peut pas etre modifie en mode edition. Cree un nouveau projet pour changer de slug.");
-      return;
-    }
-
     setIsSaving(true);
 
     try {
-      const payload = toUpsertInput(formState);
-      const persisted = await upsertShowcaseProject(payload, editingSlug ?? payload.slug);
+      const payload = toUpsertInput(
+        {
+          ...formState,
+          slug,
+          imageUrl: nextImageUrl,
+        },
+        slug,
+      );
+      const persisted = await upsertShowcaseProject(payload, editingSlug ?? slug);
 
       setProjects((previous) => {
-        const existingIndex = previous.findIndex((item) => item.slug === (editingSlug ?? payload.slug));
+        const existingIndex = previous.findIndex((item) => item.slug === (editingSlug ?? slug));
         if (existingIndex === -1) {
           return [...previous, persisted];
         }
@@ -398,6 +468,13 @@ export default function ProjetsAdminPage() {
       setIsSaving(false);
     }
   };
+
+  const periodSelectValue = isPresetValue(formState.period, PERIOD_OPTIONS)
+    ? formState.period
+    : MANUAL_OPTION;
+  const locationSelectValue = isPresetValue(formState.location, LOCATION_OPTIONS)
+    ? formState.location
+    : MANUAL_OPTION;
 
   return (
     <div className="space-y-6">
@@ -467,20 +544,20 @@ export default function ProjetsAdminPage() {
                 <input
                   type="text"
                   value={formState.slug}
-                  disabled={editingSlug !== null}
-                  onBlur={onCreateFromTitle}
-                  onChange={(event) =>
-                    setFormState((previous) => ({ ...previous, slug: slugify(event.target.value) }))
-                  }
-                  className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm disabled:bg-gray-50"
-                  placeholder="ex: saien-talks"
+                  readOnly
+                  className="mt-1 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm"
+                  placeholder="Genere automatiquement depuis le titre"
                 />
+                <span className="mt-1 block text-xs text-gray-500">
+                  Le slug est genere automatiquement et fige en edition.
+                </span>
               </label>
 
               <label className="block text-sm text-gray-700">
                 Badge *
                 <input
                   type="text"
+                  list="project-badge-options"
                   value={formState.badge}
                   onChange={(event) =>
                     setFormState((previous) => ({ ...previous, badge: event.target.value }))
@@ -488,6 +565,11 @@ export default function ProjetsAdminPage() {
                   className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
                   placeholder="ex: Communaute"
                 />
+                <datalist id="project-badge-options">
+                  {BADGE_OPTIONS.map((option) => (
+                    <option key={option} value={option} />
+                  ))}
+                </datalist>
               </label>
             </div>
 
@@ -496,25 +578,71 @@ export default function ProjetsAdminPage() {
               <input
                 type="text"
                 value={formState.title}
-                onBlur={onCreateFromTitle}
-                onChange={(event) =>
-                  setFormState((previous) => ({ ...previous, title: event.target.value }))
-                }
+                onChange={(event) => {
+                  const nextTitle = event.target.value;
+                  setFormState((previous) => ({
+                    ...previous,
+                    title: nextTitle,
+                    slug: editingSlug === null ? slugify(nextTitle) : previous.slug,
+                  }));
+                }}
                 className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                placeholder="ex: SAIEN Talks"
               />
             </label>
 
             <label className="block text-sm text-gray-700">
-              URL image *
-              <input
-                type="text"
-                value={formState.imageUrl}
-                onChange={(event) =>
-                  setFormState((previous) => ({ ...previous, imageUrl: event.target.value }))
-                }
-                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
-                placeholder="/event-1.png ou https://..."
-              />
+              Image projet *
+              <div className="mt-1 grid grid-cols-1 gap-3 md:grid-cols-[1fr_auto]">
+                <input
+                  type="text"
+                  value={formState.imageUrl}
+                  readOnly
+                  className="w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm"
+                  placeholder="URL generee apres upload"
+                />
+
+                <div className="flex items-center gap-2">
+                  <label className="inline-flex cursor-pointer items-center gap-2 rounded-lg border border-gray-200 px-3 py-2 text-sm font-semibold text-gray-700 hover:bg-gray-50">
+                    <Upload size={14} />
+                    Choisir image
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="hidden"
+                      onChange={onImageFileChange}
+                    />
+                  </label>
+
+                  <button
+                    type="button"
+                    onClick={uploadSelectedImage}
+                    disabled={!selectedImageFile || isUploadingImage}
+                    className="inline-flex items-center gap-2 rounded-lg bg-[#0A2540] px-3 py-2 text-sm font-semibold text-white hover:bg-[#12385a] disabled:opacity-60"
+                  >
+                    {isUploadingImage ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                    Upload
+                  </button>
+                </div>
+              </div>
+
+              {selectedImageFile && (
+                <span className="mt-1 block text-xs text-gray-500">
+                  Fichier selectionne: {selectedImageFile.name}
+                </span>
+              )}
+
+              {selectedImageFile && (
+                <span className="mt-1 block text-xs text-gray-500">
+                  Le fichier sera televerse automatiquement pendant l'enregistrement si besoin.
+                </span>
+              )}
+
+              {formState.imageUrl && (
+                <div className="mt-2 max-w-sm overflow-hidden rounded-xl border border-gray-200 bg-gray-50">
+                  <img src={formState.imageUrl} alt="Apercu image projet" className="h-44 w-full object-cover" />
+                </div>
+              )}
             </label>
 
             <label className="block text-sm text-gray-700">
@@ -568,7 +696,7 @@ export default function ProjetsAdminPage() {
                     setFormState((previous) => ({ ...previous, footerValue: event.target.value }))
                   }
                   className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
-                  placeholder="ex: 1 250 inscrits"
+                  placeholder={FOOTER_VALUE_EXAMPLE_BY_TYPE[formState.footerType] ?? "ex: 1 250 inscrits"}
                 />
               </label>
             </div>
@@ -576,38 +704,87 @@ export default function ProjetsAdminPage() {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
               <label className="block text-sm text-gray-700">
                 Periode *
-                <input
-                  type="text"
-                  value={formState.period}
-                  onChange={(event) =>
-                    setFormState((previous) => ({ ...previous, period: event.target.value }))
-                  }
+                <select
+                  value={periodSelectValue}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setFormState((previous) => ({
+                      ...previous,
+                      period: value === MANUAL_OPTION ? "" : value,
+                    }));
+                  }}
                   className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
-                />
+                >
+                  {PERIOD_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                  <option value={MANUAL_OPTION}>Entree manuelle</option>
+                </select>
+                {periodSelectValue === MANUAL_OPTION && (
+                  <input
+                    type="text"
+                    value={formState.period}
+                    onChange={(event) =>
+                      setFormState((previous) => ({ ...previous, period: event.target.value }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                    placeholder="ex: Cycle mensuel"
+                  />
+                )}
               </label>
 
               <label className="block text-sm text-gray-700">
                 Lieu *
-                <input
-                  type="text"
-                  value={formState.location}
-                  onChange={(event) =>
-                    setFormState((previous) => ({ ...previous, location: event.target.value }))
-                  }
+                <select
+                  value={locationSelectValue}
+                  onChange={(event) => {
+                    const value = event.target.value;
+                    setFormState((previous) => ({
+                      ...previous,
+                      location: value === MANUAL_OPTION ? "" : value,
+                    }));
+                  }}
                   className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
-                />
+                >
+                  {LOCATION_OPTIONS.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                  <option value={MANUAL_OPTION}>Entree manuelle</option>
+                </select>
+                {locationSelectValue === MANUAL_OPTION && (
+                  <input
+                    type="text"
+                    value={formState.location}
+                    onChange={(event) =>
+                      setFormState((previous) => ({ ...previous, location: event.target.value }))
+                    }
+                    className="mt-2 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                    placeholder="ex: Dakar, Senegal"
+                  />
+                )}
               </label>
 
               <label className="block text-sm text-gray-700">
                 Lead *
                 <input
                   type="text"
+                  list="project-lead-options"
                   value={formState.lead}
                   onChange={(event) =>
                     setFormState((previous) => ({ ...previous, lead: event.target.value }))
                   }
                   className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                  placeholder="ex: Pole Reseau & Communaute"
                 />
+                <datalist id="project-lead-options">
+                  {LEAD_OPTIONS.map((option) => (
+                    <option key={option} value={option} />
+                  ))}
+                </datalist>
               </label>
             </div>
 
@@ -644,6 +821,7 @@ export default function ProjetsAdminPage() {
                 }
                 rows={4}
                 className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                placeholder={"ex:\nStructurer un mentorat regulier et mesurable.\nRenforcer l'employabilite des mentores."}
               />
             </label>
 
@@ -656,16 +834,17 @@ export default function ProjetsAdminPage() {
                 }
                 rows={4}
                 className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                placeholder={"ex:\nBinomes mentor-mentore suivis sur un parcours defini.\nPlan de progression individuel par participant."}
               />
             </label>
 
             <div className="flex flex-wrap items-center gap-3">
               <button
                 type="submit"
-                disabled={isSaving}
+                disabled={isSaving || isUploadingImage}
                 className="inline-flex items-center gap-2 rounded-lg bg-[#16A34A] px-4 py-2 text-sm font-semibold text-white hover:bg-[#15803D] disabled:cursor-not-allowed disabled:opacity-60"
               >
-                {isSaving ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
+                {isSaving || isUploadingImage ? <Loader2 size={16} className="animate-spin" /> : <Plus size={16} />}
                 {editingSlug ? "Mettre a jour" : "Ajouter le projet"}
               </button>
 

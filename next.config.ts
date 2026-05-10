@@ -12,9 +12,21 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "http",
+        hostname: "localhost",
+        port: "8090",
+        pathname: "/api/member/assets/avatars/**",
+      },
+      {
+        protocol: "http",
         hostname: "127.0.0.1",
         port: "8090",
         pathname: "/api/showcase/assets/events/images/**",
+      },
+      {
+        protocol: "http",
+        hostname: "127.0.0.1",
+        port: "8090",
+        pathname: "/api/member/assets/avatars/**",
       },
       {
         protocol: "https",
@@ -23,8 +35,18 @@ const nextConfig: NextConfig = {
       },
       {
         protocol: "https",
+        hostname: "api.saien.org",
+        pathname: "/api/member/assets/avatars/**",
+      },
+      {
+        protocol: "https",
         hostname: "saien.org",
         pathname: "/api/showcase/assets/events/images/**",
+      },
+      {
+        protocol: "https",
+        hostname: "saien.org",
+        pathname: "/api/member/assets/avatars/**",
       },
       {
         protocol: "https",

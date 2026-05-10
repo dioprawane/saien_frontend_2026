@@ -1,5 +1,5 @@
 import type { UserSession } from "@/components/auth/UserSessionContext";
-import { apiRequest } from "@/lib/api/client";
+import { apiRequest, normalizeApiUrl } from "@/lib/api/client";
 
 export type AuthApiSession = {
   id: string;
@@ -55,7 +55,7 @@ export function toUserSession(apiSession: AuthApiSession): UserSession {
     role: apiSession.role,
     isMember: apiSession.isMember,
     memberLabel: apiSession.memberLabel,
-    avatarUrl: apiSession.avatarUrl,
+    avatarUrl: normalizeApiUrl(apiSession.avatarUrl) ?? apiSession.avatarUrl,
     emailVerified: apiSession.emailVerified,
   };
 }

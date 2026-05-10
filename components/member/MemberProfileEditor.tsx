@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ChangeEvent, type FormEvent } from "react";
+import { useEffect, useMemo, useRef, useState, type ChangeEvent, type FormEvent } from "react";
 import {
   Briefcase,
   Loader2,
@@ -9,11 +9,13 @@ import {
   Phone,
   Save,
   ShieldCheck,
+  Upload,
   User,
 } from "lucide-react";
 import { ApiClientError } from "@/lib/api/client";
 import {
   getMemberProfile,
+  uploadMemberAvatar,
   updateMemberProfile,
   type MemberProfileResponse,
 } from "@/lib/api/member";
@@ -33,6 +35,8 @@ type ProfileFormState = {
   country: string;
   expertise: string;
   avatarUrl: string;
+  linkedinUrl: string;
+  networkBio: string;
 };
 
 type Notice = {
@@ -50,6 +54,8 @@ const EMPTY_FORM_STATE: ProfileFormState = {
   country: "",
   expertise: "",
   avatarUrl: "",
+  linkedinUrl: "",
+  networkBio: "",
 };
 
 const MEMBER_TYPE_LABELS: Record<string, string> = {
@@ -109,6 +115,8 @@ function toFormState(profile: MemberProfileResponse, fallbackEmail: string): Pro
     country: profile.country ?? "",
     expertise: profile.expertise ?? "",
     avatarUrl: profile.avatarUrl ?? "",
+    linkedinUrl: profile.linkedinUrl ?? "",
+    networkBio: profile.networkBio ?? "",
   };
 }
 
@@ -120,7 +128,9 @@ export default function MemberProfileEditor({
   const [profile, setProfile] = useState<MemberProfileResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const [notice, setNotice] = useState<Notice | null>(null);
+  const avatarInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
     if (!isHydrated || !session?.email) return;
@@ -143,6 +153,8 @@ export default function MemberProfileEditor({
           city: null,
           country: null,
           expertise: null,
+          linkedinUrl: null,
+          networkBio: null,
           memberType: "",
           memberStatus: "",
           avatarUrl: session.avatarUrl,
@@ -227,6 +239,44 @@ export default function MemberProfileEditor({
       setForm((previous) => ({ ...previous, [field]: value }));
     };
 
+  const handleAvatarFileChange = async (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file || !session?.email) {
+      return;
+    }
+
+    setIsUploadingAvatar(true);
+    setNotice(null);
+
+    try {
+      const updatedProfile = await uploadMemberAvatar(session.email, file);
+      setProfile(updatedProfile);
+      setForm(toFormState(updatedProfile, session.email));
+
+      updateSession({
+        ...session,
+        fullName: updatedProfile.fullName,
+        email: updatedProfile.email,
+        avatarUrl: updatedProfile.avatarUrl ?? session.avatarUrl,
+      });
+
+      setNotice({
+        type: "success",
+        message: "Photo de profil mise a jour avec succes.",
+      });
+    } catch (error) {
+      const message =
+        error instanceof ApiClientError
+          ? error.message
+          : "Echec du televersement de la photo. Veuillez reessayer.";
+
+      setNotice({ type: "error", message });
+    } finally {
+      setIsUploadingAvatar(false);
+      event.target.value = "";
+    }
+  };
+
   const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
@@ -261,6 +311,8 @@ export default function MemberProfileEditor({
         country: emptyToNull(form.country),
         expertise: emptyToNull(form.expertise),
         avatarUrl: emptyToNull(form.avatarUrl),
+        linkedinUrl: emptyToNull(form.linkedinUrl),
+        networkBio: emptyToNull(form.networkBio),
       });
 
       setProfile(updatedProfile);
@@ -379,6 +431,52 @@ export default function MemberProfileEditor({
             </div>
 
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+              <div className="md:col-span-2 rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+                <p className="text-xs font-semibold uppercase tracking-wide text-slate-500">Photo de profil</p>
+                <div className="mt-3 flex flex-wrap items-center gap-4">
+                  <div className="relative h-20 w-20 overflow-hidden rounded-full border border-slate-200 bg-white">
+                    {form.avatarUrl.trim() ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={form.avatarUrl}
+                        alt="Photo de profil"
+                        className="h-full w-full object-cover"
+                      />
+                    ) : (
+                      <div className="flex h-full w-full items-center justify-center text-sm font-semibold text-slate-600">
+                        {form.firstName.slice(0, 1)}{form.lastName.slice(0, 1)}
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-2">
+                    <input
+                      ref={avatarInputRef}
+                      type="file"
+                      accept="image/jpeg,image/png,image/webp,image/gif"
+                      className="hidden"
+                      onChange={handleAvatarFileChange}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => avatarInputRef.current?.click()}
+                      disabled={isUploadingAvatar}
+                      className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 hover:border-emerald-300 hover:text-emerald-700 disabled:cursor-not-allowed disabled:opacity-60"
+                    >
+                      {isUploadingAvatar ? (
+                        <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                      ) : (
+                        <Upload className="h-4 w-4" aria-hidden="true" />
+                      )}
+                      {isUploadingAvatar ? "Televersement..." : "Choisir une image"}
+                    </button>
+                    <p className="text-xs text-slate-500">
+                      Formats: JPG, PNG, WEBP, GIF. Taille max recommandee: 5 Mo.
+                    </p>
+                  </div>
+                </div>
+              </div>
+
               <label className="space-y-1">
                 <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Prenom</span>
                 <input
@@ -469,6 +567,27 @@ export default function MemberProfileEditor({
                   onChange={handleFieldChange("expertise")}
                   className="min-h-24 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
                   placeholder="IA generative, Data Engineering, Product..."
+                />
+              </label>
+
+              <label className="space-y-1 md:col-span-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">URL LinkedIn</span>
+                <input
+                  type="url"
+                  value={form.linkedinUrl}
+                  onChange={handleFieldChange("linkedinUrl")}
+                  className="w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  placeholder="https://www.linkedin.com/in/votre-profil"
+                />
+              </label>
+
+              <label className="space-y-1 md:col-span-2">
+                <span className="text-xs font-semibold uppercase tracking-wide text-slate-500">Description publique</span>
+                <textarea
+                  value={form.networkBio}
+                  onChange={handleFieldChange("networkBio")}
+                  className="min-h-24 w-full rounded-xl border border-slate-200 px-3 py-2 text-sm text-slate-800 focus:border-emerald-500 focus:outline-none focus:ring-2 focus:ring-emerald-100"
+                  placeholder="Quelques lignes sur votre parcours et vos contributions..."
                 />
               </label>
             </div>

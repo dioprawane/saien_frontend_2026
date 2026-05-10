@@ -2,60 +2,31 @@
 
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Info, Linkedin, Twitter } from "lucide-react";
+import type { ShowcaseNetworkMember } from "@/lib/api/showcase";
 
-interface BureauMember {
-  name: string;
-  role: string;
-  badge?: "Fondateur" | "Nouveau";
-  bio: string;
-  initials: string;
-  tone: string;
-}
+type BureauSectionProps = {
+  members: ShowcaseNetworkMember[];
+};
 
-const BUREAU: BureauMember[] = [
-  {
-    name: "Serigne Rawane DIOP",
-    role: "Président",
-    badge: "Fondateur",
-    bio: "Spécialiste en Intelligence Artificielle. Gouvernance et stratégie organisationnelle.",
-    initials: "SRD",
-    tone: "from-brand-green to-brand-green-hover",
-  },
-  {
-    name: "Dr. Moustapha DIAW",
-    role: "Vice-Présidente",
-    badge: "Fondateur",
-    bio: "Docteur en traitement du signal, consultant et ingénieur en vision par ordinateur et traitement d'images.",
-    initials: "MD",
-    tone: "from-sky-400 to-blue-500",
-  },
-  {
-    name: "Sidy Mouhamed DIENG",
-    role: "Secrétaire Général",
-    badge: "Fondateur",
-    bio: "Ingénieur en Informatique et mathématiques appliquées, datascientist.",
-    initials: "SMD",
-    tone: "from-amber-400 to-orange-500",
-  },
-  {
-    name: "Lamine TOURE",
-    role: "Trésorière",
-    badge: "Fondateur",
-    bio: "Spécialiste en Intelligence Artificielle. Double parcours UniCA Nice et Laval Canada.",
-    initials: "LT",
-    tone: "from-violet-400 to-purple-500",
-  },
-  {
-    name: "Sergne Modou DIOP",
-    role: "Adjoint Trésorier",
-    badge: "Fondateur",
-    bio: "Etudiant en BUT Sciences des données, passionné par l'IA et la Data Science.",
-    initials: "SMD",
-    tone: "from-cyan-400 to-brand-green-hover",
-  },
+const TONES = [
+  "from-brand-green to-brand-green-hover",
+  "from-sky-400 to-blue-500",
+  "from-amber-400 to-orange-500",
+  "from-violet-400 to-purple-500",
+  "from-cyan-400 to-brand-green-hover",
 ];
 
-export default function BureauSection() {
+function getInitials(fullName: string) {
+  return fullName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
+export default function BureauSection({ members }: BureauSectionProps) {
   const railRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -163,9 +134,9 @@ export default function BureauSection() {
             className="overflow-x-auto overflow-y-visible pt-3 pb-3 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
             <div className="flex w-max gap-6 pl-3 pr-8">
-              {BUREAU.map((member, index) => (
+              {members.map((member, index) => (
                 <article
-                  key={member.name}
+                  key={member.id}
                   ref={(element) => {
                     cardRefs.current[index] = element;
                   }}
@@ -195,7 +166,7 @@ export default function BureauSection() {
                   {member.badge && (
                     <span
                       className={`absolute top-3 right-3 text-[10px] font-bold px-2 py-0.5 rounded-full ${
-                        member.badge === "Fondateur"
+                        member.badge.toLowerCase() === "fondateur"
                           ? "bg-amber-50 text-amber-600 border border-amber-200"
                           : "bg-brand-green-soft text-brand-green-hover border border-brand-green-soft-strong"
                       }`}
@@ -204,32 +175,40 @@ export default function BureauSection() {
                     </span>
                   )}
 
-                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${member.tone} flex items-center justify-center text-white font-bold text-lg`}>
-                    {member.initials}
+                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${TONES[index % TONES.length]} flex items-center justify-center text-white font-bold text-lg`}>
+                    {getInitials(member.fullName)}
                   </div>
 
                   <div>
-                    <p className="font-bold text-[#123a5f] text-sm">{member.name}</p>
+                    <p className="font-bold text-[#123a5f] text-sm">{member.fullName}</p>
                     <p className="text-brand-green-hover text-xs font-semibold mt-0.5">{member.role}</p>
                   </div>
 
                   <div className="flex items-center gap-2 text-slate-400">
-                    <a
-                      href="#"
-                      aria-label={`LinkedIn de ${member.name}`}
-                      onClick={(event) => event.stopPropagation()}
-                      className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-brand-surface hover:bg-brand-green-soft hover:text-brand-green-hover transition-colors"
-                    >
-                      <Linkedin className="w-3 h-3" aria-hidden="true" />
-                    </a>
-                    <a
-                      href="#"
-                      aria-label={`Profil X de ${member.name}`}
-                      onClick={(event) => event.stopPropagation()}
-                      className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-brand-surface hover:bg-brand-green-soft hover:text-brand-green-hover transition-colors"
-                    >
-                      <Twitter className="w-3 h-3" aria-hidden="true" />
-                    </a>
+                    {member.linkedinUrl ? (
+                      <a
+                        href={member.linkedinUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`LinkedIn de ${member.fullName}`}
+                        onClick={(event) => event.stopPropagation()}
+                        className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-brand-surface hover:bg-brand-green-soft hover:text-brand-green-hover transition-colors"
+                      >
+                        <Linkedin className="w-3 h-3" aria-hidden="true" />
+                      </a>
+                    ) : null}
+                    {member.twitterUrl ? (
+                      <a
+                        href={member.twitterUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        aria-label={`Profil X de ${member.fullName}`}
+                        onClick={(event) => event.stopPropagation()}
+                        className="inline-flex h-6 w-6 items-center justify-center rounded-md bg-brand-surface hover:bg-brand-green-soft hover:text-brand-green-hover transition-colors"
+                      >
+                        <Twitter className="w-3 h-3" aria-hidden="true" />
+                      </a>
+                    ) : null}
                   </div>
 
                   <p className="text-slate-500 text-xs leading-relaxed line-clamp-3">
@@ -239,6 +218,12 @@ export default function BureauSection() {
               ))}
             </div>
           </div>
+
+          {members.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-10 text-center text-sm text-slate-500">
+              Aucun membre du bureau n'est disponible pour le moment.
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

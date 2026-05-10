@@ -1,6 +1,17 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Linkedin, Twitter, Github, Mail, MapPin } from "lucide-react";
+import {
+  AtSign,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Music2,
+  Twitter,
+  Youtube,
+} from "lucide-react";
+import { TikTok_Sans } from "next/font/google";
 
 const LE_RESEAU = [
   { label: "À propos", href: "/a-propos" },
@@ -19,9 +30,12 @@ const RESSOURCES = [
 ];
 
 const SOCIALS = [
-  { icon: Linkedin, label: "LinkedIn", href: "#" },
-  { icon: Twitter, label: "Twitter / X", href: "#" },
-  { icon: Github, label: "GitHub", href: "#" },
+  { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/company/saien-ai/" },
+  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/saien_officiel?igsh=MWx6Y2JsZjNldDZybg%3D%3D&utm_source=qr" },
+  { icon: Facebook, label: "Facebook", href: "https://www.facebook.com/share/1D4QBYZ9cc/?mibextid=wwXIfr" },
+  { icon: Youtube, label: "Youtube", href: "https://www.youtube.com/@Saien-b8r" },
+  { icon: AtSign, label: "Threads", href: "#" },
+  { icon: Twitter, label: "X", href: "#" },
 ];
 
 export default function Footer() {
@@ -35,7 +49,7 @@ export default function Footer() {
             <div className="flex items-center gap-2">
               <div className="relative h-14 w-[168px] overflow-hidden rounded-lg border border-white/20 bg-white/95 shadow-sm">
                 <Image
-                  src="/logos/Logo_saien.png"
+                  src="/logos/New_logo_saien.svg"
                   alt="Logo SAIEN"
                   fill
                   sizes="168px"
@@ -48,7 +62,7 @@ export default function Footer() {
               l&apos;innovation en intelligence artificielle au service de la
               diaspora.
             </p>
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2 flex-wrap">
               {SOCIALS.map(({ icon: Icon, label, href }) => (
                 <a
                   key={label}

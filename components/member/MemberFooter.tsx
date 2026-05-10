@@ -1,6 +1,16 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Linkedin, Twitter, Mail, MapPin } from "lucide-react";
+import {
+  AtSign,
+  Facebook,
+  Instagram,
+  Linkedin,
+  Mail,
+  MapPin,
+  Music2,
+  Twitter,
+  Youtube,
+} from "lucide-react";
 
 const NAVIGATION = [
   { label: "Accueil", href: "/" },
@@ -16,6 +26,16 @@ const MEMBER_SPACE = [
   { label: "Paramètres", href: "/espace-membre/parametres" },
 ];
 
+const SOCIALS = [
+  { icon: Linkedin, label: "LinkedIn", href: "#" },
+  { icon: Instagram, label: "Instagram", href: "#" },
+  { icon: Facebook, label: "Facebook", href: "#" },
+  { icon: Youtube, label: "Youtube", href: "#" },
+  { icon: AtSign, label: "Threads", href: "#" },
+  { icon: Twitter, label: "X", href: "#" },
+  { icon: Music2, label: "Tiktok", href: "#" },
+];
+
 export default function MemberFooter() {
   return (
     <footer className="bg-[#0a2e4a] text-slate-200 mt-14">
@@ -25,7 +45,7 @@ export default function MemberFooter() {
             <div className="flex items-center gap-2 mb-3">
               <div className="relative h-12 w-[156px] overflow-hidden rounded-lg border border-white/20 bg-white/95 shadow-sm">
                 <Image
-                  src="/logos/Logo_saien.png"
+                  src="/logos/New_logo_saien.svg"
                   alt="Logo SAIEN"
                   fill
                   sizes="156px"
@@ -36,13 +56,17 @@ export default function MemberFooter() {
             <p className="text-xs text-slate-300 leading-relaxed mb-4">
               Le réseau d&apos;excellence pour l&apos;innovation et l&apos;intelligence artificielle.
             </p>
-            <div className="flex items-center gap-2">
-              <a href="#" aria-label="LinkedIn" className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 hover:bg-[#0e6f5c] transition-colors">
-                <Linkedin className="h-3.5 w-3.5" aria-hidden="true" />
-              </a>
-              <a href="#" aria-label="Twitter" className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 hover:bg-[#0e6f5c] transition-colors">
-                <Twitter className="h-3.5 w-3.5" aria-hidden="true" />
-              </a>
+            <div className="flex items-center gap-2 flex-wrap">
+              {SOCIALS.map(({ icon: Icon, label, href }) => (
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
+                  className="inline-flex h-7 w-7 items-center justify-center rounded-full bg-white/10 hover:bg-[#0e6f5c] transition-colors"
+                >
+                  <Icon className="h-3.5 w-3.5" aria-hidden="true" />
+                </a>
+              ))}
             </div>
           </div>
 

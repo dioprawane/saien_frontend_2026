@@ -58,7 +58,7 @@ export default function MemberHeader() {
           <Link href="/" className="flex items-center gap-2.5 shrink-0" aria-label="Accueil SAIEN">
             <div className="relative h-10 w-[108px] overflow-hidden rounded-md border border-[#0a2e4a]/10 bg-white shadow-sm">
               <Image
-                src="/logos/Logo_saien.png"
+                src="/logos/New_logo_saien.svg"
                 alt="Logo SAIEN"
                 fill
                 priority

@@ -72,6 +72,47 @@ type ApiShowcaseProject = {
   outcomes: string[] | null;
 };
 
+type ApiShowcaseImpactMetrics = {
+  totalMembers: number;
+  countriesRepresented: number;
+  totalProjects: number;
+};
+
+type ApiShowcaseNetworkLocation = {
+  country: string;
+  city: string;
+  members: number;
+  lat: number | null;
+  lon: number | null;
+};
+
+type ApiShowcaseNetworkOverview = {
+  representedMembers: number;
+  activeCountries: number;
+  locations: ApiShowcaseNetworkLocation[] | null;
+};
+
+type ApiShowcaseNetworkMember = {
+  id: string;
+  fullName: string;
+  role: string;
+  badge: string | null;
+  bio: string;
+  linkedinUrl: string | null;
+  twitterUrl: string | null;
+  avatarUrl: string | null;
+  city: string | null;
+  country: string | null;
+  featured: boolean;
+  memberType: "ACTIVE" | "ADHERENT" | "HONOR" | "BENEFACTOR" | null;
+};
+
+type ApiShowcaseNetworkDirectory = {
+  bureau: ApiShowcaseNetworkMember[] | null;
+  honor: ApiShowcaseNetworkMember[] | null;
+  members: ApiShowcaseNetworkMember[] | null;
+};
+
 type ApiArticleSection = {
   heading: string;
   paragraphs: string[] | null;
@@ -184,6 +225,47 @@ export type ShowcaseProject = {
   lead: string;
   objectives: string[];
   outcomes: string[];
+};
+
+export type ShowcaseImpactMetrics = {
+  totalMembers: number;
+  countriesRepresented: number;
+  totalProjects: number;
+};
+
+export type ShowcaseNetworkLocation = {
+  country: string;
+  city: string;
+  members: number;
+  lat: number | null;
+  lon: number | null;
+};
+
+export type ShowcaseNetworkOverview = {
+  representedMembers: number;
+  activeCountries: number;
+  locations: ShowcaseNetworkLocation[];
+};
+
+export type ShowcaseNetworkMember = {
+  id: string;
+  fullName: string;
+  role: string;
+  badge: string | null;
+  bio: string;
+  linkedinUrl: string | null;
+  twitterUrl: string | null;
+  avatarUrl: string | null;
+  city: string | null;
+  country: string | null;
+  featured: boolean;
+  memberType: "ACTIVE" | "ADHERENT" | "HONOR" | "BENEFACTOR" | null;
+};
+
+export type ShowcaseNetworkDirectory = {
+  bureau: ShowcaseNetworkMember[];
+  honor: ShowcaseNetworkMember[];
+  members: ShowcaseNetworkMember[];
 };
 
 export type UpsertShowcaseProjectInput = {
@@ -358,6 +440,49 @@ function normalizeShowcaseProject(project: ApiShowcaseProject): ShowcaseProject 
     lead: project.lead,
     objectives: project.objectives ?? [],
     outcomes: project.outcomes ?? [],
+  };
+}
+
+function normalizeShowcaseNetworkLocation(location: ApiShowcaseNetworkLocation): ShowcaseNetworkLocation {
+  return {
+    country: location.country,
+    city: location.city,
+    members: Math.max(0, location.members ?? 0),
+    lat: typeof location.lat === "number" ? location.lat : null,
+    lon: typeof location.lon === "number" ? location.lon : null,
+  };
+}
+
+function normalizeShowcaseNetworkOverview(overview: ApiShowcaseNetworkOverview): ShowcaseNetworkOverview {
+  return {
+    representedMembers: Math.max(0, overview.representedMembers ?? 0),
+    activeCountries: Math.max(0, overview.activeCountries ?? 0),
+    locations: (overview.locations ?? []).map(normalizeShowcaseNetworkLocation),
+  };
+}
+
+function normalizeShowcaseNetworkMember(member: ApiShowcaseNetworkMember): ShowcaseNetworkMember {
+  return {
+    id: member.id,
+    fullName: member.fullName,
+    role: member.role,
+    badge: member.badge,
+    bio: member.bio,
+    linkedinUrl: absolutizeApiUrl(member.linkedinUrl) ?? member.linkedinUrl,
+    twitterUrl: absolutizeApiUrl(member.twitterUrl) ?? member.twitterUrl,
+    avatarUrl: absolutizeApiUrl(member.avatarUrl) ?? member.avatarUrl,
+    city: member.city,
+    country: member.country,
+    featured: Boolean(member.featured),
+    memberType: member.memberType,
+  };
+}
+
+function normalizeShowcaseNetworkDirectory(directory: ApiShowcaseNetworkDirectory): ShowcaseNetworkDirectory {
+  return {
+    bureau: (directory.bureau ?? []).map(normalizeShowcaseNetworkMember),
+    honor: (directory.honor ?? []).map(normalizeShowcaseNetworkMember),
+    members: (directory.members ?? []).map(normalizeShowcaseNetworkMember),
   };
 }
 
@@ -566,9 +691,36 @@ export function uploadShowcaseArticleImage(file: File) {
   }));
 }
 
+export function uploadShowcaseProjectImage(file: File) {
+  const formData = new FormData();
+  formData.append("file", file);
+
+  return apiRequest<UploadedShowcaseImage>("/api/admin/showcase/projects/upload-image", {
+    method: "POST",
+    body: formData,
+  }).then((uploaded) => ({
+    ...uploaded,
+    url: absolutizeApiUrl(uploaded.url) ?? uploaded.url,
+  }));
+}
+
 export async function listShowcaseProjects() {
   const projects = await apiRequest<ApiShowcaseProject[]>("/api/showcase/projects");
   return projects.map(normalizeShowcaseProject);
+}
+
+export async function getShowcaseImpactMetrics() {
+  return apiRequest<ApiShowcaseImpactMetrics>("/api/showcase/impact");
+}
+
+export async function getShowcaseNetworkOverview() {
+  const overview = await apiRequest<ApiShowcaseNetworkOverview>("/api/showcase/network");
+  return normalizeShowcaseNetworkOverview(overview);
+}
+
+export async function getShowcaseNetworkDirectory() {
+  const directory = await apiRequest<ApiShowcaseNetworkDirectory>("/api/showcase/network-directory");
+  return normalizeShowcaseNetworkDirectory(directory);
 }
 
 export async function getShowcaseProjectBySlug(slug: string) {
