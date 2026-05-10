@@ -2,53 +2,32 @@
 
 import { useRef, useState } from "react";
 import { ChevronLeft, ChevronRight, Linkedin } from "lucide-react";
+import type { ShowcaseNetworkMember } from "@/lib/api/showcase";
 
-const HONOR_MEMBERS = [
-  {
-    name: "Donnees de test",
-    title: "Pionnière en IA Éthique",
-    bio: "Professeure émérite, ses travaux ont façonné les régulations européennes sur l'intelligence artificielle responsable.",
-    initials: "MD",
-    tone: "from-cyan-400 to-blue-500",
-  },
-  {
-    name: "Test 2",
-    title: "Fondateur de TechForGood",
-    bio: "A créé de multiples initiatives utilisant le Deep Learning pour résoudre des défis environnementaux majeurs.",
-    initials: "JD",
-    tone: "from-brand-green to-brand-green-hover",
-  },
-  {
-    name: "Test 3",
-    title: "Auteure & Visionnaire",
-    bio: "Conférencière internationale et auteure de best-sellers sur l'impact sociétal de l'automatisation cognitive.",
-    initials: "ER",
-    tone: "from-violet-400 to-purple-500",
-  },
-  {
-    name: "Test 4",
-    title: "Chercheur IA Médicale",
-    bio: "Ses contributions en diagnostic assisté par IA ont ouvert de nouvelles approches pour les systèmes de santé en Afrique.",
-    initials: "MS",
-    tone: "from-rose-400 to-pink-500",
-  },
-  {
-    name: "Test 5",
-    title: "Leadership & Inclusion",
-    bio: "Mentore internationale, engagée pour une gouvernance technologique plus inclusive et représentative des diasporas.",
-    initials: "NE",
-    tone: "from-amber-400 to-orange-500",
-  },
-  {
-    name: "Test 6",
-    title: "Innovation Publique",
-    bio: "Conseiller stratégique auprès d'institutions publiques, il facilite l'adoption d'IA responsable dans les services citoyens.",
-    initials: "KB",
-    tone: "from-indigo-400 to-blue-600",
-  },
+type HonorSectionProps = {
+  members: ShowcaseNetworkMember[];
+};
+
+const TONES = [
+  "from-cyan-400 to-blue-500",
+  "from-brand-green to-brand-green-hover",
+  "from-violet-400 to-purple-500",
+  "from-rose-400 to-pink-500",
+  "from-amber-400 to-orange-500",
+  "from-indigo-400 to-blue-600",
 ];
 
-export default function HonorSection() {
+function getInitials(fullName: string) {
+  return fullName
+    .split(" ")
+    .filter(Boolean)
+    .slice(0, 3)
+    .map((part) => part[0])
+    .join("")
+    .toUpperCase();
+}
+
+export default function HonorSection({ members }: HonorSectionProps) {
   const railRef = useRef<HTMLDivElement>(null);
   const cardRefs = useRef<Array<HTMLElement | null>>([]);
   const [activeIndex, setActiveIndex] = useState(0);
@@ -143,9 +122,9 @@ export default function HonorSection() {
             className="overflow-x-auto overflow-y-visible pt-3 pb-3 scroll-smooth snap-x snap-mandatory [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden"
           >
             <div className="flex w-max gap-6 pl-3 pr-8">
-              {HONOR_MEMBERS.map((member, index) => (
+              {members.map((member, index) => (
                 <article
-                  key={member.name}
+                  key={member.id}
                   ref={(element) => {
                     cardRefs.current[index] = element;
                   }}
@@ -165,14 +144,14 @@ export default function HonorSection() {
                       : "border-slate-200 bg-brand-surface hover:-translate-y-0.5 hover:shadow-[0_20px_36px_-30px_rgba(15,23,42,0.65)]"
                   }`}
                 >
-                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${member.tone} flex items-center justify-center text-white font-bold text-lg`}>
-                    {member.initials}
+                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${TONES[index % TONES.length]} flex items-center justify-center text-white font-bold text-lg`}>
+                    {getInitials(member.fullName)}
                   </div>
 
                   <div>
-                    <p className="font-bold text-[#123a5f] text-sm">{member.name}</p>
+                    <p className="font-bold text-[#123a5f] text-sm">{member.fullName}</p>
                     <p className="text-brand-green-hover text-xs font-semibold mt-0.5">
-                      {member.title}
+                      {member.role}
                     </p>
                   </div>
 
@@ -180,18 +159,32 @@ export default function HonorSection() {
                     {member.bio}
                   </p>
 
-                  <a
-                    href="#"
-                    onClick={(event) => event.stopPropagation()}
-                    className="mt-auto inline-flex items-center gap-1.5 border border-slate-200 bg-white hover:border-brand-green-soft-strong hover:text-brand-green-hover transition-colors text-slate-600 text-xs font-medium px-4 py-2 rounded-full"
-                  >
-                    <Linkedin className="w-3.5 h-3.5" aria-hidden="true" />
-                    Voir le profil
-                  </a>
+                  {member.linkedinUrl ? (
+                    <a
+                      href={member.linkedinUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={(event) => event.stopPropagation()}
+                      className="mt-auto inline-flex items-center gap-1.5 border border-slate-200 bg-white hover:border-brand-green-soft-strong hover:text-brand-green-hover transition-colors text-slate-600 text-xs font-medium px-4 py-2 rounded-full"
+                    >
+                      <Linkedin className="w-3.5 h-3.5" aria-hidden="true" />
+                      Voir le profil
+                    </a>
+                  ) : (
+                    <span className="mt-auto inline-flex items-center gap-1.5 border border-slate-200 bg-white text-slate-400 text-xs font-medium px-4 py-2 rounded-full">
+                      Profil indisponible
+                    </span>
+                  )}
                 </article>
               ))}
             </div>
           </div>
+
+          {members.length === 0 ? (
+            <div className="rounded-2xl border border-dashed border-slate-300 bg-brand-surface px-5 py-10 text-center text-sm text-slate-500">
+              Aucun membre d'honneur n'est disponible pour le moment.
+            </div>
+          ) : null}
         </div>
       </div>
     </section>

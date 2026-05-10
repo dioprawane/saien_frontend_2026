@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowRight, Bell, ChevronDown, LayoutDashboard, LogOut, Settings, Ticket, UserPlus, Users, WalletCards } from "lucide-react";
+import { ArrowRight, ChevronDown, LayoutDashboard, LogOut, Settings, Ticket, User, Users, WalletCards } from "lucide-react";
 import { useUserSession } from "@/components/auth/UserSessionContext";
 
 const PUBLIC_NAV_LINKS = [
@@ -17,19 +17,14 @@ const PUBLIC_NAV_LINKS = [
 
 const PROFILE_MENU_LINKS = [
   { label: "Tableau de bord", href: "/espace-membre", icon: LayoutDashboard },
+  { label: "Profil", href: "/espace-membre/profil", icon: User },
   { label: "Événements", href: "/espace-membre/evenements", icon: Ticket },
   { label: "Réseau", href: "/espace-membre/reseau", icon: Users },
   { label: "Ma Carte", href: "/espace-membre/carte", icon: WalletCards },
   { label: "Paramètres", href: "/espace-membre/parametres", icon: Settings },
 ];
 
-const ADMIN_MENU_LINKS = [
-  { label: "TDB Admin", href: "/admin", icon: LayoutDashboard },
-  { label: "Membres", href: "/admin/membres", icon: Users },
-  { label: "Inscriptions", href: "/admin/inscriptions", icon: UserPlus },
-  { label: "Événements", href: "/admin/evenements", icon: Ticket },
-  { label: "Paramètres", href: "/admin/parametres", icon: Settings },
-];
+const ADMIN_SHORTCUT = { label: "Admin", href: "/admin", icon: LayoutDashboard };
 
 export default function MemberHeader() {
   const router = useRouter();
@@ -40,8 +35,20 @@ export default function MemberHeader() {
   const activeSession = session ?? {
     fullName: "Jean Dupont",
     memberLabel: "Membre Actif",
+    memberType: "active",
     avatarUrl: "/members/avatar-1.png",
   };
+
+  const MEMBER_TYPE_DISPLAY: Record<string, string> = {
+    active: "Membre Actif",
+    adherent: "Membre Adhérent",
+    honor: "Membre d'Honneur",
+    benefactor: "Membre Bienfaiteur",
+  };
+
+  const memberTypeDisplay =
+    (activeSession.memberType && MEMBER_TYPE_DISPLAY[activeSession.memberType]) ||
+    activeSession.memberLabel;
 
   const closeDetails = (target: EventTarget | null) => {
     if (!(target instanceof HTMLElement)) return;
@@ -63,7 +70,7 @@ export default function MemberHeader() {
           <Link href="/" className="flex items-center gap-2.5 shrink-0" aria-label="Accueil SAIEN">
             <div className="relative h-10 w-[108px] overflow-hidden rounded-md border border-[#0a2e4a]/10 bg-white shadow-sm">
               <Image
-                src="/logos/Logo_saien.png"
+                src="/logos/New_logo_saien.svg"
                 alt="Logo SAIEN"
                 fill
                 priority
@@ -101,15 +108,6 @@ export default function MemberHeader() {
             </Link>
           )}
 
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-[#0a2e4a]/70 hover:text-[#0a2e4a] hover:border-[#0a2e4a]/30 transition-colors"
-          >
-            <Bell className="h-4 w-4" aria-hidden="true" />
-            <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#0e6f5c]" />
-          </button>
-
           <details className="relative">
             <summary
               className="list-none inline-flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 px-2.5 py-1.5 hover:border-[#0a2e4a]/30 transition-colors [&::-webkit-details-marker]:hidden"
@@ -135,7 +133,7 @@ export default function MemberHeader() {
               </div>
               <div className="hidden sm:block text-left leading-tight">
                 <p className="text-xs font-semibold text-[#0a2e4a]">{activeSession.fullName}</p>
-                <p className="text-[11px] text-[#0a2e4a]/60">{activeSession.memberLabel}</p>
+                <p className="text-[11px] text-[#0a2e4a]/60">{memberTypeDisplay}</p>
               </div>
               <ChevronDown className="h-3.5 w-3.5 text-[#0a2e4a]/60" aria-hidden="true" />
             </summary>
@@ -156,20 +154,14 @@ export default function MemberHeader() {
               {isAdmin && (
                 <>
                   <div className="my-1 border-t border-slate-200" />
-                  <p className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-[0.14em] text-[#0a2e4a]/45">
-                    Administration
-                  </p>
-                  {ADMIN_MENU_LINKS.map(({ label, href, icon: Icon }) => (
-                    <Link
-                      key={href}
-                      href={href}
-                      onClick={(event) => closeDetails(event.currentTarget)}
-                      className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-semibold text-[#0e6f5c] hover:bg-[#0e6f5c]/10"
-                    >
-                      <Icon className="h-4 w-4" aria-hidden="true" />
-                      {label}
-                    </Link>
-                  ))}
+                  <Link
+                    href={ADMIN_SHORTCUT.href}
+                    onClick={(event) => closeDetails(event.currentTarget)}
+                    className="flex items-center gap-2 rounded-lg px-2.5 py-2 text-sm font-semibold text-[#0e6f5c] hover:bg-[#0e6f5c]/10"
+                  >
+                    <ADMIN_SHORTCUT.icon className="h-4 w-4" aria-hidden="true" />
+                    {ADMIN_SHORTCUT.label}
+                  </Link>
                 </>
               )}
 

@@ -1,15 +1,11 @@
 "use client";
 
-import { Cloud } from "lucide-react";
+import Image from "next/image";
 import { useEffect, useRef, useState, type PointerEvent } from "react";
 
-const PARTNERS = [
-  { name: "TechCorp", icon: null },
-  { name: "CloudSys", icon: "cloud" as const },
-  { name: "InnovateAI", icon: null },
-  { name: "DataGlobal", icon: null },
-  { name: "FutureLabs", icon: null },
-];
+const PARTNERS = Array.from({ length: 7 }, (_, index) => ({
+  id: `saien-logo-${index + 1}`,
+}));
 
 const LOOPED_PARTNERS = [...PARTNERS, ...PARTNERS];
 
@@ -109,22 +105,23 @@ export default function PartnersSection() {
           }}
         >
           <ul className="flex w-max items-center gap-4 pr-4 sm:gap-5 lg:gap-6 lg:pr-6">
-            {LOOPED_PARTNERS.map(({ name, icon }, index) => (
-              <li key={`${name}-${index}`} className="shrink-0">
-                <span className="flex h-14 items-center gap-1.5 rounded-full border border-slate-200 bg-white px-6 text-base font-extrabold text-slate-500 shadow-sm sm:text-lg">
-                  {icon === "cloud" && (
-                    <Cloud className="h-4 w-4" aria-hidden="true" />
-                  )}
-                  {name}
+            {LOOPED_PARTNERS.map((partner, index) => (
+              <li key={`${partner.id}-${index}`} className="shrink-0">
+                <span className="flex h-16 w-[192px] items-center justify-center rounded-2xl border border-slate-200 bg-white px-5 shadow-sm">
+                  <span className="relative h-10 w-[126px]">
+                    <Image
+                      src="/logos/New_logo_saien.svg"
+                      alt="Logo SAIEN"
+                      fill
+                      sizes="126px"
+                      className="object-contain"
+                    />
+                  </span>
                 </span>
               </li>
             ))}
           </ul>
         </div>
-
-        <p className="mt-4 text-center text-xs text-slate-400">
-          Défilement automatique. Balayez à gauche ou à droite pour explorer.
-        </p>
       </div>
     </section>
   );

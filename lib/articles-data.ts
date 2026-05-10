@@ -17,6 +17,8 @@ export interface ArticleSection {
   videos?: ArticleVideo[];
 }
 
+export type ArticleStatus = "draft" | "published" | "withdrawn";
+
 export interface Article {
   id: number;
   slug: string;
@@ -29,6 +31,7 @@ export interface Article {
   readTime: string;
   coverImage: string;
   featured?: boolean;
+  status?: ArticleStatus;
   tags: string[];
   sections: ArticleSection[];
 }

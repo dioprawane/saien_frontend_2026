@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { label: "Accueil", href: "/" },
   { label: "A propos", href: "/a-propos" },
   { label: "Vision & Missions", href: "/vision" },
-  { label: "Réseau & Bureau", href: "/reseau" },
+  { label: "Réseau", href: "/reseau" },
   { label: "Actualités", href: "/actualites" },
   { label: "Événements", href: "/evenements" },
 ];
@@ -20,8 +20,13 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const pathname = usePathname();
   const { session, isAuthenticated } = useUserSession();
+  const dashboardHref =
+    session?.role === "admin" || session?.role === "super-admin"
+      ? "/admin"
+      : "/espace-membre";
 
-  const shouldShowJoin = !isAuthenticated || !session?.isMember;
+  const shouldShowJoin =
+    !isAuthenticated || (session?.role === "member" && !session?.memberType);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -34,7 +39,7 @@ export default function Navbar() {
           <Link href="/" className="flex items-center gap-2 shrink-0" aria-label="Accueil SAIEN">
             <div className="relative h-10 w-[108px] overflow-hidden rounded-md border border-[#0a2e4a]/10 bg-white shadow-sm">
               <Image
-                src="/logos/Logo_saien.png"
+                src="/logos/New_logo_saien.svg"
                 alt="Logo SAIEN"
                 fill
                 priority
@@ -67,12 +72,37 @@ export default function Navbar() {
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
             {!isAuthenticated && (
-              <Link
-                href="/connexion"
-                className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
-              >
-                Connexion
-              </Link>
+              <>
+                <Link
+                  href="/connexion"
+                  className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  href="/inscription"
+                  className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+                >
+                  Inscription
+                </Link>
+              </>
+            )}
+
+            {isAuthenticated && (
+              <>
+                <Link
+                  href={dashboardHref}
+                  className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+                >
+                  Mon espace
+                </Link>
+                <Link
+                  href="/deconnexion"
+                  className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+                >
+                  Deconnexion
+                </Link>
+              </>
             )}
 
             {shouldShowJoin && (
@@ -122,13 +152,41 @@ export default function Navbar() {
           ))}
 
           {!isAuthenticated && (
-            <Link
-              href="/connexion"
-              className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              Connexion
-            </Link>
+            <>
+              <Link
+                href="/connexion"
+                className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Connexion
+              </Link>
+              <Link
+                href="/inscription"
+                className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Inscription
+              </Link>
+            </>
+          )}
+
+          {isAuthenticated && (
+            <>
+              <Link
+                href={dashboardHref}
+                className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Mon espace
+              </Link>
+              <Link
+                href="/deconnexion"
+                className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Deconnexion
+              </Link>
+            </>
           )}
 
           {shouldShowJoin && (

@@ -18,6 +18,7 @@ export interface AgendaEvent {
   day: string;
   month: string;
   year: string;
+  status?: "draft" | "published" | "completed" | "cancelled";
   tags: EventTag[];
   thematique: string;
   format: string;
@@ -28,6 +29,8 @@ export interface AgendaEvent {
   location: string;
   seats?: string;
   imageUrl?: string;
+  joinLink?: string;
+  eventVisibility?: string;
   objectifs?: string[];
   intervenants?: Intervenant[];
   programme?: { time: string; title: string; description?: string }[];

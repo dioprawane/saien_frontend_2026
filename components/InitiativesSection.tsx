@@ -1,11 +1,9 @@
 import Link from "next/link";
 import { Building2, Users } from "lucide-react";
 import InitiativeCard from "@/components/InitiativeCard";
-import { PROJECTS, type ProjectData } from "../lib/projects-data";
+import { listShowcaseProjects, type ShowcaseProject } from "@/lib/api/showcase";
 
-const INITIATIVES = PROJECTS.filter((project) => project.featuredOnVision).slice(0, 3);
-
-function renderProjectFooter(project: ProjectData) {
+function renderProjectFooter(project: ShowcaseProject) {
   if (project.footerType === "registrations") {
     return (
       <span className="inline-flex items-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 px-2.5 py-1 text-[11px] font-semibold text-slate-700">
@@ -42,7 +40,18 @@ function renderProjectFooter(project: ProjectData) {
   );
 }
 
-export default function InitiativesSection() {
+export default async function InitiativesSection() {
+  let initiatives: ShowcaseProject[] = [];
+  let hasLoadingError = false;
+
+  try {
+    initiatives = (await listShowcaseProjects())
+      .filter((project) => project.featuredOnVision)
+      .slice(0, 3);
+  } catch {
+    hasLoadingError = true;
+  }
+
   return (
     <section
       id="initiatives"
@@ -72,11 +81,11 @@ export default function InitiativesSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {INITIATIVES.map((initiative) => (
+          {initiatives.map((initiative) => (
             <InitiativeCard
               key={initiative.slug}
               badge={initiative.badge}
-              imageUrl={initiative.imageUrl}
+              imageUrl={initiative.imageUrl ?? "/saien_vision_hero_illustration.svg"}
               title={initiative.title}
               description={initiative.description}
               footer={renderProjectFooter(initiative)}
@@ -84,6 +93,18 @@ export default function InitiativesSection() {
             />
           ))}
         </div>
+
+        {hasLoadingError && (
+          <p className="mt-6 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            Impossible de charger les projets phares depuis la base.
+          </p>
+        )}
+
+        {!hasLoadingError && initiatives.length === 0 && (
+          <p className="mt-6 rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-600">
+            Aucun projet phare n'est disponible pour le moment.
+          </p>
+        )}
       </div>
     </section>
   );

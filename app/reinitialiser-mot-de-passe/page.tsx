@@ -1,15 +1,63 @@
-import type { Metadata } from "next";
-import Link from "next/link";
-import { ArrowRight, KeyRound } from "lucide-react";
-import AuthShell from "@/components/auth/AuthShell";
+"use client";
 
-export const metadata: Metadata = {
-  title: "Réinitialiser le mot de passe — SAIEN",
-  description:
-    "Choisissez un nouveau mot de passe pour sécuriser votre compte SAIEN.",
-};
+import Link from "next/link";
+import { type FormEvent, useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { ArrowRight, KeyRound, Loader2 } from "lucide-react";
+import AuthShell from "@/components/auth/AuthShell";
+import { resetPassword } from "@/lib/api/auth";
+import { getApiErrorMessage } from "@/lib/api/errors";
 
 export default function ReinitialiserMotDePassePage() {
+  const router = useRouter();
+  const [token, setToken] = useState("");
+
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    setToken(params.get("token")?.trim() ?? "");
+  }, []);
+
+  const handleSubmit = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setErrorMessage(null);
+
+    if (!token) {
+      setErrorMessage("Le lien de reinitialisation est invalide ou incomplet.");
+      return;
+    }
+
+    if (password.length < 8) {
+      setErrorMessage("Le mot de passe doit contenir au moins 8 caracteres.");
+      return;
+    }
+
+    if (password !== confirmPassword) {
+      setErrorMessage("Les mots de passe ne correspondent pas.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      await resetPassword({
+        token,
+        newPassword: password,
+      });
+
+      router.push("/mot-de-passe-reinitialise");
+    } catch (error) {
+      setErrorMessage(getApiErrorMessage(error, "Impossible de reinitialiser le mot de passe."));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
   return (
     <AuthShell
       title="Nouveau mot de passe"
@@ -23,7 +71,7 @@ export default function ReinitialiserMotDePassePage() {
         "Conservez ce mot de passe en lieu sûr.",
       ]}
     >
-      <form className="space-y-4">
+      <form className="space-y-4" onSubmit={handleSubmit}>
         <label className="text-sm font-medium text-slate-700 block">
           Nouveau mot de passe
           <input
@@ -31,6 +79,10 @@ export default function ReinitialiserMotDePassePage() {
             placeholder="••••••••"
             className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green"
             autoComplete="new-password"
+            value={password}
+            onChange={(event) => setPassword(event.target.value)}
+            minLength={8}
+            required
           />
         </label>
 
@@ -41,6 +93,10 @@ export default function ReinitialiserMotDePassePage() {
             placeholder="••••••••"
             className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green"
             autoComplete="new-password"
+            value={confirmPassword}
+            onChange={(event) => setConfirmPassword(event.target.value)}
+            minLength={8}
+            required
           />
         </label>
 
@@ -52,13 +108,23 @@ export default function ReinitialiserMotDePassePage() {
         </div>
 
         <div className="flex flex-col sm:flex-row gap-3 pt-2">
-          <Link
-            href="/mot-de-passe-reinitialise"
+          <button
+            type="submit"
+            disabled={isSubmitting}
             className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-green px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-green-hover"
           >
-            Enregistrer le nouveau mot de passe
-            <ArrowRight className="h-4 w-4" aria-hidden="true" />
-          </Link>
+            {isSubmitting ? (
+              <>
+                <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+                Validation...
+              </>
+            ) : (
+              <>
+                Enregistrer le nouveau mot de passe
+                <ArrowRight className="h-4 w-4" aria-hidden="true" />
+              </>
+            )}
+          </button>
 
           <Link
             href="/connexion"
@@ -67,6 +133,12 @@ export default function ReinitialiserMotDePassePage() {
             Annuler
           </Link>
         </div>
+
+        {errorMessage ? (
+          <p className="rounded-xl border border-red-100 bg-red-50 px-3 py-2 text-sm text-red-700">
+            {errorMessage}
+          </p>
+        ) : null}
       </form>
     </AuthShell>
   );

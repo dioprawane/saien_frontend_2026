@@ -3,24 +3,64 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Search, Clock, ArrowRight } from "lucide-react";
-import { ARTICLES, ARTICLE_CATEGORIES } from "@/lib/articles-data";
+import { type Article } from "@/lib/articles-data";
+import { listShowcaseArticles } from "@/lib/api/showcase";
 
 const INITIAL_VISIBLE_ARTICLES = 4;
 const LOAD_MORE_STEP = 4;
 
 export default function ActualitesPage() {
   const router = useRouter();
+  const [articles, setArticles] = useState<Article[]>([]);
+  const [isLoading, setIsLoading] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [query, setQuery] = useState("");
   const [activeCategory, setActiveCategory] = useState("Toutes");
   const [visibleArticles, setVisibleArticles] = useState(INITIAL_VISIBLE_ARTICLES);
 
   useEffect(() => {
+    let isCancelled = false;
+
+    async function loadArticles() {
+      setIsLoading(true);
+      setLoadError(null);
+
+      try {
+        const remoteArticles = await listShowcaseArticles();
+        if (!isCancelled) {
+          setArticles(remoteArticles);
+        }
+      } catch {
+        if (!isCancelled) {
+          setLoadError("Impossible de charger les actualites depuis la base.");
+          setArticles([]);
+        }
+      } finally {
+        if (!isCancelled) {
+          setIsLoading(false);
+        }
+      }
+    }
+
+    void loadArticles();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const categoryOptions = useMemo(() => {
+    const uniqueCategories = Array.from(new Set(articles.map((article) => article.category)));
+    return ["Toutes", ...uniqueCategories];
+  }, [articles]);
+
+  useEffect(() => {
     setVisibleArticles(INITIAL_VISIBLE_ARTICLES);
   }, [query, activeCategory]);
 
-  const filtered = ARTICLES.filter((a) => {
+  const filtered = articles.filter((a) => {
     const matchCat =
       activeCategory === "Toutes" || a.category === activeCategory;
     const matchSearch =
@@ -31,8 +71,9 @@ export default function ActualitesPage() {
   });
 
   const featured = filtered.find((a) => a.featured);
-  const rest = filtered.filter((a) => !a.featured);
-  const sourceArticles = activeCategory === "Toutes" && !query ? rest : filtered;
+  const sourceArticles = activeCategory === "Toutes" && !query && featured
+    ? filtered.filter((a) => a.id !== featured.id)
+    : filtered;
   const displayedArticles = sourceArticles.slice(0, visibleArticles);
 
   const openArticle = (slug: string) => {
@@ -74,7 +115,7 @@ export default function ActualitesPage() {
           </div>
 
           <div className="flex flex-wrap gap-2">
-            {ARTICLE_CATEGORIES.map((cat) => (
+              {categoryOptions.map((cat) => (
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
@@ -136,13 +177,23 @@ export default function ActualitesPage() {
         )}
 
         {/* Grille d'articles */}
+        {loadError ? (
+          <p className="mb-6 rounded-xl border border-amber-200 bg-amber-50 px-4 py-2 text-sm text-amber-800">
+            {loadError}
+          </p>
+        ) : null}
+
+        {isLoading ? (
+          <p className="mb-6 text-sm text-slate-500">Chargement des actualites...</p>
+        ) : null}
+
         {filtered.length === 0 ? (
           <p className="text-center text-slate-400 text-sm py-16">
-            Aucun article trouvé.
+            Aucun article publie pour le moment.
           </p>
         ) : (
           <>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 items-stretch sm:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayedArticles.map((article) => (
                 <article
                   key={article.id}
@@ -156,7 +207,7 @@ export default function ActualitesPage() {
                   tabIndex={0}
                   role="link"
                   aria-label={`Lire l'article ${article.title}`}
-                  className="bg-white rounded-2xl border border-slate-100 overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer outline-none"
+                  className="h-full bg-white rounded-2xl border border-slate-100 overflow-hidden flex flex-col hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer outline-none"
                 >
                   <div className="relative h-40">
                     <Image
@@ -169,20 +220,21 @@ export default function ActualitesPage() {
                     <div className="absolute inset-0 bg-gradient-to-t from-[#0A2540]/65 via-[#0A2540]/5 to-transparent" />
                   </div>
 
-                  <div className="p-6 flex flex-col gap-3 flex-1">
+                  <div className="p-5 flex flex-col gap-2 flex-1">
                     <span
                       className={`self-start text-[10px] font-bold px-2.5 py-0.5 rounded-full ${article.categoryColor}`}
                     >
                       {article.category}
                     </span>
-                    <h3 className="font-bold text-slate-900 text-sm leading-snug">
+                    <h3 className="min-h-[2.75rem] line-clamp-2 font-bold text-slate-900 text-sm leading-snug">
                       {article.title}
                     </h3>
-                    <p className="text-slate-500 text-xs leading-relaxed flex-1">
+
+                    <p className="line-clamp-1 text-slate-500 text-xs leading-relaxed">
                       {article.excerpt}
                     </p>
 
-                    <div className="flex items-center gap-3 text-xs text-slate-400 mt-auto pt-2 border-t border-slate-50">
+                    <div className="flex items-center gap-2 text-xs text-slate-400 pt-1 border-t border-slate-50">
                       <span className="font-medium text-slate-600">
                         {article.author}
                       </span>

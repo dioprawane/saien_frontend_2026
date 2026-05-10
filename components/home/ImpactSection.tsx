@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState, useCallback } from "react";
 import { Users2, Globe, Layers } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import { getShowcaseImpactMetrics } from "@/lib/api/showcase";
 
 /* ── Compteur animé ─────────────────────────────────────── */
 function useCountUp(target: number, duration = 1200, active = false) {
@@ -107,35 +108,36 @@ function StatCard({
   );
 }
 
-/* ── Données ────────────────────────────────────────────── */
-const STATS = [
-  {
-    icon: Users2,
-    rawValue: 40,
-    suffix: "+",
-    label: "Membres actifs",
-    description: "Experts en IA, Data et Cyber répartis dans le monde entier.",
-  },
-  {
-    icon: Globe,
-    rawValue: 10,
-    suffix: "",
-    label: "Pays représentés",
-    description: "Une présence internationale favorisant les échanges interculturels.",
-  },
-  {
-    icon: Layers,
-    rawValue: 5,
-    suffix: "",
-    label: "Projets collaboratifs",
-    description: "Initiatives technologiques nées au sein de notre écosystème.",
-  },
-];
-
 /* ── Section principale ─────────────────────────────────── */
 export default function ImpactSection() {
   const [visible, setVisible] = useState(false);
+  const [metrics, setMetrics] = useState({
+    totalMembers: 0,
+    countriesRepresented: 0,
+    totalProjects: 0,
+  });
   const sectionRef = useRef<HTMLElement>(null);
+
+  useEffect(() => {
+    let active = true;
+
+    getShowcaseImpactMetrics()
+      .then((data) => {
+        if (!active) return;
+        setMetrics({
+          totalMembers: Math.max(0, data.totalMembers ?? 0),
+          countriesRepresented: Math.max(0, data.countriesRepresented ?? 0),
+          totalProjects: Math.max(0, data.totalProjects ?? 0),
+        });
+      })
+      .catch(() => {
+        // Keep safe defaults when API is temporarily unavailable.
+      });
+
+    return () => {
+      active = false;
+    };
+  }, []);
 
   useEffect(() => {
     const obs = new IntersectionObserver(
@@ -145,6 +147,30 @@ export default function ImpactSection() {
     if (sectionRef.current) obs.observe(sectionRef.current);
     return () => obs.disconnect();
   }, []);
+
+  const stats = [
+    {
+      icon: Users2,
+      rawValue: metrics.totalMembers,
+      suffix: "+",
+      label: "Membres actifs",
+      description: "Experts en IA, Data et Cyber répartis dans le monde entier.",
+    },
+    {
+      icon: Globe,
+      rawValue: metrics.countriesRepresented,
+      suffix: "",
+      label: "Pays représentés",
+      description: "Une présence internationale favorisant les échanges interculturels.",
+    },
+    {
+      icon: Layers,
+      rawValue: metrics.totalProjects,
+      suffix: "",
+      label: "Projets collaboratifs",
+      description: "Initiatives technologiques nées au sein de notre écosystème.",
+    },
+  ];
 
   return (
     <section
@@ -166,7 +192,7 @@ export default function ImpactSection() {
         </div>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
-          {STATS.map((stat) => (
+          {stats.map((stat) => (
             <StatCard
               key={stat.label}
               {...stat}

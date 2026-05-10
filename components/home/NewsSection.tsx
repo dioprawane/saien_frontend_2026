@@ -1,42 +1,24 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight, Briefcase, MapPin, Mail } from "lucide-react";
 import ArticleRow from "./ArticleRow";
+import { listShowcaseArticles } from "@/lib/api/showcase";
+import { subscribeToNewsletter } from "@/lib/api/newsletter";
+import { type Article } from "@/lib/articles-data";
 
-const ARTICLES = [
-  {
-    category: "Publication",
-    categoryColor: "bg-blue-100 text-blue-700",
-    date: "il y a 2 jours",
-    imageUrl: "/event-1.png",
-    title: "Rapport SAIEN 2024 : L'état de l'IA en Afrique francophone",
-    description:
-      "Notre dernière étude met en lumière les avancées majeures et les défis de l'écosystème IA sur le continent.",
-    href: "/actualites",
-  },
-  {
-    category: "Partenariat",
-    categoryColor: "bg-amber-100 text-amber-700",
-    date: "il y a 1 semaine",
-    imageUrl: "/event-2.png",
-    title: "Nouveau partenariat stratégique avec l'Institut de l'IA",
-    description:
-      "Cette collaboration permettra d'offrir des bourses de recherche aux membres de notre réseau.",
-    href: "/actualites",
-  },
-  {
-    category: "Technologie",
-    categoryColor: "bg-brand-green-soft text-brand-green-hover",
-    date: "il y a 2 semaines",
-    imageUrl: "/event-3.png",
-    title: "Lancement de la plateforme open-source SAIEN-Core",
-    description:
-      "Une suite d'outils développée par notre communauté pour faciliter le déploiement de modèles en production.",
-    href: "/actualites",
-  },
-];
+const defaultCategoryColor = "bg-brand-green-soft text-brand-green-hover";
+
+const toHomeArticleRow = (article: Article) => ({
+  category: article.category,
+  categoryColor: article.categoryColor || defaultCategoryColor,
+  date: article.date,
+  imageUrl: article.coverImage,
+  title: article.title,
+  description: article.excerpt,
+  href: `/actualites/${article.slug}`,
+});
 
 const OPPORTUNITIES = [
   {
@@ -64,6 +46,37 @@ const OPPORTUNITIES = [
 
 export default function NewsSection() {
   const [email, setEmail] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [newsletterMessage, setNewsletterMessage] = useState<string | null>(null);
+  const [articles, setArticles] = useState<Article[]>([]);
+
+  useEffect(() => {
+    let isCancelled = false;
+
+    async function loadArticles() {
+      try {
+        const remoteArticles = await listShowcaseArticles();
+        if (!isCancelled) {
+          setArticles(remoteArticles);
+        }
+      } catch {
+        if (!isCancelled) {
+          setArticles([]);
+        }
+      }
+    }
+
+    void loadArticles();
+
+    return () => {
+      isCancelled = true;
+    };
+  }, []);
+
+  const displayedArticles = useMemo(
+    () => articles.slice(0, 3).map(toHomeArticleRow),
+    [articles],
+  );
 
   return (
     <section
@@ -89,9 +102,15 @@ export default function NewsSection() {
             </div>
 
             <div className="space-y-4">
-              {ARTICLES.map((article) => (
-                <ArticleRow key={article.title} {...article} />
-              ))}
+              {displayedArticles.length > 0 ? (
+                displayedArticles.map((article) => (
+                  <ArticleRow key={article.href} {...article} />
+                ))
+              ) : (
+                <p className="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm text-slate-500">
+                  Aucune actualite publiee pour le moment.
+                </p>
+              )}
             </div>
           </div>
 
@@ -150,9 +169,20 @@ export default function NewsSection() {
 
               <form
                 className="flex flex-col gap-2.5"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  setEmail("");
+                  if (!email.trim() || newsletterStatus === "loading") return;
+                  setNewsletterStatus("loading");
+                  setNewsletterMessage(null);
+                  try {
+                    const res = await subscribeToNewsletter(email.trim());
+                    setNewsletterStatus("success");
+                    setNewsletterMessage(res.message);
+                    setEmail("");
+                  } catch {
+                    setNewsletterStatus("error");
+                    setNewsletterMessage("Une erreur est survenue. Veuillez réessayer.");
+                  }
                 }}
               >
                 <input
@@ -164,11 +194,17 @@ export default function NewsSection() {
                   aria-label="Votre adresse email pour la newsletter"
                   className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2.5 text-sm text-white placeholder:text-slate-300 focus:border-brand-green focus:outline-none transition-colors"
                 />
+                {newsletterMessage && (
+                  <p className={`text-xs leading-relaxed ${newsletterStatus === "success" ? "text-green-300" : "text-red-300"}`}>
+                    {newsletterMessage}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-brand-green py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-green-hover"
+                  disabled={newsletterStatus === "loading"}
+                  className="w-full rounded-lg bg-brand-green py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-green-hover disabled:opacity-70"
                 >
-                  S&apos;abonner
+                  {newsletterStatus === "loading" ? "Envoi..." : "S\u2019abonner"}
                 </button>
               </form>
             </div>

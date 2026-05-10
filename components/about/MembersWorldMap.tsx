@@ -50,10 +50,13 @@ export default function MembersWorldMap({ locations }: MembersWorldMapProps) {
 
       {primaryHub &&
         locations
-          .filter((location) => location.country !== primaryHub.country)
-          .map((location) => (
+          .filter(
+            (location) =>
+              location.country !== primaryHub.country || location.city !== primaryHub.city,
+          )
+          .map((location, index) => (
             <Polyline
-              key={`line-${location.country}`}
+              key={`line-${location.country}-${location.city}-${index}`}
               positions={[
                 [primaryHub.lat, primaryHub.lon],
                 [location.lat, location.lon],
@@ -67,9 +70,9 @@ export default function MembersWorldMap({ locations }: MembersWorldMapProps) {
             />
           ))}
 
-      {locations.map((location) => (
+      {locations.map((location, index) => (
         <CircleMarker
-          key={location.country}
+          key={`${location.country}-${location.city}-${index}`}
           center={[location.lat, location.lon]}
           radius={location.featured ? 8 : 6}
           pathOptions={{

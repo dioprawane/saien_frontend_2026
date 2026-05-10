@@ -35,10 +35,10 @@ export default function LienReinitialisationEnvoyePage() {
 
       <div className="mt-6 flex flex-col sm:flex-row gap-3">
         <Link
-          href="/reinitialiser-mot-de-passe"
+          href="/connexion"
           className="inline-flex items-center justify-center gap-2 rounded-full bg-brand-green px-5 py-3 text-sm font-semibold text-white transition-colors hover:bg-brand-green-hover"
         >
-          Continuer vers la réinitialisation
+          Retour a la connexion
           <ArrowRight className="h-4 w-4" aria-hidden="true" />
         </Link>
 

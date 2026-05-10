@@ -23,7 +23,7 @@ const BENEFITS = [
 
 export default function AdhesionHero() {
   return (
-    <section className="bg-white pt-16 pb-20" aria-labelledby="adhesion-hero-heading">
+    <section className="bg-white pt-14 pb-8 lg:pb-10" aria-labelledby="adhesion-hero-heading">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center max-w-2xl mx-auto mb-14">
           <h1

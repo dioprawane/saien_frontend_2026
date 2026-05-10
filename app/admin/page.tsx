@@ -4,10 +4,12 @@ import Link from "next/link";
 import {
   Activity,
   ArrowRight,
+  BriefcaseBusiness,
   CalendarDays,
   CheckCircle2,
   Clock3,
   LayoutDashboard,
+  Newspaper,
   UserPlus2,
   Users,
   XCircle,
@@ -197,6 +199,28 @@ export default function AdminDashboardPage() {
                 <span className="inline-flex items-center gap-2">
                   <CalendarDays size={16} />
                   Planifier un evenement
+                </span>
+                <ArrowRight size={14} />
+              </Link>
+
+              <Link
+                href="/admin/projets"
+                className="inline-flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-[#16A34A]/40 hover:text-[#16A34A]"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <BriefcaseBusiness size={16} />
+                  Gerer les projets
+                </span>
+                <ArrowRight size={14} />
+              </Link>
+
+              <Link
+                href="/admin/actualites"
+                className="inline-flex items-center justify-between rounded-lg border border-gray-200 px-3 py-2 text-sm text-gray-700 hover:border-[#16A34A]/40 hover:text-[#16A34A]"
+              >
+                <span className="inline-flex items-center gap-2">
+                  <Newspaper size={16} />
+                  Gerer les actualites
                 </span>
                 <ArrowRight size={14} />
               </Link>
