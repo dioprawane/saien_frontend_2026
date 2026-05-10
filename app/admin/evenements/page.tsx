@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { useRouter } from "next/navigation";
 import {
   Ban,
   Calendar,
@@ -17,6 +18,7 @@ import {
   Search,
   Trash2,
   Upload,
+  Users,
   Video,
 } from "lucide-react";
 import { ApiClientError } from "@/lib/api/client";
@@ -47,6 +49,8 @@ type EventFormState = {
   seats: string;
   imageUrl: string;
   objectifsText: string;
+  joinLink: string;
+  eventVisibility: string;
 };
 
 const ITEMS_PER_PAGE = 8;
@@ -160,6 +164,8 @@ const createEmptyForm = (nextId: number): EventFormState => ({
   seats: "",
   imageUrl: "",
   objectifsText: "",
+  joinLink: "",
+  eventVisibility: "public",
 });
 
 const findExistingType = (eventItem: AgendaEvent): string => {
@@ -202,6 +208,8 @@ const eventToForm = (eventItem: AgendaEvent): EventFormState => {
     seats: eventItem.seats ?? "",
     imageUrl: eventItem.imageUrl ?? "",
     objectifsText: (eventItem.objectifs ?? []).join("\n"),
+    joinLink: eventItem.joinLink ?? "",
+    eventVisibility: eventItem.eventVisibility ?? "public",
   };
 };
 
@@ -248,6 +256,7 @@ const closeActionMenu = (target: EventTarget | null) => {
 };
 
 export default function EvenementsAdminPage() {
+  const router = useRouter();
   const [events, setEvents] = useState<AgendaEvent[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
@@ -437,6 +446,8 @@ export default function EvenementsAdminPage() {
       seats: formState.seats.trim() || undefined,
       status: existingEvent?.status ?? "draft",
       imageUrl: nextImageUrl || undefined,
+      joinLink: formState.joinLink.trim() || undefined,
+      eventVisibility: formState.eventVisibility || "public",
       objectifs: splitLines(formState.objectifsText),
       tags: computedTags,
       intervenants: (existingEvent?.intervenants ?? []) as Intervenant[],
@@ -525,6 +536,8 @@ export default function EvenementsAdminPage() {
         seats: eventItem.seats,
         status,
         imageUrl: eventItem.imageUrl,
+        joinLink: eventItem.joinLink,
+        eventVisibility: eventItem.eventVisibility,
         objectifs: eventItem.objectifs,
         tags: eventItem.tags,
         intervenants: eventItem.intervenants,
@@ -843,6 +856,47 @@ export default function EvenementsAdminPage() {
             className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm"
           />
 
+          <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Lien de connexion (optionnel)
+              </label>
+              <input
+                type="url"
+                value={formState.joinLink}
+                onChange={(event) =>
+                  setFormState((previous) => ({ ...previous, joinLink: event.target.value }))
+                }
+                placeholder="https://meet.google.com/xxx ou https://zoom.us/j/..."
+                className="h-10 rounded-lg border border-gray-200 px-3 text-sm"
+              />
+              <p className="text-xs text-gray-400">Visible uniquement par les membres inscrits.</p>
+            </div>
+            <div className="flex flex-col gap-1">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Visibilité
+              </label>
+              <select
+                value={formState.eventVisibility}
+                onChange={(event) =>
+                  setFormState((previous) => ({ ...previous, eventVisibility: event.target.value }))
+                }
+                className="h-10 rounded-lg border border-gray-200 px-3 text-sm"
+              >
+                <option value="open">Ouvert — inscription sans compte (par email)</option>
+                <option value="public">Public — inscription avec compte requis</option>
+                <option value="members">Membres — réservé aux membres actifs</option>
+                <option value="prive">Privé — sur invitation uniquement</option>
+              </select>
+              <p className="text-xs text-gray-400">
+                {formState.eventVisibility === "open" && "Les visiteurs peuvent s'inscrire avec seulement leur email."}
+                {formState.eventVisibility === "public" && "Un compte SAIEN est requis pour s'inscrire."}
+                {formState.eventVisibility === "members" && "Réservé aux membres ayant un statut actif."}
+                {formState.eventVisibility === "prive" && "Accès par invitation uniquement, lien non public."}
+              </p>
+            </div>
+          </div>
+
           <div className="flex flex-wrap items-center gap-3">
             <button
               type="submit"
@@ -967,6 +1021,17 @@ export default function EvenementsAdminPage() {
                       >
                         <Edit3 size={13} />
                         Modifier
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          closeActionMenu(e.currentTarget);
+                          router.push(`/admin/evenements/${eventItem.id}`);
+                        }}
+                        className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-100"
+                      >
+                        <Users size={13} />
+                        Voir inscrits
                       </button>
                       <button
                         type="button"

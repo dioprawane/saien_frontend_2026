@@ -20,6 +20,7 @@ export type UserSession = {
   role: UserRole;
   isMember: boolean;
   memberLabel: string;
+  memberType: string | null;
   avatarUrl: string;
   emailVerified: boolean;
 };

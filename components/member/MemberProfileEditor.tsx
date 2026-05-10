@@ -67,6 +67,8 @@ const MEMBER_TYPE_LABELS: Record<string, string> = {
 
 const MEMBER_STATUS_LABELS: Record<string, string> = {
   ACTIVE: "Actif",
+  PENDING: "En cours",
+  EXPIRED: "Expire",
   SUSPENDED: "Suspendu",
 };
 

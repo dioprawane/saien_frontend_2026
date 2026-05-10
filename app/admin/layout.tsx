@@ -4,11 +4,11 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import {
-  Bell,
   BriefcaseBusiness,
   Calendar,
   LayoutDashboard,
   LogOut,
+  Mail,
   Menu,
   Newspaper,
   Search,
@@ -21,6 +21,7 @@ import {
 import { AdminProvider, useAdminContext } from "@/components/admin/AdminContext";
 import { useUserSession } from "@/components/auth/UserSessionContext";
 import MemberHeader from "@/components/member/MemberHeader";
+import { getAdminSummary } from "@/lib/api/admin";
 
 type AdminLayoutProps = {
   children: ReactNode;
@@ -38,6 +39,7 @@ const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { href: "/admin/membres", label: "Membres", icon: Users },
   { href: "/admin/inscriptions", label: "Inscriptions", icon: UserPlus },
   { href: "/admin/evenements", label: "Evenements", icon: Calendar },
+  { href: "/admin/newsletter", label: "Newsletter", icon: Mail },
   { href: "/admin/projets", label: "Projets", icon: BriefcaseBusiness },
   { href: "/admin/actualites", label: "Actualites", icon: Newspaper },
   { href: "/admin/parametres", label: "Parametres", icon: Settings },
@@ -54,6 +56,7 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
   const { summary } = useAdminContext();
   const { isHydrated, isAuthenticated, isAdmin, session, signOut } = useUserSession();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
+  const [pendingFromApi, setPendingFromApi] = useState<number | null>(null);
 
   useEffect(() => {
     setMobileSidebarOpen(false);
@@ -83,6 +86,26 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
       router.replace("/espace-membre");
     }
   }, [isHydrated, isAuthenticated, isAdmin, router]);
+
+  useEffect(() => {
+    if (!isHydrated || !isAuthenticated || !isAdmin) return;
+
+    let cancelled = false;
+    getAdminSummary()
+      .then((nextSummary) => {
+        if (cancelled) return;
+        setPendingFromApi(nextSummary.pendingRegistrations);
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setPendingFromApi(null);
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [isHydrated, isAuthenticated, isAdmin, pathname]);
 
   const isActive = (path: string) => {
     if (path === "/admin") return pathname === path;
@@ -143,6 +166,8 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
       : session?.role === "admin"
         ? "Admin"
         : "Membre";
+
+  const pendingRegistrationsCount = pendingFromApi ?? summary.pendingRegistrations;
 
   return (
     <div className="min-h-screen flex flex-col bg-[#F8FAFC]">
@@ -205,7 +230,7 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
 
                       {isRegistrationsLink && (
                         <span className="bg-orange-100 text-orange-600 text-xs font-bold px-2 py-0.5 rounded-full">
-                          {formatPendingCounter(summary.pendingRegistrations)}
+                          {formatPendingCounter(pendingRegistrationsCount)}
                         </span>
                       )}
                     </Link>
@@ -264,13 +289,6 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
                   className="pl-10 pr-4 py-2 bg-gray-50 border border-gray-200 rounded-full text-sm focus:outline-none focus:ring-2 focus:ring-[#16A34A] focus:border-transparent w-64"
                 />
               </div>
-
-              <button className="relative text-gray-500 hover:text-gray-700" aria-label="Notifications">
-                <Bell size={20} />
-                {summary.pendingRegistrations > 0 && (
-                  <span className="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full" />
-                )}
-              </button>
 
               <div className="flex items-center gap-3 border-l border-gray-200 pl-6 cursor-pointer">
                 <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold overflow-hidden">

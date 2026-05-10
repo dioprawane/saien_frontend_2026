@@ -29,6 +29,8 @@ export interface AgendaEvent {
   location: string;
   seats?: string;
   imageUrl?: string;
+  joinLink?: string;
+  eventVisibility?: string;
   objectifs?: string[];
   intervenants?: Intervenant[];
   programme?: { time: string; title: string; description?: string }[];

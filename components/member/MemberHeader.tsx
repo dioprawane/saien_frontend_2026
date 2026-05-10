@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { ArrowRight, Bell, ChevronDown, LayoutDashboard, LogOut, Settings, Ticket, User, Users, WalletCards } from "lucide-react";
+import { ArrowRight, ChevronDown, LayoutDashboard, LogOut, Settings, Ticket, User, Users, WalletCards } from "lucide-react";
 import { useUserSession } from "@/components/auth/UserSessionContext";
 
 const PUBLIC_NAV_LINKS = [
@@ -35,8 +35,20 @@ export default function MemberHeader() {
   const activeSession = session ?? {
     fullName: "Jean Dupont",
     memberLabel: "Membre Actif",
+    memberType: "active",
     avatarUrl: "/members/avatar-1.png",
   };
+
+  const MEMBER_TYPE_DISPLAY: Record<string, string> = {
+    active: "Membre Actif",
+    adherent: "Membre Adhérent",
+    honor: "Membre d'Honneur",
+    benefactor: "Membre Bienfaiteur",
+  };
+
+  const memberTypeDisplay =
+    (activeSession.memberType && MEMBER_TYPE_DISPLAY[activeSession.memberType]) ||
+    activeSession.memberLabel;
 
   const closeDetails = (target: EventTarget | null) => {
     if (!(target instanceof HTMLElement)) return;
@@ -96,15 +108,6 @@ export default function MemberHeader() {
             </Link>
           )}
 
-          <button
-            type="button"
-            aria-label="Notifications"
-            className="relative inline-flex h-9 w-9 items-center justify-center rounded-lg border border-slate-200 text-[#0a2e4a]/70 hover:text-[#0a2e4a] hover:border-[#0a2e4a]/30 transition-colors"
-          >
-            <Bell className="h-4 w-4" aria-hidden="true" />
-            <span className="absolute right-2 top-2 h-1.5 w-1.5 rounded-full bg-[#0e6f5c]" />
-          </button>
-
           <details className="relative">
             <summary
               className="list-none inline-flex cursor-pointer items-center gap-2.5 rounded-xl border border-slate-200 px-2.5 py-1.5 hover:border-[#0a2e4a]/30 transition-colors [&::-webkit-details-marker]:hidden"
@@ -130,7 +133,7 @@ export default function MemberHeader() {
               </div>
               <div className="hidden sm:block text-left leading-tight">
                 <p className="text-xs font-semibold text-[#0a2e4a]">{activeSession.fullName}</p>
-                <p className="text-[11px] text-[#0a2e4a]/60">{activeSession.memberLabel}</p>
+                <p className="text-[11px] text-[#0a2e4a]/60">{memberTypeDisplay}</p>
               </div>
               <ChevronDown className="h-3.5 w-3.5 text-[#0a2e4a]/60" aria-hidden="true" />
             </summary>

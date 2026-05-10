@@ -16,8 +16,9 @@ import {
 } from "lucide-react";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
-import { getShowcaseEventById } from "@/lib/api/showcase";
+import { getShowcaseEventById, registerToShowcaseEvent } from "@/lib/api/showcase";
 import { EVENTS, type AgendaEvent } from "@/lib/events-data";
+import { useUserSession } from "@/components/auth/UserSessionContext";
 
 type EvenementDetailClientProps = {
   id: number;
@@ -33,9 +34,16 @@ function getFallbackEvent(id: number) {
 }
 
 export default function EvenementDetailClient({ id }: EvenementDetailClientProps) {
+  const { isAuthenticated, session } = useUserSession();
   const [event, setEvent] = useState<AgendaEvent | null>(() => getFallbackEvent(id));
   const [isLoading, setIsLoading] = useState(event === null);
   const [loadError, setLoadError] = useState<string | null>(null);
+
+  // Registration state
+  const [regEmail, setRegEmail] = useState("");
+  const [regName, setRegName] = useState("");
+  const [regStatus, setRegStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [regMessage, setRegMessage] = useState<string | null>(null);
 
   useEffect(() => {
     let isCancelled = false;
@@ -332,24 +340,76 @@ export default function EvenementDetailClient({ id }: EvenementDetailClientProps
                   ) : null}
                 </div>
 
-                <div className="pt-2 space-y-3">
-                  <button className="w-full py-3 bg-brand-green hover:bg-brand-green-hover text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm">
-                    S'inscrire maintenant
-                  </button>
-                  <button className="w-full py-3 border border-gray-200 text-slate-600 hover:bg-brand-surface font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2">
-                    <Share2 className="w-4 h-4" />
-                    Partager l'evenement
-                  </button>
-                </div>
-
-                <div className="pt-2 border-t border-gray-100 text-center">
-                  <p className="text-xs text-slate-400">
-                    Reserve aux membres SAIEN.{" "}
-                    <Link href="/rejoindre" className="text-brand-green font-semibold hover:underline">
-                      Rejoindre
+                {/* Registration panel by visibility */}
+                {event.eventVisibility === "open" ? (
+                  <RegistrationFormOpen
+                    eventId={event.id}
+                    regEmail={regEmail}
+                    setRegEmail={setRegEmail}
+                    regName={regName}
+                    setRegName={setRegName}
+                    regStatus={regStatus}
+                    regMessage={regMessage}
+                    onSubmit={async () => {
+                      if (regStatus === "loading") return;
+                      setRegStatus("loading");
+                      setRegMessage(null);
+                      try {
+                        const res = await registerToShowcaseEvent(event.id, regEmail.trim(), regName.trim() || null, null);
+                        setRegStatus("success");
+                        setRegMessage(res.message);
+                      } catch {
+                        setRegStatus("error");
+                        setRegMessage("Une erreur est survenue. Veuillez réessayer.");
+                      }
+                    }}
+                  />
+                ) : isAuthenticated && session?.email ? (
+                  <RegistrationButtonMember
+                    regStatus={regStatus}
+                    regMessage={regMessage}
+                    onRegister={async () => {
+                      if (regStatus === "loading") return;
+                      setRegStatus("loading");
+                      setRegMessage(null);
+                      try {
+                        const res = await registerToShowcaseEvent(
+                          event.id,
+                          session.email,
+                          session.fullName ?? null,
+                          session.email,
+                        );
+                        setRegStatus("success");
+                        setRegMessage(res.message);
+                      } catch {
+                        setRegStatus("error");
+                        setRegMessage("Une erreur est survenue. Veuillez réessayer.");
+                      }
+                    }}
+                  />
+                ) : (
+                  <div className="pt-2 space-y-3">
+                    <Link
+                      href={`/connexion?next=/evenements/${event.id}`}
+                      className="block w-full py-3 bg-brand-green hover:bg-brand-green-hover text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm text-center"
+                    >
+                      Se connecter pour s&apos;inscrire
                     </Link>
-                  </p>
-                </div>
+                    <div className="pt-2 border-t border-gray-100 text-center">
+                      <p className="text-xs text-slate-400">
+                        Pas encore membre ?{" "}
+                        <Link href="/rejoindre" className="text-brand-green font-semibold hover:underline">
+                          Rejoindre
+                        </Link>
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                <button className="w-full py-3 border border-gray-200 text-slate-600 hover:bg-brand-surface font-semibold text-sm rounded-xl transition-all flex items-center justify-center gap-2">
+                  <Share2 className="w-4 h-4" />
+                  Partager l&apos;evenement
+                </button>
               </div>
             </div>
           </div>
@@ -359,3 +419,107 @@ export default function EvenementDetailClient({ id }: EvenementDetailClientProps
     </>
   );
 }
+
+// ── Sub-components ─────────────────────────────────────────────────────────
+
+type RegStatus = "idle" | "loading" | "success" | "error";
+
+function RegistrationFormOpen({
+  regEmail,
+  setRegEmail,
+  regName,
+  setRegName,
+  regStatus,
+  regMessage,
+  onSubmit,
+}: {
+  eventId: number;
+  regEmail: string;
+  setRegEmail: (v: string) => void;
+  regName: string;
+  setRegName: (v: string) => void;
+  regStatus: RegStatus;
+  regMessage: string | null;
+  onSubmit: () => void;
+}) {
+  if (regStatus === "success") {
+    return (
+      <div className="rounded-xl bg-green-50 border border-green-200 px-4 py-4 text-sm text-green-700">
+        <CheckCircle2 className="mb-2 h-5 w-5 text-green-500" />
+        <p className="font-semibold">Inscription confirmée !</p>
+        {regMessage && <p className="mt-1 text-xs">{regMessage}</p>}
+        <p className="mt-1 text-xs">Un email avec le lien de connexion vous a été envoyé.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2.5 pt-1">
+      <input
+        type="text"
+        value={regName}
+        onChange={(e) => setRegName(e.target.value)}
+        placeholder="Votre nom complet"
+        className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-[#0A2540] placeholder:text-slate-400 focus:border-brand-green focus:outline-none"
+      />
+      <input
+        type="email"
+        required
+        value={regEmail}
+        onChange={(e) => setRegEmail(e.target.value)}
+        placeholder="Votre adresse email *"
+        className="w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-[#0A2540] placeholder:text-slate-400 focus:border-brand-green focus:outline-none"
+      />
+      {regMessage && regStatus === "error" && (
+        <p className="text-xs text-red-600">{regMessage}</p>
+      )}
+      <button
+        onClick={onSubmit}
+        disabled={regStatus === "loading" || !regEmail.trim()}
+        className="w-full py-3 bg-brand-green hover:bg-brand-green-hover text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm disabled:opacity-70"
+      >
+        {regStatus === "loading" ? "Envoi..." : "S\u2019inscrire — recevoir le lien"}
+      </button>
+      <p className="text-center text-xs text-slate-400">
+        Inscription ouverte. Le lien vous sera envoyé par email.
+      </p>
+    </div>
+  );
+}
+
+function RegistrationButtonMember({
+  regStatus,
+  regMessage,
+  onRegister,
+}: {
+  regStatus: RegStatus;
+  regMessage: string | null;
+  onRegister: () => void;
+}) {
+  if (regStatus === "success") {
+    return (
+      <div className="rounded-xl bg-green-50 border border-green-200 px-4 py-4 text-sm text-green-700">
+        <CheckCircle2 className="mb-2 h-5 w-5 text-green-500" />
+        <p className="font-semibold">Inscription confirmée !</p>
+        {regMessage && <p className="mt-1 text-xs">{regMessage}</p>}
+        <p className="mt-1 text-xs">L&apos;événement est visible dans votre espace membre.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-2.5 pt-1">
+      {regMessage && regStatus === "error" && (
+        <p className="mb-1 text-xs text-red-600">{regMessage}</p>
+      )}
+      <button
+        onClick={onRegister}
+        disabled={regStatus === "loading"}
+        className="w-full py-3 bg-brand-green hover:bg-brand-green-hover text-white font-bold text-sm rounded-xl transition-all active:scale-95 shadow-sm disabled:opacity-70"
+      >
+        {regStatus === "loading" ? "Envoi..." : "S\u2019inscrire maintenant"}
+      </button>
+    </div>
+  );
+}
+

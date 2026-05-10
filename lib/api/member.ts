@@ -65,3 +65,18 @@ export function uploadMemberAvatar(userEmail: string, file: File) {
     body: formData,
   }).then(normalizeMemberProfile);
 }
+
+export type MemberEventResponse = {
+  id: string;
+  title: string;
+  startsAt: string;
+  location: string;
+  status: "REGISTERED" | "INVITED" | "PAST";
+  joinLink: string | null;
+};
+
+export function getMemberEvents(userEmail: string) {
+  return apiRequest<MemberEventResponse[]>("/api/member/events", {
+    headers: withUserEmailHeader(userEmail),
+  });
+}

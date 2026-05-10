@@ -8,6 +8,7 @@ export type AuthApiSession = {
   role: "member" | "admin" | "super-admin";
   isMember: boolean;
   memberLabel: string;
+  memberType: string | null;
   avatarUrl: string;
   emailVerified: boolean;
 };
@@ -55,6 +56,7 @@ export function toUserSession(apiSession: AuthApiSession): UserSession {
     role: apiSession.role,
     isMember: apiSession.isMember,
     memberLabel: apiSession.memberLabel,
+    memberType: apiSession.memberType ?? null,
     avatarUrl: normalizeApiUrl(apiSession.avatarUrl) ?? apiSession.avatarUrl,
     emailVerified: apiSession.emailVerified,
   };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   CheckCircle2,
   ChevronLeft,
@@ -17,13 +17,20 @@ import {
 } from "lucide-react";
 import {
   type AdminRegistration,
-  type MemberType,
-  type RegistrationStatus,
-  useAdminContext,
-} from "@/components/admin/AdminContext";
+  type AdminMemberType,
+  type AdminRegistrationStatus,
+  bulkUpdateAdminRegistrationStatus,
+  deleteAdminRegistration,
+  getAdminRegistrations,
+  updateAdminRegistrationStatus,
+} from "@/lib/api/admin";
+import { getApiErrorMessage } from "@/lib/api/errors";
 
 const DEFAULT_ITEMS_PER_PAGE = 8;
 const PAGE_SIZE_OPTIONS = [8, 12, 20] as const;
+
+type RegistrationStatus = AdminRegistrationStatus;
+type MemberType = AdminMemberType;
 
 const statusLabel: Record<RegistrationStatus, string> = {
   pending: "En attente",
@@ -44,12 +51,6 @@ const typeLabel: Record<MemberType, string> = {
   benefactor: "Bienfaiteur",
 };
 
-const sourceLabel: Record<AdminRegistration["source"], string> = {
-  website: "Site web",
-  event: "Evenement",
-  referral: "Parrainage",
-};
-
 const formatDate = (isoDate: string) =>
   new Intl.DateTimeFormat("fr-FR", {
     day: "2-digit",
@@ -58,15 +59,10 @@ const formatDate = (isoDate: string) =>
   }).format(new Date(isoDate));
 
 export default function InscriptionsAdminPage() {
-  const {
-    registrations,
-    summary,
-    approveRegistration,
-    rejectRegistration,
-    setRegistrationPending,
-    bulkSetRegistrationStatus,
-    deleteRegistration,
-  } = useAdminContext();
+  const [registrations, setRegistrations] = useState<AdminRegistration[]>([]);
+  const [isLoadingRegistrations, setIsLoadingRegistrations] = useState(true);
+  const [requestError, setRequestError] = useState<string | null>(null);
+  const [isMutating, setIsMutating] = useState(false);
 
   const [searchValue, setSearchValue] = useState("");
   const [statusFilter, setStatusFilter] = useState<"all" | RegistrationStatus>("all");
@@ -74,6 +70,24 @@ export default function InscriptionsAdminPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [page, setPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(DEFAULT_ITEMS_PER_PAGE);
+
+  const loadRegistrations = useCallback(async () => {
+    setIsLoadingRegistrations(true);
+    setRequestError(null);
+
+    try {
+      const response = await getAdminRegistrations();
+      setRegistrations(response);
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible de charger les inscriptions depuis la base de données."));
+    } finally {
+      setIsLoadingRegistrations(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadRegistrations();
+  }, [loadRegistrations]);
 
   const filteredRegistrations = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
@@ -138,11 +152,84 @@ export default function InscriptionsAdminPage() {
 
   const resetSelection = () => setSelectedIds([]);
 
-  const runBulkAction = (status: RegistrationStatus) => {
-    if (selectedIds.length === 0) return;
-    bulkSetRegistrationStatus(selectedIds, status);
-    resetSelection();
+  const replaceRegistration = (updated: AdminRegistration) => {
+    setRegistrations((previous) =>
+      previous.map((registration) =>
+        registration.id === updated.id ? updated : registration,
+      ),
+    );
   };
+
+  const updateStatus = async (registrationId: string, status: RegistrationStatus, note?: string) => {
+    setIsMutating(true);
+    setRequestError(null);
+
+    try {
+      const updated = await updateAdminRegistrationStatus(registrationId, {
+        status,
+        reviewer: "Admin",
+        note,
+      });
+      replaceRegistration(updated);
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible de mettre à jour le statut de l'inscription."));
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const removeRegistration = async (registrationId: string) => {
+    setIsMutating(true);
+    setRequestError(null);
+
+    try {
+      await deleteAdminRegistration(registrationId);
+      setRegistrations((previous) => previous.filter((registration) => registration.id !== registrationId));
+      setSelectedIds((previous) => previous.filter((id) => id !== registrationId));
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible de supprimer l'inscription."));
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const runBulkAction = async (status: RegistrationStatus) => {
+    if (selectedIds.length === 0) return;
+
+    setIsMutating(true);
+    setRequestError(null);
+
+    try {
+      const updated = await bulkUpdateAdminRegistrationStatus({
+        registrationIds: selectedIds,
+        status,
+        reviewer: "Admin",
+        note: status === "rejected" ? "Refus administratif" : undefined,
+      });
+
+      const byId = new Map(updated.map((registration) => [registration.id, registration]));
+      setRegistrations((previous) =>
+        previous.map((registration) => byId.get(registration.id) ?? registration),
+      );
+      resetSelection();
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible d'appliquer l'action en masse."));
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const summary = useMemo(() => {
+    const pendingRegistrations = registrations.filter((item) => item.status === "pending").length;
+    const approvedRegistrations = registrations.filter((item) => item.status === "approved").length;
+    const rejectedRegistrations = registrations.filter((item) => item.status === "rejected").length;
+
+    return {
+      pendingRegistrations,
+      approvedRegistrations,
+      rejectedRegistrations,
+    };
+  }, [registrations]);
 
   const stats = [
     {
@@ -250,8 +337,10 @@ export default function InscriptionsAdminPage() {
           <div className="flex flex-col items-stretch gap-2 sm:flex-row sm:flex-wrap sm:items-center">
             <button
               type="button"
-              onClick={() => runBulkAction("approved")}
-              disabled={selectedIds.length === 0}
+              onClick={() => {
+                void runBulkAction("approved");
+              }}
+              disabled={selectedIds.length === 0 || isMutating}
               className="inline-flex items-center gap-1 rounded-lg bg-green-600 px-3 py-2 text-xs font-semibold text-white hover:bg-green-700 disabled:opacity-50"
             >
               <CheckCircle2 size={14} />
@@ -259,8 +348,10 @@ export default function InscriptionsAdminPage() {
             </button>
             <button
               type="button"
-              onClick={() => runBulkAction("rejected")}
-              disabled={selectedIds.length === 0}
+              onClick={() => {
+                void runBulkAction("rejected");
+              }}
+              disabled={selectedIds.length === 0 || isMutating}
               className="inline-flex items-center gap-1 rounded-lg bg-red-50 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-100 disabled:opacity-50"
             >
               <ShieldX size={14} />
@@ -268,8 +359,10 @@ export default function InscriptionsAdminPage() {
             </button>
             <button
               type="button"
-              onClick={() => runBulkAction("pending")}
-              disabled={selectedIds.length === 0}
+              onClick={() => {
+                void runBulkAction("pending");
+              }}
+              disabled={selectedIds.length === 0 || isMutating}
               className="inline-flex items-center gap-1 rounded-lg bg-gray-100 px-3 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-200 disabled:opacity-50"
             >
               <Undo2 size={14} />
@@ -301,23 +394,43 @@ export default function InscriptionsAdminPage() {
               </select>
             </div>
           </div>
+
+          {requestError && (
+            <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+              {requestError}
+            </p>
+          )}
         </div>
 
         <div className="space-y-3 p-4 md:hidden">
+          {isLoadingRegistrations && (
+            <p className="rounded-lg border border-slate-200 px-4 py-8 text-center text-sm text-slate-500">
+              Chargement des inscriptions depuis la base de données...
+            </p>
+          )}
+
           {pageRows.map((registration) => (
             <MobileRegistrationCard
               key={registration.id}
               registration={registration}
               isSelected={selectedIds.includes(registration.id)}
               onToggleSelect={() => toggleRow(registration.id)}
-              onApprove={() => approveRegistration(registration.id, "Jean Dupont")}
-              onReject={() => rejectRegistration(registration.id, "Jean Dupont", "Refus administratif")}
-              onSetPending={() => setRegistrationPending(registration.id)}
-              onDelete={() => deleteRegistration(registration.id)}
+              onApprove={() => {
+                void updateStatus(registration.id, "approved");
+              }}
+              onReject={() => {
+                void updateStatus(registration.id, "rejected", "Refus administratif");
+              }}
+              onSetPending={() => {
+                void updateStatus(registration.id, "pending");
+              }}
+              onDelete={() => {
+                void removeRegistration(registration.id);
+              }}
             />
           ))}
 
-          {pageRows.length === 0 && (
+          {!isLoadingRegistrations && pageRows.length === 0 && (
             <p className="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
               Aucune inscription ne correspond aux filtres.
             </p>
@@ -339,13 +452,22 @@ export default function InscriptionsAdminPage() {
                 <th className="px-4 py-3 border-b border-gray-100">Nom</th>
                 <th className="px-4 py-3 border-b border-gray-100">Email</th>
                 <th className="px-4 py-3 border-b border-gray-100">Type</th>
-                <th className="px-4 py-3 border-b border-gray-100">Source</th>
+                <th className="px-4 py-3 border-b border-gray-100">Fonction</th>
+                <th className="px-4 py-3 border-b border-gray-100">RGPD image</th>
                 <th className="px-4 py-3 border-b border-gray-100">Date</th>
                 <th className="px-4 py-3 border-b border-gray-100">Statut</th>
                 <th className="px-4 py-3 border-b border-gray-100 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
+              {isLoadingRegistrations && (
+                <tr>
+                  <td colSpan={9} className="px-4 py-10 text-center text-sm text-gray-500">
+                    Chargement des inscriptions depuis la base de données...
+                  </td>
+                </tr>
+              )}
+
               {pageRows.map((registration) => (
                 <tr key={registration.id} className="hover:bg-gray-50 transition-colors">
                   <td className="px-4 py-4">
@@ -359,10 +481,18 @@ export default function InscriptionsAdminPage() {
                   <td className="px-4 py-4">
                     <p className="font-semibold text-gray-900">{registration.fullName}</p>
                     <p className="text-xs text-gray-400">{registration.id}</p>
+                    <p className="text-xs text-gray-400 mt-1">
+                      {registration.phone || "Téléphone non renseigné"} · {registration.city || "Ville non renseignée"}
+                    </p>
                   </td>
                   <td className="px-4 py-4 text-sm text-gray-600">{registration.email}</td>
-                  <td className="px-4 py-4 text-sm text-gray-600">{typeLabel[registration.type]}</td>
-                  <td className="px-4 py-4 text-sm text-gray-500">{sourceLabel[registration.source]}</td>
+                  <td className="px-4 py-4">
+                    <span className="inline-flex rounded-full bg-sky-100 px-2.5 py-1 text-xs font-semibold text-sky-700">
+                      {typeLabel[registration.type]}
+                    </span>
+                  </td>
+                  <td className="px-4 py-4 text-sm text-gray-600">{registration.title || "\u2014"}</td>
+                  <td className="px-4 py-4 text-sm text-gray-600">{registration.imageConsent ? "Oui" : "Non"}</td>
                   <td className="px-4 py-4 text-sm text-gray-500">{formatDate(registration.submittedAt)}</td>
                   <td className="px-4 py-4">
                     <span
@@ -374,20 +504,26 @@ export default function InscriptionsAdminPage() {
                   <td className="px-4 py-4 text-right">
                     <RegistrationRowActions
                       registration={registration}
-                      onApprove={() => approveRegistration(registration.id, "Jean Dupont")}
-                      onReject={() =>
-                        rejectRegistration(registration.id, "Jean Dupont", "Refus administratif")
-                      }
-                      onSetPending={() => setRegistrationPending(registration.id)}
-                      onDelete={() => deleteRegistration(registration.id)}
+                      onApprove={() => {
+                        void updateStatus(registration.id, "approved");
+                      }}
+                      onReject={() => {
+                        void updateStatus(registration.id, "rejected", "Refus administratif");
+                      }}
+                      onSetPending={() => {
+                        void updateStatus(registration.id, "pending");
+                      }}
+                      onDelete={() => {
+                        void removeRegistration(registration.id);
+                      }}
                     />
                   </td>
                 </tr>
               ))}
 
-              {pageRows.length === 0 && (
+              {!isLoadingRegistrations && pageRows.length === 0 && (
                 <tr>
-                  <td colSpan={8} className="px-4 py-10 text-center text-sm text-gray-500">
+                  <td colSpan={9} className="px-4 py-10 text-center text-sm text-gray-500">
                     Aucune inscription ne correspond aux filtres.
                   </td>
                 </tr>
@@ -494,8 +630,13 @@ function MobileRegistrationCard({
         </div>
 
         <div className="rounded-lg bg-gray-50 p-2">
-          <p className="text-[11px] uppercase tracking-wide text-gray-400">Source</p>
-          <p className="mt-1 font-medium text-gray-700">{sourceLabel[registration.source]}</p>
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">Fonction</p>
+          <p className="mt-1 font-medium text-gray-700">{registration.title || "—"}</p>
+        </div>
+
+        <div className="rounded-lg bg-gray-50 p-2">
+          <p className="text-[11px] uppercase tracking-wide text-gray-400">RGPD image</p>
+          <p className="mt-1 font-medium text-gray-700">{registration.imageConsent ? "Oui" : "Non"}</p>
         </div>
 
         <div className="rounded-lg bg-gray-50 p-2">

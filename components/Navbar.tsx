@@ -11,7 +11,7 @@ const NAV_LINKS = [
   { label: "Accueil", href: "/" },
   { label: "A propos", href: "/a-propos" },
   { label: "Vision & Missions", href: "/vision" },
-  { label: "Réseau & Bureau", href: "/reseau" },
+  { label: "Réseau", href: "/reseau" },
   { label: "Actualités", href: "/actualites" },
   { label: "Événements", href: "/evenements" },
 ];
@@ -25,7 +25,8 @@ export default function Navbar() {
       ? "/admin"
       : "/espace-membre";
 
-  const shouldShowJoin = !isAuthenticated || !session?.isMember;
+  const shouldShowJoin =
+    !isAuthenticated || (session?.role === "member" && !session?.memberType);
 
   const isActive = (href: string) =>
     href === "/" ? pathname === "/" : pathname.startsWith(href);
@@ -71,12 +72,20 @@ export default function Navbar() {
           {/* Desktop CTAs */}
           <div className="hidden md:flex items-center gap-3">
             {!isAuthenticated && (
-              <Link
-                href="/connexion"
-                className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
-              >
-                Connexion
-              </Link>
+              <>
+                <Link
+                  href="/connexion"
+                  className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+                >
+                  Connexion
+                </Link>
+                <Link
+                  href="/inscription"
+                  className="text-sm font-medium text-[#0a2e4a]/75 hover:text-[#0a2e4a] transition-colors"
+                >
+                  Inscription
+                </Link>
+              </>
             )}
 
             {isAuthenticated && (
@@ -143,13 +152,22 @@ export default function Navbar() {
           ))}
 
           {!isAuthenticated && (
-            <Link
-              href="/connexion"
-              className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
-              onClick={() => setOpen(false)}
-            >
-              Connexion
-            </Link>
+            <>
+              <Link
+                href="/connexion"
+                className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Connexion
+              </Link>
+              <Link
+                href="/inscription"
+                className="text-sm font-medium text-[#0a2e4a]/80 hover:text-[#0a2e4a] transition-colors"
+                onClick={() => setOpen(false)}
+              >
+                Inscription
+              </Link>
+            </>
           )}
 
           {isAuthenticated && (

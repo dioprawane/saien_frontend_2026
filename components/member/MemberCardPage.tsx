@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { type ChangeEvent, useEffect, useMemo, useRef, useState } from "react";
-import { toPng } from "html-to-image";
+import { toJpeg, toPng } from "html-to-image";
 import { jsPDF } from "jspdf";
 import {
   BadgeCheck,
@@ -12,7 +12,6 @@ import {
   Loader2,
   PencilLine,
   Plus,
-  Printer,
   RotateCw,
   Upload,
   Users,
@@ -38,6 +37,8 @@ const MEMBER_TYPE_LABELS: Record<string, string> = {
 
 const MEMBER_STATUS_LABELS: Record<string, string> = {
   ACTIVE: "Actif",
+  PENDING: "En cours",
+  EXPIRED: "Expire",
   SUSPENDED: "Suspendu",
 };
 
@@ -119,7 +120,7 @@ function buildMemberId(
   country: string | null | undefined,
   fullName: string | null | undefined,
 ) {
-  const fallback = `SAIEN-000000-XX-000000-${getInitials(fullName)}`;
+  const fallback = `SAIEN-XX-${getInitials(fullName)}-000000000000`;
   if (!joinedAtIso) return fallback;
 
   const date = new Date(joinedAtIso);
@@ -129,7 +130,30 @@ function buildMemberId(
   const datePart = `${yy}${pad2(date.getMonth() + 1)}${pad2(date.getDate())}`;
   const timePart = `${pad2(date.getHours())}${pad2(date.getMinutes())}${pad2(date.getSeconds())}`;
 
-  return `SAIEN-${datePart}-${resolveCountryCode(country)}-${timePart}-${getInitials(fullName)}`;
+  return `SAIEN-${resolveCountryCode(country)}-${getInitials(fullName)}-${datePart}${timePart}`;
+}
+
+function getOffsetWithinAncestor(node: HTMLElement, ancestor: HTMLElement) {
+  let current: HTMLElement | null = node;
+  let x = 0;
+  let y = 0;
+
+  while (current && current !== ancestor) {
+    x += current.offsetLeft - current.scrollLeft;
+    y += current.offsetTop - current.scrollTop;
+    current = current.offsetParent as HTMLElement | null;
+  }
+
+  return { x, y };
+}
+
+function downloadDataUrl(dataUrl: string, fileName: string) {
+  const link = document.createElement("a");
+  link.href = dataUrl;
+  link.download = fileName;
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
 }
 
 function proxiedAvatarUrl(url: string | null | undefined): string | null {
@@ -258,6 +282,11 @@ export default function MemberCardPage() {
     return MEMBER_STATUS_LABELS[upper] ?? profile.memberStatus;
   }, [profile?.memberStatus]);
 
+  const isCardAvailable = useMemo(
+    () => profile?.memberStatus?.toUpperCase() === "ACTIVE",
+    [profile?.memberStatus],
+  );
+
   const memberTypeBadgeLabel = memberTypeLabel.replace(/^membre\s+/i, "").trim() || memberTypeLabel;
 
   const expiry = useMemo(
@@ -311,12 +340,13 @@ export default function MemberCardPage() {
     }
   };
 
-  const captureCardPng = async () => {
+  const getCaptureContext = async () => {
     if (!cardRef.current) {
       throw new Error("Carte non disponible pour l'export.");
     }
 
-    const cardImages = Array.from(cardRef.current.querySelectorAll("img"));
+    const cardElement = cardRef.current;
+    const cardImages = Array.from(cardElement.querySelectorAll("img"));
     await Promise.all(cardImages.map((image) => waitForImageReady(image)));
 
     if (typeof document !== "undefined" && "fonts" in document) {
@@ -326,7 +356,13 @@ export default function MemberCardPage() {
     const mobileLikeDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     const exportPixelRatio = mobileLikeDevice ? 2 : 4;
 
-    return toPng(cardRef.current, {
+    return { cardElement, exportPixelRatio };
+  };
+
+  const captureCardPng = async () => {
+    const { cardElement, exportPixelRatio } = await getCaptureContext();
+
+    return toPng(cardElement, {
       cacheBust: true,
       pixelRatio: exportPixelRatio,
       fetchRequestInit: {
@@ -335,17 +371,62 @@ export default function MemberCardPage() {
     });
   };
 
+  const captureCardJpeg = async () => {
+    const { cardElement, exportPixelRatio } = await getCaptureContext();
+
+    return toJpeg(cardElement, {
+      cacheBust: true,
+      pixelRatio: exportPixelRatio,
+      quality: 0.95,
+      fetchRequestInit: {
+        mode: "cors",
+      },
+    });
+  };
+
+  const captureCardWebp = async () => {
+    const pngData = await captureCardPng();
+
+    return new Promise<string>((resolve, reject) => {
+      const image = new Image();
+      image.onload = () => {
+        const canvas = document.createElement("canvas");
+        canvas.width = image.naturalWidth;
+        canvas.height = image.naturalHeight;
+
+        const ctx = canvas.getContext("2d");
+        if (!ctx) {
+          reject(new Error("Impossible de convertir l'image au format WebP."));
+          return;
+        }
+
+        ctx.drawImage(image, 0, 0);
+        resolve(canvas.toDataURL("image/webp", 0.95));
+      };
+      image.onerror = () => reject(new Error("Impossible de préparer l'image WebP."));
+      image.src = pngData;
+    });
+  };
+
   const handleDownloadPdf = async () => {
+    if (!isCardAvailable) {
+      setExportError("La carte membre est disponible uniquement pour les membres au statut actif.");
+      return;
+    }
+
     try {
       setIsExporting(true);
       setExportError(null);
 
       const imageData = await captureCardPng();
-      const cardElement = cardRef.current;
-      if (!cardElement) throw new Error("Carte introuvable.");
+      const { cardElement } = await getCaptureContext();
 
       const cardWidth = cardElement.offsetWidth;
       const cardHeight = cardElement.offsetHeight;
+      const sourceWidth = cardElement.clientWidth || cardWidth;
+      const sourceHeight = cardElement.clientHeight || cardHeight;
+      const scaleX = cardWidth / sourceWidth;
+      const scaleY = cardHeight / sourceHeight;
 
       const pdf = new jsPDF({
         orientation: cardWidth > cardHeight ? "landscape" : "portrait",
@@ -362,16 +443,17 @@ export default function MemberCardPage() {
       pdf.addImage(imageData, "PNG", 0, 0, cardWidth, cardHeight, undefined, "SLOW");
 
       // Re-injecte des annotations de liens cliquables sur le PDF (le PNG aplati les a perdus).
-      const cardRect = cardElement.getBoundingClientRect();
       const linkNodes = cardElement.querySelectorAll<HTMLAnchorElement>("a[href]");
       linkNodes.forEach((node) => {
         const href = node.getAttribute("href");
         if (!href) return;
-        const rect = node.getBoundingClientRect();
-        const x = rect.left - cardRect.left;
-        const y = rect.top - cardRect.top;
-        const w = rect.width;
-        const h = rect.height;
+
+        const position = getOffsetWithinAncestor(node, cardElement);
+        const x = position.x * scaleX;
+        const y = position.y * scaleY;
+        const w = node.offsetWidth * scaleX;
+        const h = node.offsetHeight * scaleY;
+
         if (w <= 0 || h <= 0) return;
         pdf.link(x, y, w, h, { url: href });
       });
@@ -388,65 +470,31 @@ export default function MemberCardPage() {
     }
   };
 
-  const handlePrintCard = async () => {
+  const handleDownloadImage = async (format: "png" | "jpg" | "webp") => {
+    if (!isCardAvailable) {
+      setExportError("La carte membre est disponible uniquement pour les membres au statut actif.");
+      return;
+    }
+
     try {
       setIsExporting(true);
       setExportError(null);
 
-      const imageData = await captureCardPng();
-      const printWindow = window.open("", "_blank", "noopener,noreferrer,width=900,height=700");
-
-      if (!printWindow) {
-        throw new Error("Impossible d'ouvrir la fenêtre d'impression.");
+      let imageData = "";
+      if (format === "png") {
+        imageData = await captureCardPng();
+      } else if (format === "jpg") {
+        imageData = await captureCardJpeg();
+      } else {
+        imageData = await captureCardWebp();
       }
 
-      printWindow.document.write(`
-        <!doctype html>
-        <html lang="fr">
-          <head>
-            <meta charset="UTF-8" />
-            <title>Impression carte membre</title>
-            <style>
-              body {
-                margin: 0;
-                min-height: 100vh;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                background: #f1f3f5;
-              }
-              img {
-                width: min(92vw, 460px);
-                height: auto;
-                display: block;
-                box-shadow: 0 18px 40px rgba(15, 23, 42, 0.2);
-                border-radius: 18px;
-              }
-              @media print {
-                body {
-                  background: white;
-                }
-                img {
-                  width: 86mm;
-                  box-shadow: none;
-                }
-              }
-            </style>
-          </head>
-          <body>
-            <img src="${imageData}" alt="Carte membre ${profile?.fullName ?? "SAIEN"}" />
-          </body>
-        </html>
-      `);
-
-      printWindow.document.close();
-      printWindow.focus();
-      printWindow.print();
+      downloadDataUrl(imageData, `carte-membre-${computedMemberId}.${format}`);
     } catch (error) {
       setExportError(
         error instanceof Error
           ? error.message
-          : "Une erreur est survenue pendant l'impression.",
+          : "Une erreur est survenue pendant l'export de l'image.",
       );
     } finally {
       setIsExporting(false);
@@ -463,14 +511,22 @@ export default function MemberCardPage() {
   return (
     <section className="py-7 lg:py-9">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-6">
-        <div className="rounded-xl border border-[#0e6f5c]/25 bg-[#0e6f5c]/10 px-4 py-3 text-[#0e6f5c] text-sm flex items-center justify-between">
+        <div
+          className={`rounded-xl px-4 py-3 text-sm flex items-center justify-between ${
+            isCardAvailable
+              ? "border border-[#0e6f5c]/25 bg-[#0e6f5c]/10 text-[#0e6f5c]"
+              : "border border-amber-200 bg-amber-50 text-amber-800"
+          }`}
+        >
           <p className="flex items-center gap-2">
             <BadgeCheck className="h-4 w-4" aria-hidden="true" />
-            Votre carte est active.
+            {isCardAvailable
+              ? "Votre carte est active."
+              : `Carte indisponible (statut: ${memberStatusLabel}).`}
           </p>
           <button
             type="button"
-            className="text-[#0e6f5c]/70 hover:text-[#0e6f5c]"
+            className={isCardAvailable ? "text-[#0e6f5c]/70 hover:text-[#0e6f5c]" : "text-amber-700/70 hover:text-amber-700"}
             aria-label="Fermer l'alerte"
           >
             ×
@@ -494,7 +550,7 @@ export default function MemberCardPage() {
 
         <div className="grid grid-cols-1 lg:grid-cols-[340px_minmax(0,1fr)] gap-6 items-start">
           <aside className="space-y-4">
-            <div className="rounded-2xl border border-slate-200 bg-white p-3">
+            <div className="relative rounded-2xl border border-slate-200 bg-white p-3">
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-3">
                 <div className="flex items-center justify-between gap-3">
                   <p className="text-xs font-semibold text-[#0a2e4a]">
@@ -519,13 +575,14 @@ export default function MemberCardPage() {
                       accept="image/*"
                       onChange={handlePhotoUpload}
                       className="sr-only"
-                      disabled={isUploadingPhoto || !session?.email}
+                      disabled={isUploadingPhoto || !session?.email || !isCardAvailable}
                     />
                   </label>
                   {photoUrl && (
                     <button
                       type="button"
                       onClick={handleRemovePhoto}
+                      disabled={!isCardAvailable}
                       className="inline-flex items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:border-rose-300 hover:text-rose-600"
                     >
                       <ImageOff className="h-3.5 w-3.5" aria-hidden="true" />
@@ -547,10 +604,10 @@ export default function MemberCardPage() {
                 )}
               </div>
 
-              <div
-                ref={cardRef}
-                className="mt-3 rounded-2xl bg-gradient-to-br from-[#0a2e4a] to-[#0e6f5c] p-4 text-white shadow-[0_26px_50px_-35px_rgba(10,37,64,0.9)]"
-              >
+                <div
+                  ref={cardRef}
+                  className="relative mt-3 rounded-2xl border border-white/20 bg-gradient-to-br from-[#0a2e4a] to-[#0e6f5c] p-4 text-white shadow-[0_26px_50px_-35px_rgba(10,37,64,0.9)]"
+                >
                 <div className="flex items-start justify-between gap-3">
                   <div className="relative h-12 w-[104px] shrink-0 overflow-hidden rounded-md border border-white/35 bg-white shadow-sm">
                     <img
@@ -574,7 +631,7 @@ export default function MemberCardPage() {
                   </div>
                 </div>
 
-                <div className="mt-3 rounded-xl border border-white/20 bg-white/10 p-3">
+                  <div className="mt-3 rounded-xl border border-white/20 bg-white/10 p-3">
                   <div className="flex items-start justify-between gap-3">
                     <div>
                       <div className="flex items-center gap-2">
@@ -614,7 +671,7 @@ export default function MemberCardPage() {
                   </div>
                 </div>
 
-                <div className="mt-4 border-t border-white/20 pt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[10px] text-cyan-50 leading-none">
+                  <div className="mt-4 border-t border-white/20 pt-2 flex flex-wrap items-center justify-between gap-x-3 gap-y-1 text-[10px] text-cyan-50 leading-none">
                   <a
                     href="mailto:bureau@saien.org"
                     className="inline-block py-1 font-semibold hover:text-white hover:underline"
@@ -630,11 +687,33 @@ export default function MemberCardPage() {
                     saien.org
                   </a>
                 </div>
+
+                {!isCardAvailable && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center rounded-2xl bg-slate-950 p-4 text-center">
+                    <div>
+                      <p className="text-sm font-bold uppercase tracking-[0.1em] text-white">Carte inactive</p>
+                      <p className="mt-1 text-xs font-medium text-slate-300">
+                        Statut {memberStatusLabel}. L&apos;aperçu est masque tant que le compte n&apos;est pas actif.
+                      </p>
+                    </div>
+                  </div>
+                )}
               </div>
+
+              {!isCardAvailable && (
+                <div className="absolute inset-0 z-20 rounded-2xl" aria-hidden="true" />
+              )}
             </div>
           </aside>
 
           <div className="space-y-4">
+            {!isCardAvailable && (
+              <div className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs font-medium text-amber-800">
+                Les actions de cette page sont desactivees tant que le statut membre n&apos;est pas Actif.
+              </div>
+            )}
+
+            <div className={`${!isCardAvailable ? "pointer-events-none opacity-60 select-none" : ""} space-y-4`}>
             <section className="rounded-2xl border border-slate-200 bg-white overflow-hidden">
               <div className="flex items-center justify-between border-b border-slate-100 px-4 py-3">
                 <h2 className="text-sm font-bold text-[#0A3458] flex items-center gap-2">
@@ -703,7 +782,7 @@ export default function MemberCardPage() {
                 <button
                   type="button"
                   onClick={handleDownloadPdf}
-                  disabled={isExporting}
+                  disabled={isExporting || !isCardAvailable}
                   className="inline-flex items-center justify-center gap-2 rounded-xl bg-[#0e6f5c] px-4 py-3 text-sm font-semibold text-white hover:bg-[#0c5f50] disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                 >
                   <Download className="h-4 w-4" aria-hidden="true" />
@@ -711,12 +790,30 @@ export default function MemberCardPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={handlePrintCard}
-                  disabled={isExporting}
+                  onClick={() => handleDownloadImage("png")}
+                  disabled={isExporting || !isCardAvailable}
                   className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#0a2e4a] px-4 py-3 text-sm font-semibold text-[#0a2e4a] hover:bg-[#0a2e4a] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
                 >
-                  <Printer className="h-4 w-4" aria-hidden="true" />
-                  Imprimer la carte
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  Télécharger PNG
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDownloadImage("jpg")}
+                  disabled={isExporting || !isCardAvailable}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#0a2e4a] px-4 py-3 text-sm font-semibold text-[#0a2e4a] hover:bg-[#0a2e4a] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  Télécharger JPG
+                </button>
+                <button
+                  type="button"
+                  onClick={() => handleDownloadImage("webp")}
+                  disabled={isExporting || !isCardAvailable}
+                  className="inline-flex items-center justify-center gap-2 rounded-xl border border-[#0a2e4a] px-4 py-3 text-sm font-semibold text-[#0a2e4a] hover:bg-[#0a2e4a] hover:text-white disabled:opacity-60 disabled:cursor-not-allowed transition-colors"
+                >
+                  <Download className="h-4 w-4" aria-hidden="true" />
+                  Télécharger WEBP
                 </button>
               </div>
 
@@ -790,6 +887,7 @@ export default function MemberCardPage() {
                 </article>
               </div>
             </section>
+            </div>
           </div>
         </div>
       </div>

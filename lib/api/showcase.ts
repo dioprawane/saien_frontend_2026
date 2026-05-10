@@ -48,6 +48,8 @@ type ApiShowcaseEvent = {
   seats: string | null;
   status: "draft" | "published" | "completed" | "cancelled" | null;
   imageUrl: string | null;
+  joinLink: string | null;
+  eventVisibility: string | null;
   objectifs: string[] | null;
   tags: ApiEventTag[] | null;
   intervenants: ApiEventSpeaker[] | null;
@@ -203,6 +205,8 @@ export type UpsertShowcaseEventInput = {
   seats?: string;
   status?: "draft" | "published" | "completed" | "cancelled";
   imageUrl?: string;
+  joinLink?: string;
+  eventVisibility?: string;
   objectifs?: string[];
   tags?: EventTag[];
   intervenants?: Intervenant[];
@@ -413,6 +417,8 @@ function normalizeShowcaseEvent(event: ApiShowcaseEvent): AgendaEvent {
     location: event.location,
     seats: event.seats ?? undefined,
     imageUrl: absolutizeApiUrl(event.imageUrl) ?? undefined,
+    joinLink: event.joinLink ?? undefined,
+    eventVisibility: event.eventVisibility ?? undefined,
     objectifs: event.objectifs ?? undefined,
     intervenants: (event.intervenants ?? []).map(normalizeIntervenant),
     programme: (event.programme ?? []).map((item) => ({
@@ -644,6 +650,8 @@ export async function upsertShowcaseEvent(input: UpsertShowcaseEventInput) {
     seats: input.seats ?? null,
     status: input.status ?? "draft",
     imageUrl: input.imageUrl ?? null,
+    joinLink: input.joinLink ?? null,
+    eventVisibility: input.eventVisibility ?? null,
     objectifs: input.objectifs ?? [],
     tags: (input.tags ?? []).map(toApiTagRequest),
     intervenants: (input.intervenants ?? []).map(toApiSpeakerRequest),
@@ -809,3 +817,36 @@ export function deleteShowcaseArticle(slug: string) {
     method: "DELETE",
   });
 }
+
+// ── Event registration ─────────────────────────────────────────────────────
+
+export type ShowcaseEventRegistrant = {
+  id: string;
+  email: string;
+  fullName: string | null;
+  hasMemberAccount: boolean;
+  registeredAt: string;
+};
+
+export function registerToShowcaseEvent(
+  eventId: number,
+  email: string,
+  fullName: string | null,
+  userEmail?: string | null,
+) {
+  return apiRequest<ApiMessage>(`/api/showcase/events/${eventId}/register`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(userEmail ? { "X-User-Email": userEmail } : {}),
+    },
+    body: JSON.stringify({ email, fullName: fullName ?? null }),
+  });
+}
+
+export async function getAdminShowcaseEventRegistrants(eventId: number) {
+  return apiRequest<ShowcaseEventRegistrant[]>(
+    `/api/admin/showcase/events/${eventId}/registrants`,
+  );
+}
+

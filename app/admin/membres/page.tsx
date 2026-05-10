@@ -1,25 +1,29 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  Check,
   ChevronLeft,
   ChevronRight,
   MoreHorizontal,
   Plus,
   Search,
-  Shield,
-  ShieldAlert,
   Trash2,
-  UserCog,
   Users,
 } from "lucide-react";
 import {
   type AdminMember,
   type AdminRole,
-  type MemberStatus,
-  type MemberType,
-  useAdminContext,
-} from "@/components/admin/AdminContext";
+  type AdminMemberStatus as MemberStatus,
+  type AdminMemberType as MemberType,
+  createAdminMember,
+  deleteAdminMember,
+  getAdminMembers,
+  updateAdminMemberRole,
+  updateAdminMemberStatus,
+  updateAdminMemberType,
+} from "@/lib/api/admin";
+import { getApiErrorMessage } from "@/lib/api/errors";
 
 const typeLabel: Record<MemberType, string> = {
   active: "Actif",
@@ -36,7 +40,23 @@ const roleLabel: Record<AdminRole, string> = {
 
 const statusLabel: Record<MemberStatus, string> = {
   active: "Actif",
+  pending: "En cours",
+  expired: "Expire",
   suspended: "Suspendu",
+};
+
+const STATUS_ACTIONS: Array<{ value: MemberStatus; label: string }> = [
+  { value: "active", label: "Activer" },
+  { value: "pending", label: "En cours" },
+  { value: "expired", label: "Expire" },
+  { value: "suspended", label: "Suspendre" },
+];
+
+const getStatusBadgeClass = (status: MemberStatus) => {
+  if (status === "active") return "bg-emerald-100 text-emerald-700";
+  if (status === "pending") return "bg-amber-100 text-amber-700";
+  if (status === "expired") return "bg-slate-100 text-slate-700";
+  return "bg-rose-100 text-rose-700";
 };
 
 const formatDate = (isoDate: string) =>
@@ -50,14 +70,12 @@ const DEFAULT_ITEMS_PER_PAGE = 8;
 const PAGE_SIZE_OPTIONS = [8, 12, 20] as const;
 
 export default function MembresAdminPage() {
-  const {
-    members,
-    createMember,
-    updateMemberStatus,
-    updateMemberType,
-    updateMemberRole,
-    removeMember,
-  } = useAdminContext();
+  const supportsExtendedStatuses = true;
+
+  const [members, setMembers] = useState<AdminMember[]>([]);
+  const [isLoadingMembers, setIsLoadingMembers] = useState(true);
+  const [isMutating, setIsMutating] = useState(false);
+  const [requestError, setRequestError] = useState<string | null>(null);
 
   const [searchValue, setSearchValue] = useState("");
   const [typeFilter, setTypeFilter] = useState<"all" | MemberType>("all");
@@ -72,6 +90,24 @@ export default function MembresAdminPage() {
     city: "",
     role: "member" as AdminRole,
   });
+
+  const loadMembers = useCallback(async () => {
+    setIsLoadingMembers(true);
+    setRequestError(null);
+
+    try {
+      const response = await getAdminMembers();
+      setMembers(response);
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible de charger les membres depuis la base de données."));
+    } finally {
+      setIsLoadingMembers(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    void loadMembers();
+  }, [loadMembers]);
 
   const filteredMembers = useMemo(() => {
     const normalizedSearch = searchValue.trim().toLowerCase();
@@ -110,24 +146,110 @@ export default function MembresAdminPage() {
     admins: members.filter((member) => member.role !== "member").length,
   };
 
-  const handleCreateMember = () => {
+  const replaceMember = (updated: AdminMember) => {
+    setMembers((previous) =>
+      previous.map((member) =>
+        member.id === updated.id ? updated : member,
+      ),
+    );
+  };
+
+  const handleCreateMember = async () => {
     if (!newMember.fullName.trim() || !newMember.email.trim()) return;
 
-    createMember({
-      fullName: newMember.fullName,
-      email: newMember.email,
-      type: newMember.type,
-      city: newMember.city,
-      role: newMember.role,
-    });
+    setIsMutating(true);
+    setRequestError(null);
 
-    setNewMember({
-      fullName: "",
-      email: "",
-      type: "active",
-      city: "",
-      role: "member",
-    });
+    try {
+      const created = await createAdminMember({
+        fullName: newMember.fullName.trim(),
+        email: newMember.email.trim(),
+        type: newMember.type,
+        city: newMember.city.trim(),
+        role: newMember.role,
+        title: "",
+        phone: "",
+        country: "",
+        expertise: "",
+      });
+
+      setMembers((previous) => [created, ...previous]);
+
+      setNewMember({
+        fullName: "",
+        email: "",
+        type: "active",
+        city: "",
+        role: "member",
+      });
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible d'ajouter le membre."));
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleSetMemberStatus = async (memberId: string, status: MemberStatus) => {
+    if (!supportsExtendedStatuses && (status === "pending" || status === "expired")) {
+      setRequestError(
+        "Les statuts En cours et Expire ne sont pas encore actives. Activez NEXT_PUBLIC_MEMBER_STATUS_EXTENDED=true apres la mise a jour backend + BDD.",
+      );
+      return;
+    }
+
+    setIsMutating(true);
+    setRequestError(null);
+
+    try {
+      const updated = await updateAdminMemberStatus(memberId, status);
+      replaceMember(updated);
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible de mettre à jour le statut du membre."));
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleChangeMemberType = async (memberId: string, type: MemberType) => {
+    setIsMutating(true);
+    setRequestError(null);
+
+    try {
+      const updated = await updateAdminMemberType(memberId, type);
+      replaceMember(updated);
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible de mettre à jour le type du membre."));
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleChangeMemberRole = async (memberId: string, role: AdminRole) => {
+    setIsMutating(true);
+    setRequestError(null);
+
+    try {
+      const updated = await updateAdminMemberRole(memberId, role);
+      replaceMember(updated);
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible de mettre à jour le rôle du membre."));
+    } finally {
+      setIsMutating(false);
+    }
+  };
+
+  const handleDeleteMember = async (memberId: string) => {
+    setIsMutating(true);
+    setRequestError(null);
+
+    try {
+      await deleteAdminMember(memberId);
+      setMembers((previous) => previous.filter((member) => member.id !== memberId));
+    } catch (error) {
+      setRequestError(getApiErrorMessage(error, "Impossible de supprimer ce membre."));
+    } finally {
+      setIsMutating(false);
+    }
   };
 
   return (
@@ -156,27 +278,27 @@ export default function MembresAdminPage() {
           <Plus size={18} className="text-[#16A34A]" />
           Ajouter un membre
         </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
           <input
             type="text"
             value={newMember.fullName}
             onChange={(event) => setNewMember((previous) => ({ ...previous, fullName: event.target.value }))}
             placeholder="Nom complet"
-            className="h-10 rounded-lg border border-gray-200 px-3 text-sm"
+            className="h-10 rounded-lg border border-gray-200 px-3 text-sm min-w-0"
           />
           <input
             type="email"
             value={newMember.email}
             onChange={(event) => setNewMember((previous) => ({ ...previous, email: event.target.value }))}
             placeholder="Email"
-            className="h-10 rounded-lg border border-gray-200 px-3 text-sm"
+            className="h-10 rounded-lg border border-gray-200 px-3 text-sm min-w-0"
           />
           <select
             value={newMember.type}
             onChange={(event) =>
               setNewMember((previous) => ({ ...previous, type: event.target.value as MemberType }))
             }
-            className="h-10 rounded-lg border border-gray-200 px-3 text-sm"
+            className="h-10 rounded-lg border border-gray-200 px-3 text-sm min-w-0"
           >
             <option value="active">Actif</option>
             <option value="adherent">Adherent</option>
@@ -188,30 +310,37 @@ export default function MembresAdminPage() {
             value={newMember.city}
             onChange={(event) => setNewMember((previous) => ({ ...previous, city: event.target.value }))}
             placeholder="Ville"
-            className="h-10 rounded-lg border border-gray-200 px-3 text-sm"
+            className="h-10 rounded-lg border border-gray-200 px-3 text-sm min-w-0"
           />
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <select
-              value={newMember.role}
-              onChange={(event) =>
-                setNewMember((previous) => ({ ...previous, role: event.target.value as AdminRole }))
-              }
-              className="h-10 flex-1 rounded-lg border border-gray-200 px-3 text-sm"
-            >
-              <option value="member">Membre</option>
-              <option value="admin">Admin</option>
-              <option value="super-admin">Super Admin</option>
-            </select>
-            <button
-              type="button"
-              onClick={handleCreateMember}
-              className="h-10 inline-flex items-center gap-2 rounded-lg bg-[#0A2540] px-4 text-sm font-semibold text-white hover:bg-[#12385a]"
-            >
-              <Plus size={14} />
-              Ajouter
-            </button>
-          </div>
+          <select
+            value={newMember.role}
+            onChange={(event) =>
+              setNewMember((previous) => ({ ...previous, role: event.target.value as AdminRole }))
+            }
+            className="h-10 rounded-lg border border-gray-200 px-3 text-sm min-w-0"
+          >
+            <option value="member">Membre</option>
+            <option value="admin">Admin</option>
+            <option value="super-admin">Super Admin</option>
+          </select>
+          <button
+            type="button"
+            onClick={() => {
+              void handleCreateMember();
+            }}
+            disabled={isMutating}
+            className="h-10 w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#0A2540] px-4 text-sm font-semibold text-white hover:bg-[#12385a] disabled:opacity-60"
+          >
+            <Plus size={14} />
+            Ajouter
+          </button>
         </div>
+
+        {requestError && (
+          <p className="rounded-lg border border-rose-200 bg-rose-50 px-3 py-2 text-xs text-rose-700">
+            {requestError}
+          </p>
+        )}
       </section>
 
       <section className="bg-white rounded-xl border border-gray-100 shadow-sm overflow-hidden">
@@ -256,6 +385,8 @@ export default function MembresAdminPage() {
             >
               <option value="all">Tous statuts</option>
               <option value="active">Actif</option>
+              <option value="pending">En cours</option>
+              <option value="expired">Expire</option>
               <option value="suspended">Suspendu</option>
             </select>
 
@@ -276,20 +407,33 @@ export default function MembresAdminPage() {
         </div>
 
         <div className="space-y-3 p-4 md:hidden">
+          {isLoadingMembers && (
+            <p className="rounded-lg border border-slate-200 px-4 py-8 text-center text-sm text-slate-500">
+              Chargement des membres depuis la base de données...
+            </p>
+          )}
+
           {pageRows.map((member) => (
             <MemberCard
               key={member.id}
               member={member}
-              onToggleStatus={() =>
-                updateMemberStatus(member.id, member.status === "active" ? "suspended" : "active")
-              }
-              onTypeChange={(type) => updateMemberType(member.id, type)}
-              onRoleChange={(role) => updateMemberRole(member.id, role)}
-              onDelete={() => removeMember(member.id)}
+              supportsExtendedStatuses={supportsExtendedStatuses}
+              onStatusChange={(status) => {
+                void handleSetMemberStatus(member.id, status);
+              }}
+              onTypeChange={(type) => {
+                void handleChangeMemberType(member.id, type);
+              }}
+              onRoleChange={(role) => {
+                void handleChangeMemberRole(member.id, role);
+              }}
+              onDelete={() => {
+                void handleDeleteMember(member.id);
+              }}
             />
           ))}
 
-          {pageRows.length === 0 && (
+          {!isLoadingMembers && pageRows.length === 0 && (
             <p className="rounded-lg border border-dashed border-gray-200 px-4 py-8 text-center text-sm text-gray-500">
               Aucun membre ne correspond aux criteres actuels.
             </p>
@@ -310,23 +454,35 @@ export default function MembresAdminPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-100">
+              {isLoadingMembers && (
+                <tr>
+                  <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">
+                    Chargement des membres depuis la base de données...
+                  </td>
+                </tr>
+              )}
+
               {pageRows.map((member) => (
                 <MemberRow
                   key={member.id}
                   member={member}
-                  onToggleStatus={() =>
-                    updateMemberStatus(
-                      member.id,
-                      member.status === "active" ? "suspended" : "active",
-                    )
-                  }
-                  onTypeChange={(type) => updateMemberType(member.id, type)}
-                  onRoleChange={(role) => updateMemberRole(member.id, role)}
-                  onDelete={() => removeMember(member.id)}
+                  supportsExtendedStatuses={supportsExtendedStatuses}
+                  onStatusChange={(status) => {
+                    void handleSetMemberStatus(member.id, status);
+                  }}
+                  onTypeChange={(type) => {
+                    void handleChangeMemberType(member.id, type);
+                  }}
+                  onRoleChange={(role) => {
+                    void handleChangeMemberRole(member.id, role);
+                  }}
+                  onDelete={() => {
+                    void handleDeleteMember(member.id);
+                  }}
                 />
               ))}
 
-              {pageRows.length === 0 && (
+              {!isLoadingMembers && pageRows.length === 0 && (
                 <tr>
                   <td colSpan={7} className="px-4 py-10 text-center text-sm text-gray-500">
                     Aucun membre ne correspond aux criteres actuels.
@@ -394,13 +550,15 @@ export default function MembresAdminPage() {
 
 function MemberCard({
   member,
-  onToggleStatus,
+  supportsExtendedStatuses,
+  onStatusChange,
   onTypeChange,
   onRoleChange,
   onDelete,
 }: {
   member: AdminMember;
-  onToggleStatus: () => void;
+  supportsExtendedStatuses: boolean;
+  onStatusChange: (status: MemberStatus) => void;
   onTypeChange: (type: MemberType) => void;
   onRoleChange: (role: AdminRole) => void;
   onDelete: () => void;
@@ -415,7 +573,8 @@ function MemberCard({
 
         <MemberActionsMenu
           member={member}
-          onToggleStatus={onToggleStatus}
+          supportsExtendedStatuses={supportsExtendedStatuses}
+          onStatusChange={onStatusChange}
           onDelete={onDelete}
         />
       </div>
@@ -424,10 +583,11 @@ function MemberCard({
         <label className="rounded-lg bg-gray-50 p-2">
           <p className="text-[11px] uppercase tracking-wide text-gray-400">Type</p>
           <select
-            value={member.type}
+            value={member.type ?? ""}
             onChange={(event) => onTypeChange(event.target.value as MemberType)}
             className="mt-1 h-8 w-full rounded-md border border-gray-200 px-2 text-xs"
           >
+            <option value="">—</option>
             <option value="active">{typeLabel.active}</option>
             <option value="adherent">{typeLabel.adherent}</option>
             <option value="honor">{typeLabel.honor}</option>
@@ -450,16 +610,15 @@ function MemberCard({
 
         <div className="rounded-lg bg-gray-50 p-2">
           <p className="text-[11px] uppercase tracking-wide text-gray-400">Statut</p>
-          <span
-            className={`mt-1 inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-semibold ${
-              member.status === "active"
-                ? "bg-green-100 text-green-700"
-                : "bg-orange-100 text-orange-700"
-            }`}
-          >
-            {member.status === "active" ? <Shield size={12} /> : <ShieldAlert size={12} />}
-            {statusLabel[member.status]}
-          </span>
+          {member.status ? (
+            <span
+              className={`mt-1 inline-flex rounded-full px-2.5 py-1 text-[11px] font-semibold ${getStatusBadgeClass(member.status)}`}
+            >
+              {statusLabel[member.status]}
+            </span>
+          ) : (
+            <span className="mt-1 text-xs text-gray-400">—</span>
+          )}
         </div>
 
         <div className="rounded-lg bg-gray-50 p-2">
@@ -475,13 +634,15 @@ function MemberCard({
 
 function MemberRow({
   member,
-  onToggleStatus,
+  supportsExtendedStatuses,
+  onStatusChange,
   onTypeChange,
   onRoleChange,
   onDelete,
 }: {
   member: AdminMember;
-  onToggleStatus: () => void;
+  supportsExtendedStatuses: boolean;
+  onStatusChange: (status: MemberStatus) => void;
   onTypeChange: (type: MemberType) => void;
   onRoleChange: (role: AdminRole) => void;
   onDelete: () => void;
@@ -494,10 +655,11 @@ function MemberRow({
       </td>
       <td className="px-4 py-4">
         <select
-          value={member.type}
+          value={member.type ?? ""}
           onChange={(event) => onTypeChange(event.target.value as MemberType)}
           className="h-8 rounded-md border border-gray-200 px-2 text-xs"
         >
+          <option value="">—</option>
           <option value="active">{typeLabel.active}</option>
           <option value="adherent">{typeLabel.adherent}</option>
           <option value="honor">{typeLabel.honor}</option>
@@ -505,16 +667,15 @@ function MemberRow({
         </select>
       </td>
       <td className="px-4 py-4">
-        <span
-          className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-semibold ${
-            member.status === "active"
-              ? "bg-green-100 text-green-700"
-              : "bg-orange-100 text-orange-700"
-          }`}
-        >
-          {member.status === "active" ? <Shield size={12} /> : <ShieldAlert size={12} />}
-          {statusLabel[member.status]}
-        </span>
+        {member.status ? (
+          <span
+            className={`inline-flex rounded-full px-2.5 py-1 text-xs font-semibold ${getStatusBadgeClass(member.status)}`}
+          >
+            {statusLabel[member.status]}
+          </span>
+        ) : (
+          <span className="text-xs text-gray-400">—</span>
+        )}
       </td>
       <td className="px-4 py-4">
         <select
@@ -532,7 +693,8 @@ function MemberRow({
       <td className="px-4 py-4 text-right">
         <MemberActionsMenu
           member={member}
-          onToggleStatus={onToggleStatus}
+          supportsExtendedStatuses={supportsExtendedStatuses}
+          onStatusChange={onStatusChange}
           onDelete={onDelete}
         />
       </td>
@@ -542,11 +704,13 @@ function MemberRow({
 
 function MemberActionsMenu({
   member,
-  onToggleStatus,
+  supportsExtendedStatuses,
+  onStatusChange,
   onDelete,
 }: {
   member: AdminMember;
-  onToggleStatus: () => void;
+  supportsExtendedStatuses: boolean;
+  onStatusChange: (status: MemberStatus) => void;
   onDelete: () => void;
 }) {
   const closeMenu = (target: EventTarget | null) => {
@@ -561,17 +725,38 @@ function MemberActionsMenu({
       </summary>
 
       <div className="absolute right-0 z-20 mt-2 w-44 rounded-lg border border-gray-200 bg-white p-1 shadow-lg">
-        <button
-          type="button"
-          onClick={(event) => {
-            onToggleStatus();
-            closeMenu(event.currentTarget);
-          }}
-          className="flex w-full items-center gap-2 rounded-md px-2.5 py-2 text-xs font-semibold text-gray-700 hover:bg-gray-100"
-        >
-          <UserCog size={13} />
-          {member.status === "active" ? "Suspendre" : "Activer"}
-        </button>
+        {STATUS_ACTIONS.map((action) => (
+          (() => {
+            const isUnsupportedOnProd =
+              !supportsExtendedStatuses && (action.value === "pending" || action.value === "expired");
+
+            return (
+          <button
+            key={action.value}
+            type="button"
+            onClick={(event) => {
+              if (isUnsupportedOnProd) {
+                closeMenu(event.currentTarget);
+                return;
+              }
+              onStatusChange(action.value);
+              closeMenu(event.currentTarget);
+            }}
+            className={`flex w-full items-center justify-between rounded-md px-2.5 py-2 text-xs font-semibold ${
+              isUnsupportedOnProd
+                ? "cursor-not-allowed text-gray-400"
+                : "text-gray-700 hover:bg-gray-100"
+            }`}
+            disabled={isUnsupportedOnProd}
+          >
+            <span>{isUnsupportedOnProd ? `${action.label} (indispo)` : action.label}</span>
+            {member.status === action.value && <Check size={13} className="text-emerald-600" />}
+          </button>
+            );
+          })()
+        ))}
+
+        <div className="my-1 h-px bg-gray-100" />
 
         <button
           type="button"

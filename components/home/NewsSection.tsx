@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Briefcase, MapPin, Mail } from "lucide-react";
 import ArticleRow from "./ArticleRow";
 import { listShowcaseArticles } from "@/lib/api/showcase";
+import { subscribeToNewsletter } from "@/lib/api/newsletter";
 import { type Article } from "@/lib/articles-data";
 
 const defaultCategoryColor = "bg-brand-green-soft text-brand-green-hover";
@@ -45,6 +46,8 @@ const OPPORTUNITIES = [
 
 export default function NewsSection() {
   const [email, setEmail] = useState("");
+  const [newsletterStatus, setNewsletterStatus] = useState<"idle" | "loading" | "success" | "error">("idle");
+  const [newsletterMessage, setNewsletterMessage] = useState<string | null>(null);
   const [articles, setArticles] = useState<Article[]>([]);
 
   useEffect(() => {
@@ -166,9 +169,20 @@ export default function NewsSection() {
 
               <form
                 className="flex flex-col gap-2.5"
-                onSubmit={(e) => {
+                onSubmit={async (e) => {
                   e.preventDefault();
-                  setEmail("");
+                  if (!email.trim() || newsletterStatus === "loading") return;
+                  setNewsletterStatus("loading");
+                  setNewsletterMessage(null);
+                  try {
+                    const res = await subscribeToNewsletter(email.trim());
+                    setNewsletterStatus("success");
+                    setNewsletterMessage(res.message);
+                    setEmail("");
+                  } catch {
+                    setNewsletterStatus("error");
+                    setNewsletterMessage("Une erreur est survenue. Veuillez réessayer.");
+                  }
                 }}
               >
                 <input
@@ -180,11 +194,17 @@ export default function NewsSection() {
                   aria-label="Votre adresse email pour la newsletter"
                   className="w-full rounded-lg border border-white/20 bg-white/10 px-3 py-2.5 text-sm text-white placeholder:text-slate-300 focus:border-brand-green focus:outline-none transition-colors"
                 />
+                {newsletterMessage && (
+                  <p className={`text-xs leading-relaxed ${newsletterStatus === "success" ? "text-green-300" : "text-red-300"}`}>
+                    {newsletterMessage}
+                  </p>
+                )}
                 <button
                   type="submit"
-                  className="w-full rounded-lg bg-brand-green py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-green-hover"
+                  disabled={newsletterStatus === "loading"}
+                  className="w-full rounded-lg bg-brand-green py-2.5 text-sm font-bold text-white transition-colors hover:bg-brand-green-hover disabled:opacity-70"
                 >
-                  S&apos;abonner
+                  {newsletterStatus === "loading" ? "Envoi..." : "S\u2019abonner"}
                 </button>
               </form>
             </div>
