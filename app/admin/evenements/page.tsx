@@ -18,8 +18,10 @@ import {
   Search,
   Trash2,
   Upload,
+  UserPlus,
   Users,
   Video,
+  X,
 } from "lucide-react";
 import { ApiClientError } from "@/lib/api/client";
 import {
@@ -51,6 +53,7 @@ type EventFormState = {
   objectifsText: string;
   joinLink: string;
   eventVisibility: string;
+  intervenants: Intervenant[];
 };
 
 const ITEMS_PER_PAGE = 8;
@@ -166,6 +169,7 @@ const createEmptyForm = (nextId: number): EventFormState => ({
   objectifsText: "",
   joinLink: "",
   eventVisibility: "public",
+  intervenants: [],
 });
 
 const findExistingType = (eventItem: AgendaEvent): string => {
@@ -210,6 +214,7 @@ const eventToForm = (eventItem: AgendaEvent): EventFormState => {
     objectifsText: (eventItem.objectifs ?? []).join("\n"),
     joinLink: eventItem.joinLink ?? "",
     eventVisibility: eventItem.eventVisibility ?? "public",
+    intervenants: eventItem.intervenants ?? [],
   };
 };
 
@@ -450,7 +455,7 @@ export default function EvenementsAdminPage() {
       eventVisibility: formState.eventVisibility || "public",
       objectifs: splitLines(formState.objectifsText),
       tags: computedTags,
-      intervenants: (existingEvent?.intervenants ?? []) as Intervenant[],
+      intervenants: formState.intervenants,
       programme: existingEvent?.programme ?? [],
     };
 
@@ -855,6 +860,113 @@ export default function EvenementsAdminPage() {
             rows={3}
             className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm"
           />
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Intervenants (optionnel)
+              </label>
+              <button
+                type="button"
+                onClick={() =>
+                  setFormState((previous) => ({
+                    ...previous,
+                    intervenants: [
+                      ...previous.intervenants,
+                      { name: "", role: "", initials: "", type: "Intervenant" as const, linkedin: "" },
+                    ],
+                  }))
+                }
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                <UserPlus size={13} />
+                Ajouter
+              </button>
+            </div>
+            {formState.intervenants.length === 0 ? (
+              <p className="text-xs text-gray-400">Aucun intervenant ajouté.</p>
+            ) : (
+              <div className="space-y-2">
+                {formState.intervenants.map((speaker, index) => (
+                  <div key={index} className="rounded-xl border border-gray-200 p-3 space-y-2">
+                    <div className="grid grid-cols-[1fr_80px] gap-2">
+                      <input
+                        type="text"
+                        value={speaker.name}
+                        onChange={(event) => {
+                          const updated = [...formState.intervenants];
+                          updated[index] = { ...updated[index], name: event.target.value };
+                          setFormState((previous) => ({ ...previous, intervenants: updated }));
+                        }}
+                        placeholder="Nom complet"
+                        className="h-9 rounded-lg border border-gray-200 px-2.5 text-sm"
+                      />
+                      <input
+                        type="text"
+                        value={speaker.initials}
+                        onChange={(event) => {
+                          const updated = [...formState.intervenants];
+                          updated[index] = { ...updated[index], initials: event.target.value };
+                          setFormState((previous) => ({ ...previous, intervenants: updated }));
+                        }}
+                        placeholder="AS"
+                        maxLength={4}
+                        className="h-9 rounded-lg border border-gray-200 px-2.5 text-sm text-center"
+                      />
+                    </div>
+                    <input
+                      type="text"
+                      value={speaker.role}
+                      onChange={(event) => {
+                        const updated = [...formState.intervenants];
+                        updated[index] = { ...updated[index], role: event.target.value };
+                        setFormState((previous) => ({ ...previous, intervenants: updated }));
+                      }}
+                      placeholder="Rôle / Poste"
+                      className="h-9 w-full rounded-lg border border-gray-200 px-2.5 text-sm"
+                    />
+                    <div className="grid grid-cols-[auto_1fr_auto] gap-2">
+                      <select
+                        value={speaker.type ?? "Intervenant"}
+                        onChange={(event) => {
+                          const updated = [...formState.intervenants];
+                          updated[index] = { ...updated[index], type: event.target.value as Intervenant["type"] };
+                          setFormState((previous) => ({ ...previous, intervenants: updated }));
+                        }}
+                        className="h-9 rounded-lg border border-gray-200 px-2.5 text-sm"
+                      >
+                        <option value="Intervenant">Intervenant</option>
+                        <option value="Animateur">Animateur</option>
+                        <option value="Coordinateur">Coordinateur</option>
+                      </select>
+                      <input
+                        type="url"
+                        value={speaker.linkedin ?? ""}
+                        onChange={(event) => {
+                          const updated = [...formState.intervenants];
+                          updated[index] = { ...updated[index], linkedin: event.target.value };
+                          setFormState((previous) => ({ ...previous, intervenants: updated }));
+                        }}
+                        placeholder="LinkedIn (optionnel)"
+                        className="h-9 rounded-lg border border-gray-200 px-2.5 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = formState.intervenants.filter((_, i) => i !== index);
+                          setFormState((previous) => ({ ...previous, intervenants: updated }));
+                        }}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-100 text-red-500 hover:bg-red-50 shrink-0"
+                        aria-label="Supprimer cet intervenant"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="flex flex-col gap-1">

@@ -15,9 +15,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "SAIEN – Façonner l'Avenir de l'IA Africaine",
+  title: "SAIEN",
   description:
     "Réseau international d'experts connectant la diaspora tech pour le développement d'une intelligence artificielle éthique et performante en Afrique.",
+  icons: {
+    icon: "/logos/Logo_saien.png",
+    apple: "/logos/Logo_saien.png",
+  },
 };
 
 export default function RootLayout({

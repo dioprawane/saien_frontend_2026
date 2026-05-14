@@ -115,47 +115,7 @@ export default function NewsSection() {
           </div>
 
           <aside className="flex flex-col gap-6">
-            <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-[0_18px_42px_-30px_rgba(10,37,64,0.95)] sm:p-6">
-              <div className="mb-4 flex items-center gap-2">
-                <Briefcase className="h-4 w-4 text-brand-green-hover" aria-hidden="true" />
-                <h3 className="text-lg font-bold text-[#0A2540]">
-                  Opportunités du réseau
-                </h3>
-              </div>
 
-              <ul className="flex flex-col">
-                {OPPORTUNITIES.map((opp) => (
-                  <li
-                    key={opp.title}
-                    className="flex items-start justify-between gap-4 border-b border-slate-200 py-3.5 last:border-0"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-sm font-semibold leading-snug text-[#0A2540]">
-                        {opp.title}
-                        <span className="font-medium text-slate-500">
-                          {" "}· {opp.company}
-                        </span>
-                      </p>
-                      <p className="mt-1 flex items-center gap-1 text-xs text-slate-500">
-                        <MapPin className="h-3 w-3 shrink-0" aria-hidden="true" />
-                        {opp.location}
-                      </p>
-                    </div>
-                    <span className={`shrink-0 text-[11px] font-semibold whitespace-nowrap ${opp.tagColor}`}>
-                      {opp.tag}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-
-              <Link
-                href="/reseau"
-                className="mt-4 flex w-full items-center justify-center gap-1.5 rounded-xl bg-brand-surface py-2.5 text-sm font-semibold text-slate-700 transition-colors hover:bg-brand-green-soft"
-              >
-                Voir toutes les offres
-                <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
-              </Link>
-            </div>
 
             <div className="rounded-2xl border border-[#0A3458] bg-[#0A3458] p-5 text-white shadow-[0_20px_45px_-26px_rgba(10,52,88,0.9)] sm:p-6">
               <div className="mb-2 flex items-center gap-2">

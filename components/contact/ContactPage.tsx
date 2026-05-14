@@ -3,13 +3,15 @@
 import { useState, FormEvent } from "react";
 import {
   ArrowRight,
-  Github,
+  Facebook,
+  Instagram,
   Linkedin,
   Mail,
   MapPin,
-  Microchip,
+  Phone,
   Send,
   Twitter,
+  Youtube,
 } from "lucide-react";
 
 const SUBJECTS = ["Adhésion", "Partenariat", "Presse", "Autre"] as const;
@@ -67,12 +69,23 @@ export default function ContactPage() {
 
                   <div className="flex items-start gap-3.5">
                     <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#0e6f5c]/20 bg-[#0e6f5c]/10 text-[#0e6f5c] shrink-0">
+                      <Phone className="w-5 h-5" aria-hidden="true" />
+                    </span>
+                    <div>
+                      <p className="text-xs text-slate-400 font-semibold uppercase tracking-[0.12em]">Téléphone</p>
+                      <a href="tel:+33759733545" className="text-sm font-semibold text-[#0a2e4a] hover:text-[#0e6f5c] transition-colors">
+                        +33 7 59 73 35 45
+                      </a>
+                    </div>
+                  </div>
+
+                  <div className="flex items-start gap-3.5">
+                    <span className="inline-flex h-10 w-10 items-center justify-center rounded-xl border border-[#0e6f5c]/20 bg-[#0e6f5c]/10 text-[#0e6f5c] shrink-0">
                       <MapPin className="w-5 h-5" aria-hidden="true" />
                     </span>
                     <div>
                       <p className="text-xs text-slate-400 font-semibold uppercase tracking-[0.12em]">Siège social</p>
-                      <p className="text-sm font-semibold text-[#0a2e4a]">Paris, France</p>
-                      <p className="text-xs text-slate-400">Réseau international</p>
+                      <p className="text-sm font-semibold text-[#0a2e4a]">06000 Nice, FRANCE</p>
                     </div>
                   </div>
                 </div>
@@ -81,9 +94,11 @@ export default function ContactPage() {
                   <p className="text-xs text-slate-400 font-semibold uppercase tracking-[0.12em] mb-3">Nos réseaux</p>
                   <div className="flex gap-2.5">
                     {[
-                      { icon: Linkedin, href: "https://linkedin.com", label: "LinkedIn" },
-                      { icon: Twitter, href: "https://twitter.com", label: "Twitter / X" },
-                      { icon: Github, href: "https://github.com", label: "GitHub" },
+                      { icon: Linkedin, href: "https://www.linkedin.com/company/saien-ai/", label: "LinkedIn" },
+                      { icon: Instagram, href: "https://www.instagram.com/saien_officiel?igsh=MWx6Y2JsZjNldDZybg%3D%3D&utm_source=qr", label: "Instagram" },
+                      { icon: Facebook, href: "https://www.facebook.com/share/1D4QBYZ9cc/?mibextid=wwXIfr", label: "Facebook" },
+                      { icon: Youtube, href: "https://www.youtube.com/@Saien-b8r", label: "YouTube" },
+                      { icon: Twitter, href: "#", label: "Twitter / X" },
                     ].map(({ icon: Icon, href, label }) => (
                       <a
                         key={label}
@@ -102,7 +117,7 @@ export default function ContactPage() {
 
               <article className="relative rounded-2xl border border-slate-200 bg-white min-h-[145px] overflow-hidden">
                 <div className="absolute top-3 left-3 inline-flex h-8 w-8 items-center justify-center rounded-md border border-slate-200 bg-slate-50 text-slate-400">
-                  <Microchip className="w-4 h-4" aria-hidden="true" />
+                  <Send className="w-4 h-4" aria-hidden="true" />
                 </div>
                 <div className="h-full w-full flex items-center justify-center">
                   <span className="inline-flex h-8 w-8 rounded-full bg-[#0e6f5c]/18" aria-hidden="true" />

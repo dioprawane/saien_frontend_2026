@@ -8,7 +8,7 @@ import PartnersSection from "@/components/home/PartnersSection";
 import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
-  title: "SAIEN – L'excellence sénégalaise en IA, Data et Cybersécurité",
+  title: "SAIEN",
   description:
     "SAIEN rassemble étudiants, chercheurs, ingénieurs, entrepreneurs et professionnels sénégalais de l'IA, de la Data et de la Cybersécurité en France, au Sénégal et dans la diaspora — pour faire émerger les talents, accélérer l'innovation et bâtir des ponts technologiques entre les deux rives.",
 };

@@ -69,7 +69,7 @@ export default function ConfidentialitePage() {
             comment nous collectons, utilisons et protégeons vos informations dans le cadre
             de nos services d&apos;intelligence artificielle et de réseau.
           </p>
-          <p className="mt-4 text-xs text-slate-400">Dernière mise à jour : 15 Avril 2026</p>
+          <p className="mt-4 text-xs text-slate-400">Dernière mise à jour : 6 décembre 2025</p>
         </div>
       </section>
 
@@ -103,14 +103,15 @@ export default function ConfidentialitePage() {
               <p className="text-sm sm:text-base text-slate-600 leading-relaxed mb-4">
                 Dans le cadre de l&apos;utilisation de la plateforme SAIEN, nous sommes amenés à collecter
                 différentes catégories de données personnelles. Cette collecte se fait de manière
-                transparente et limitée à ce qui est strictement nécessaire.
+                transparente et limitée à ce qui est strictement nécessaire dans le cadre de nos activités
+                de fédération des professionnels snégalais de l&apos;IA et de la data.
               </p>
               <ul className="space-y-2.5 text-sm sm:text-base text-slate-600">
                 {[
-                  "Données d'identification : nom, prénom, adresse email professionnelle, numéro de téléphone.",
-                  "Données de connexion : adresse IP, logs de connexion, type de navigateur, identifiants de session.",
-                  "Données professionnelles : fonction, entreprise, secteur d'activité, profil LinkedIn (si connecté).",
-                  "Données d'interaction IA : requêtes formulées, préférences de configuration, retours d'utilisation.",
+                  "Données d'identification : nom, prénom, adresse email, numéro de téléphone.",
+                  "Données de connexion : des informations techniques (adresse IP, type de navigateur) peuvent apparaître dans les journaux serveur de manière automatique et transitoire, sans être stockées ni exploitées dans notre base de données.",
+                  "Données professionnelles : formation, secteur d'activité, poste occupé.",
+                  "Données de compte : identifiants de session chiffrés (JWT) nécessaires au maintien de votre connexion.",
                 ].map((line) => (
                   <li key={line} className="inline-flex items-start gap-2.5">
                     <Check className="w-4 h-4 text-[#0e6f5c] mt-0.5 shrink-0" aria-hidden="true" />
@@ -133,10 +134,10 @@ export default function ConfidentialitePage() {
               <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                 <p className="text-sm font-semibold text-[#0a2e4a] mb-2">Principales finalités :</p>
                 <ul className="space-y-1.5 text-sm text-slate-600">
-                  <li>Fourniture et maintien des services d&apos;intelligence artificielle</li>
-                  <li>Gestion des comptes utilisateurs et de l&apos;authentification</li>
-                  <li>Amélioration continue de nos algorithmes et modèles prédictifs</li>
-                  <li>Communication technique et administrative</li>
+                  <li>Fédérer les membres et gérer les adhésions et cotisations</li>
+                  <li>Organisation d&apos;événements, conférences, ateliers et formations</li>
+                  <li>Communication institutionnelle et envoi de newsletters</li>
+                  <li>Mentorat, accompagnement professionnel et académique</li>
                   <li>Sécurisation de la plateforme contre les accès non autorisés</li>
                 </ul>
               </div>
@@ -248,7 +249,8 @@ export default function ConfidentialitePage() {
               <div className="mt-4 rounded-xl border border-white/20 bg-white/5 p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <p className="text-[11px] uppercase tracking-[0.14em] text-slate-300">Email direct</p>
-                  <p className="text-sm font-semibold">dpo@saien.com</p>
+                  <p className="text-sm font-semibold">bureau@saien.org</p>
+                  <p className="text-xs text-slate-300 mt-0.5">06000 Nice, France</p>
                 </div>
                 <Link
                   href="/contact"

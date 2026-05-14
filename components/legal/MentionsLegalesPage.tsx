@@ -3,7 +3,6 @@
 import Link from "next/link";
 import {
   Building2,
-  Cookie,
   Gavel,
   Mail,
   MapPin,
@@ -22,7 +21,7 @@ const SECTIONS = [
     icon: Building2,
     title: "Informations de l'Éditeur",
     paragraphs: [
-      "Le site SAIEN (ci-après le Site) est édité par l'association SAIEN (Synergie de l'Intelligence Artificielle et de l'Entrepreneuriat Numérique), association loi 1901 à but non lucratif.",
+      "Le site SAIEN (ci-après le Site) est édité par l'association SAIEN (Senegalese Artificial Intelligence Excellence Network), association loi 1901 à but non lucratif, fondée le 30 novembre 2025.",
     ],
   },
   {
@@ -30,9 +29,7 @@ const SECTIONS = [
     icon: Server,
     title: "Hébergement du Site",
     paragraphs: [
-      "Le Site est hébergé par la société CloudTech Solutions SAS, dont les serveurs sont situés en Union Européenne afin de garantir la sécurité et la souveraineté des données de notre réseau.",
-      "Adresse de l'hébergeur : 42 Rue du Serveur, 69003 Lyon, France.",
-      "Téléphone : +33 (0)4 XX XX XX XX",
+      "Le Site est hébergé sur des serveurs situés en Union Européenne, garantissant la sécurité et la souveraineté des données de notre réseau.",
     ],
   },
   {
@@ -41,7 +38,7 @@ const SECTIONS = [
     title: "Propriété Intellectuelle",
     paragraphs: [
       "L'ensemble de ce Site relève de la législation française et internationale sur le droit d'auteur et la propriété intellectuelle. Tous les droits de reproduction sont réservés, y compris pour les documents téléchargeables et les représentations iconographiques et photographiques.",
-      "Le logo SAIEN, les icônes de réseau et les éléments graphiques liés à l'intelligence artificielle présents sur ce site sont la propriété exclusive de l'association SAIEN. Toute reproduction totale ou partielle de ces éléments, sans l'autorisation expresse de l'association, est prohibée au sens de l'article L.713-2 du Code de la propriété intellectuelle.",
+      "Le logo SAIEN, les icônes et les éléments graphiques présents sur ce site sont la propriété exclusive de l'association SAIEN. Toute reproduction totale ou partielle de ces éléments, sans l'autorisation expresse de l'association, est prohibée au sens de l'article L.713-2 du Code de la propriété intellectuelle.",
     ],
   },
   {
@@ -49,27 +46,18 @@ const SECTIONS = [
     icon: ShieldCheck,
     title: "Protection des Données Personnelles (RGPD)",
     paragraphs: [
-      "Dans le cadre de ses activités de mise en réseau de la diaspora et de développement de projets IA, SAIEN est amenée à collecter et traiter des données à caractère personnel.",
+      "Dans le cadre de ses activités de mise en réseau et de développement de projets IA, SAIEN est amenée à collecter et traiter des données à caractère personnel.",
       "Conformément au Règlement Général sur la Protection des Données (RGPD) et à la loi Informatique et Libertés, vous disposez d'un droit d'accès, de rectification, de portabilité, d'effacement de vos données ou d'une limitation du traitement.",
-      "Pour exercer ces droits ou pour toute question sur le traitement de vos données dans ce dispositif, vous pouvez contacter notre Délégué à la Protection des Données (DPO).",
+      "Pour exercer ces droits ou pour toute question sur le traitement de vos données, vous pouvez contacter l'association à l'adresse e-mail ci-dessous.",
     ],
   },
   {
     id: 5,
-    icon: Cookie,
-    title: "Gestion des Cookies",
-    paragraphs: [
-      "Le Site utilise des cookies pour améliorer l'expérience utilisateur, analyser le trafic et optimiser le fonctionnement de nos algorithmes de recommandation de réseau.",
-      "Lors de votre première visite, un bandeau vous informe de la présence de ces cookies et vous invite à indiquer votre choix. Ils ne sont déposés que si vous les acceptez. Vous pouvez à tout moment vous informer et paramétrer vos cookies pour les accepter ou les refuser.",
-    ],
-  },
-  {
-    id: 6,
     icon: Gavel,
     title: "Limitation de Responsabilité",
     paragraphs: [
       "Les informations contenues sur ce Site sont aussi précises que possible et le Site est périodiquement remis à jour, mais peut toutefois contenir des inexactitudes, des omissions ou des lacunes.",
-      "Les projets d'intelligence artificielle ou les initiatives de réseau présentés sur le site sont donnés à titre indicatif. SAIEN ne saurait être tenue responsable des dommages directs ou indirects qui pourraient résulter de l'accès ou de l'utilisation du Site ou des informations qui y figurent.",
+      "SAIEN ne saurait être tenue responsable des dommages directs ou indirects qui pourraient résulter de l'accès ou de l'utilisation du Site ou des informations qui y figurent.",
     ],
   },
 ];
@@ -95,7 +83,7 @@ export default function MentionsLegalesPage() {
       <section className="bg-[#fdfef6] pb-14 pt-8">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
           <article className="rounded-2xl border border-slate-200 bg-white p-6 sm:p-8 shadow-sm">
-            <p className="text-xs text-slate-500 mb-5">Dernière mise à jour : 15 Avril 2026</p>
+            <p className="text-xs text-slate-500 mb-5">Dernière mise à jour : 6 décembre 2025</p>
 
             <div className="space-y-8">
               {SECTIONS.map(({ id, icon: Icon, title, paragraphs }) => (
@@ -113,31 +101,26 @@ export default function MentionsLegalesPage() {
 
                   {id === 1 && (
                     <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2.5 text-sm text-slate-600">
-                      <p className="inline-flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-[#0e6f5c]" aria-hidden="true" />
-                        Siège social : 15 Avenue de l&apos;Innovation, 75013 Paris, France
+                      <p className="flex items-center gap-2">
+                        <MapPin className="h-4 w-4 text-[#0e6f5c] shrink-0" aria-hidden="true" />
+                        Siège social : 12 boulevard Joseph Garnier, 06000 Nice, France
                       </p>
-                      <p className="inline-flex items-center gap-2">
-                        <Building2 className="h-4 w-4 text-[#0e6f5c]" aria-hidden="true" />
-                        SIRET : 123 456 789 00012
+                      <p className="flex items-center gap-2">
+                        <Mail className="h-4 w-4 text-[#0e6f5c] shrink-0" aria-hidden="true" />
+                        Email de contact : bureau@saien.org
                       </p>
-                      <p className="inline-flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-[#0e6f5c]" aria-hidden="true" />
-                        Email de contact : contact@saien.network
-                      </p>
-                      <p className="inline-flex items-center gap-2">
-                        <UserRound className="h-4 w-4 text-[#0e6f5c]" aria-hidden="true" />
-                        Directeur de la publication : M. Jean Dupont, en qualité de Président.
+                      <p className="flex items-center gap-2">
+                        <UserRound className="h-4 w-4 text-[#0e6f5c] shrink-0" aria-hidden="true" />
+                        Directeur de la publication : M. DIOP Serigne Rawane, Président-Fondateur.
                       </p>
                     </div>
                   )}
 
                   {id === 4 && (
                     <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 text-sm text-slate-600 space-y-2">
-                      <p>Par voie électronique : dpo@saien.network</p>
+                      <p>Par voie électronique : bureau@saien.org</p>
                       <p>
-                        Par courrier postal : SAIEN, À l&apos;attention du DPO, 15 Avenue de l&apos;Innovation,
-                        75013 Paris.
+                        Par courrier postal : SAIEN, 06000 Nice, France.
                       </p>
                       <p>
                         Pour plus de détails sur la gestion de vos données, veuillez consulter notre

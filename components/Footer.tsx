@@ -7,11 +7,10 @@ import {
   Linkedin,
   Mail,
   MapPin,
-  Music2,
+  Phone,
   Twitter,
   Youtube,
 } from "lucide-react";
-import { TikTok_Sans } from "next/font/google";
 
 const LE_RESEAU = [
   { label: "À propos", href: "/a-propos" },
@@ -111,21 +110,29 @@ export default function Footer() {
               <li className="flex items-center gap-2 text-sm">
                 <Mail className="w-4 h-4 shrink-0 text-[#0e6f5c]" aria-hidden="true" />
                 <a
-                  href="mailto:contact@saien-network.org"
+                  href="mailto:bureau@saien.org"
                   className="hover:text-[#fdfef6] transition-colors break-all"
                 >
-                  contact@saien-network.org
+                  bureau@saien.org
+                </a>
+              </li>
+              <li className="flex items-center gap-2 text-sm">
+                <Phone className="w-4 h-4 shrink-0 text-[#0e6f5c]" aria-hidden="true" />
+                <a href="tel:+33759733545" className="hover:text-[#fdfef6] transition-colors">
+                  +33 7 59 73 35 45
                 </a>
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="w-4 h-4 shrink-0 text-[#0e6f5c] mt-0.5" aria-hidden="true" />
-                <span>
-                  Paris, France
-                  <br />
-                  <span className="text-xs text-slate-400">Présence globale</span>
-                </span>
+                <span>06000 Nice, FRANCE</span>
               </li>
             </ul>
+            <Link
+              href="/contact"
+              className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#0e6f5c] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0b5a4a] transition-colors"
+            >
+              Nous contacter
+            </Link>
           </div>
 
         </div>

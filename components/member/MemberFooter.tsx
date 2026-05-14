@@ -7,7 +7,7 @@ import {
   Linkedin,
   Mail,
   MapPin,
-  Music2,
+  Phone,
   Twitter,
   Youtube,
 } from "lucide-react";
@@ -27,13 +27,12 @@ const MEMBER_SPACE = [
 ];
 
 const SOCIALS = [
-  { icon: Linkedin, label: "LinkedIn", href: "#" },
-  { icon: Instagram, label: "Instagram", href: "#" },
-  { icon: Facebook, label: "Facebook", href: "#" },
-  { icon: Youtube, label: "Youtube", href: "#" },
+  { icon: Linkedin, label: "LinkedIn", href: "https://www.linkedin.com/company/saien-ai/" },
+  { icon: Instagram, label: "Instagram", href: "https://www.instagram.com/saien_officiel?igsh=MWx6Y2JsZjNldDZybg%3D%3D&utm_source=qr" },
+  { icon: Facebook, label: "Facebook", href: "https://www.facebook.com/share/1D4QBYZ9cc/?mibextid=wwXIfr" },
+  { icon: Youtube, label: "Youtube", href: "https://www.youtube.com/@Saien-b8r" },
   { icon: AtSign, label: "Threads", href: "#" },
   { icon: Twitter, label: "X", href: "#" },
-  { icon: Music2, label: "Tiktok", href: "#" },
 ];
 
 export default function MemberFooter() {
@@ -99,15 +98,29 @@ export default function MemberFooter() {
           <div>
             <h3 className="text-sm font-semibold text-white mb-3">Contact</h3>
             <ul className="space-y-2.5">
-              <li className="flex items-start gap-2 text-xs text-slate-300">
-                <MapPin className="h-3.5 w-3.5 mt-0.5 text-[#0e6f5c] shrink-0" aria-hidden="true" />
-                123 Avenue de l&apos;Innovation, 75001 Paris, France
-              </li>
               <li className="flex items-center gap-2 text-xs text-slate-300">
                 <Mail className="h-3.5 w-3.5 text-[#0e6f5c] shrink-0" aria-hidden="true" />
-                contact@saien-network.org
+                <a href="mailto:bureau@saien.org" className="hover:text-white transition-colors">
+                  bureau@saien.org
+                </a>
+              </li>
+              <li className="flex items-center gap-2 text-xs text-slate-300">
+                <Phone className="h-3.5 w-3.5 text-[#0e6f5c] shrink-0" aria-hidden="true" />
+                <a href="tel:+33759733545" className="hover:text-white transition-colors">
+                  +33 7 59 73 35 45
+                </a>
+              </li>
+              <li className="flex items-start gap-2 text-xs text-slate-300">
+                <MapPin className="h-3.5 w-3.5 mt-0.5 text-[#0e6f5c] shrink-0" aria-hidden="true" />
+                06000 Nice, FRANCE
               </li>
             </ul>
+            <Link
+              href="/contact"
+              className="mt-4 inline-flex items-center gap-2 rounded-lg bg-[#0e6f5c] px-3 py-1.5 text-xs font-semibold text-white hover:bg-[#0b5a4a] transition-colors"
+            >
+              Nous contacter
+            </Link>
           </div>
         </div>
 
