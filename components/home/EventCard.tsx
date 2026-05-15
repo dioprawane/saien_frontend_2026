@@ -1,5 +1,10 @@
 import { Clock, MapPin, Tag, type LucideIcon } from "lucide-react";
 
+interface Speaker {
+  name: string;
+  initials: string;
+}
+
 interface EventCardProps {
   dateBadge: string;
   imageUrl: string;
@@ -12,6 +17,7 @@ interface EventCardProps {
   description: string;
   time: string;
   location: string;
+  speakers?: Speaker[];
 }
 
 export default function EventCard({
@@ -26,6 +32,7 @@ export default function EventCard({
   description,
   time,
   location,
+  speakers,
 }: EventCardProps) {
   return (
     <article className="h-full bg-white rounded-2xl overflow-hidden shadow-[0_2px_10px_-4px_rgba(0,0,0,0.1)] border border-slate-100 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 flex flex-col">
@@ -67,9 +74,18 @@ export default function EventCard({
           {title}
         </h3>
 
-        <p className="text-slate-500 text-sm leading-relaxed line-clamp-3 flex-1">
-          {description}
-        </p>
+        {speakers && speakers.length > 0 ? (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {speakers.slice(0, 3).map((speaker, i) => (
+              <span key={i} className="inline-flex items-center gap-1.5 rounded-full bg-[#0A2540]/5 px-2.5 py-1 text-[11px] font-semibold text-[#0A2540]">
+                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#0A2540] to-[#0d3a60] text-[9px] font-black text-white">
+                  {speaker.initials || speaker.name.slice(0, 2).toUpperCase()}
+                </span>
+                {speaker.name}
+              </span>
+            ))}
+          </div>
+        ) : null}
 
         <div className="flex items-center justify-between gap-3 text-slate-400 text-xs font-medium pt-2 border-t border-slate-100">
           <span className="inline-flex min-w-0 items-center gap-1.5">

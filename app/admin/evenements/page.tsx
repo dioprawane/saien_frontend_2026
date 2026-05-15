@@ -54,6 +54,7 @@ type EventFormState = {
   joinLink: string;
   eventVisibility: string;
   intervenants: Intervenant[];
+  programme: { time: string; title: string; description: string }[];
 };
 
 const ITEMS_PER_PAGE = 8;
@@ -170,6 +171,7 @@ const createEmptyForm = (nextId: number): EventFormState => ({
   joinLink: "",
   eventVisibility: "public",
   intervenants: [],
+  programme: [],
 });
 
 const findExistingType = (eventItem: AgendaEvent): string => {
@@ -215,6 +217,7 @@ const eventToForm = (eventItem: AgendaEvent): EventFormState => {
     joinLink: eventItem.joinLink ?? "",
     eventVisibility: eventItem.eventVisibility ?? "public",
     intervenants: eventItem.intervenants ?? [],
+    programme: (eventItem.programme ?? []).map((p) => ({ time: p.time, title: p.title, description: p.description ?? "" })),
   };
 };
 
@@ -456,7 +459,7 @@ export default function EvenementsAdminPage() {
       objectifs: splitLines(formState.objectifsText),
       tags: computedTags,
       intervenants: formState.intervenants,
-      programme: existingEvent?.programme ?? [],
+      programme: formState.programme.filter((p) => p.time.trim() && p.title.trim()),
     };
 
     setIsSaving(true);
@@ -962,6 +965,83 @@ export default function EvenementsAdminPage() {
                         <X size={14} />
                       </button>
                     </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <div className="space-y-2">
+            <div className="flex items-center justify-between">
+              <label className="text-xs font-semibold text-gray-500 uppercase tracking-wide">
+                Programme (optionnel)
+              </label>
+              <button
+                type="button"
+                onClick={() =>
+                  setFormState((previous) => ({
+                    ...previous,
+                    programme: [...previous.programme, { time: "", title: "", description: "" }],
+                  }))
+                }
+                className="inline-flex items-center gap-1.5 rounded-lg border border-gray-200 px-3 py-1.5 text-xs font-semibold text-gray-700 hover:bg-gray-50"
+              >
+                <Plus size={13} />
+                Ajouter étape
+              </button>
+            </div>
+            {formState.programme.length === 0 ? (
+              <p className="text-xs text-gray-400">Aucune étape de programme.</p>
+            ) : (
+              <div className="space-y-2">
+                {formState.programme.map((step, index) => (
+                  <div key={index} className="rounded-xl border border-gray-200 p-3 space-y-2">
+                    <div className="grid grid-cols-[100px_1fr_auto] gap-2">
+                      <input
+                        type="text"
+                        value={step.time}
+                        onChange={(event) => {
+                          const updated = [...formState.programme];
+                          updated[index] = { ...updated[index], time: event.target.value };
+                          setFormState((previous) => ({ ...previous, programme: updated }));
+                        }}
+                        placeholder="10:00"
+                        className="h-9 rounded-lg border border-gray-200 px-2.5 text-sm text-center"
+                      />
+                      <input
+                        type="text"
+                        value={step.title}
+                        onChange={(event) => {
+                          const updated = [...formState.programme];
+                          updated[index] = { ...updated[index], title: event.target.value };
+                          setFormState((previous) => ({ ...previous, programme: updated }));
+                        }}
+                        placeholder="Titre de l'étape"
+                        className="h-9 rounded-lg border border-gray-200 px-2.5 text-sm"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const updated = formState.programme.filter((_, i) => i !== index);
+                          setFormState((previous) => ({ ...previous, programme: updated }));
+                        }}
+                        className="inline-flex h-9 w-9 items-center justify-center rounded-lg border border-red-100 text-red-500 hover:bg-red-50 shrink-0"
+                        aria-label="Supprimer cette étape"
+                      >
+                        <X size={14} />
+                      </button>
+                    </div>
+                    <input
+                      type="text"
+                      value={step.description}
+                      onChange={(event) => {
+                        const updated = [...formState.programme];
+                        updated[index] = { ...updated[index], description: event.target.value };
+                        setFormState((previous) => ({ ...previous, programme: updated }));
+                      }}
+                      placeholder="Description (optionnel)"
+                      className="h-9 w-full rounded-lg border border-gray-200 px-2.5 text-sm"
+                    />
                   </div>
                 ))}
               </div>

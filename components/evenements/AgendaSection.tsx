@@ -253,6 +253,7 @@ export default function AgendaSection() {
 
                     {/* Contenu */}
                     <div className="flex-1 p-5 md:p-6 flex flex-col min-w-0">
+                      {/* Ligne 1 : tags format + intervenants à droite */}
                       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
                         <div className="flex flex-wrap items-center gap-2">
                           {(() => {
@@ -269,6 +270,28 @@ export default function AgendaSection() {
                             {event.format}
                           </span>
                         </div>
+                        {event.intervenants && event.intervenants.length > 0 ? (
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            {event.intervenants.slice(0, 3).map((speaker, i) => (
+                              <span key={i} className="inline-flex items-center gap-1.5 rounded-full bg-[#0A2540]/5 px-2.5 py-1 text-[11px] font-semibold text-[#0A2540]">
+                                <span className="flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#0A2540] to-[#0d3a60] text-[9px] font-black text-white">
+                                  {speaker.initials || speaker.name.slice(0, 2).toUpperCase()}
+                                </span>
+                                {speaker.name}
+                              </span>
+                            ))}
+                          </div>
+                        ) : null}
+                      </div>
+                      <h3 className="text-lg font-bold text-[#0A2540] mb-1.5 group-hover:text-brand-green transition-colors line-clamp-1">{event.title}</h3>
+                      <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-3">{event.description}</p>
+                      {/* Ligne bas : heure/lieu + badge statut à droite */}
+                      <div className="flex flex-wrap items-center justify-between gap-x-5 gap-y-2 text-xs text-slate-500 font-medium">
+                        <div className="flex flex-wrap items-center gap-x-5 gap-y-2">
+                          <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.time}</span>
+                          <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.location}</span>
+                          {event.seats && <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.seats}</span>}
+                        </div>
                         {(() => {
                           const chronology = getEventChronology(event);
                           return (
@@ -277,13 +300,6 @@ export default function AgendaSection() {
                             </span>
                           );
                         })()}
-                      </div>
-                      <h3 className="text-lg font-bold text-[#0A2540] mb-1.5 group-hover:text-brand-green transition-colors line-clamp-1">{event.title}</h3>
-                      <p className="text-slate-500 text-sm leading-relaxed line-clamp-2 mb-4">{event.description}</p>
-                      <div className="flex flex-wrap items-center gap-x-5 gap-y-2 text-xs text-slate-500 font-medium">
-                        <span className="flex items-center gap-1.5"><Clock className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.time}</span>
-                        <span className="flex items-center gap-1.5"><MapPin className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.location}</span>
-                        {event.seats && <span className="flex items-center gap-1.5"><Users className="w-3.5 h-3.5 text-brand-green shrink-0" />{event.seats}</span>}
                       </div>
                     </div>
 

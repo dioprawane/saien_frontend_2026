@@ -49,6 +49,10 @@ const toHomeEventCard = (event: AgendaEvent) => {
     description: event.description,
     time: event.time,
     location: event.location,
+    speakers: (event.intervenants ?? []).slice(0, 3).map((s) => ({
+      name: s.name,
+      initials: s.initials || s.name.slice(0, 2).toUpperCase(),
+    })),
   };
 };
 

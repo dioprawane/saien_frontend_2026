@@ -144,8 +144,16 @@ export default function HonorSection({ members }: HonorSectionProps) {
                       : "border-slate-200 bg-brand-surface hover:-translate-y-0.5 hover:shadow-[0_20px_36px_-30px_rgba(15,23,42,0.65)]"
                   }`}
                 >
-                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${TONES[index % TONES.length]} flex items-center justify-center text-white font-bold text-lg`}>
-                    {getInitials(member.fullName)}
+                  <div className={`w-16 h-16 rounded-full bg-gradient-to-br ${TONES[index % TONES.length]} flex items-center justify-center text-white font-bold text-lg shrink-0 overflow-hidden`}>
+                    {member.avatarUrl && !member.avatarUrl.includes("avatar-1.png") ? (
+                      <img
+                        src={member.avatarUrl}
+                        alt={member.fullName}
+                        className="w-full h-full object-cover"
+                      />
+                    ) : (
+                      getInitials(member.fullName)
+                    )}
                   </div>
 
                   <div>

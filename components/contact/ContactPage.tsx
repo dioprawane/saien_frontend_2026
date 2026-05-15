@@ -13,15 +13,33 @@ import {
   Twitter,
   Youtube,
 } from "lucide-react";
+import { sendContactMessage, ContactSubject } from "@/lib/api/contact";
 
 const SUBJECTS = ["Adhésion", "Partenariat", "Presse", "Autre"] as const;
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleSubmit = (e: FormEvent) => {
+  const [fullName, setFullName] = useState("");
+  const [email, setEmail] = useState("");
+  const [subject, setSubject] = useState<ContactSubject | "">("");
+  const [message, setMessage] = useState("");
+
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (!subject) return;
+    setLoading(true);
+    setError(null);
+    try {
+      await sendContactMessage({ fullName, email, subject, message });
+      setSubmitted(true);
+    } catch {
+      setError("Une erreur est survenue. Veuillez réessayer ou nous contacter directement par email.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -142,7 +160,9 @@ export default function ContactPage() {
                       Nom complet
                       <input
                         type="text"
-                        placeholder="Jean Dupont"
+                        value={fullName}
+                        onChange={(e) => setFullName(e.target.value)}
+                        placeholder="Prénom NOM"
                         required
                         className="mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                       />
@@ -152,7 +172,9 @@ export default function ContactPage() {
                       Adresse email
                       <input
                         type="email"
-                        placeholder="jean@example.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        placeholder="libelle@example.com"
                         required
                         className="mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                       />
@@ -163,15 +185,16 @@ export default function ContactPage() {
                     Sujet
                     <select
                       required
-                      defaultValue=""
+                      value={subject}
+                      onChange={(e) => setSubject(e.target.value as ContactSubject)}
                       className="mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-emerald-400"
                     >
                       <option value="" disabled>
                         Sélectionnez un sujet
                       </option>
-                      {SUBJECTS.map((subject) => (
-                        <option key={subject} value={subject}>
-                          {subject}
+                      {SUBJECTS.map((s) => (
+                        <option key={s} value={s}>
+                          {s}
                         </option>
                       ))}
                     </select>
@@ -181,18 +204,27 @@ export default function ContactPage() {
                     Votre message
                     <textarea
                       rows={6}
+                      value={message}
+                      onChange={(e) => setMessage(e.target.value)}
                       placeholder="Comment pouvons-nous vous aider ?"
                       required
                       className="mt-1.5 w-full rounded-lg border border-slate-200 bg-slate-50 px-3 py-2.5 text-sm text-slate-700 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-emerald-400 resize-none"
                     />
                   </label>
 
+                  {error && (
+                    <p className="text-sm text-red-600 rounded-lg border border-red-200 bg-red-50 px-3 py-2">
+                      {error}
+                    </p>
+                  )}
+
                   <button
                     type="submit"
-                    className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#0e6f5c] hover:bg-[#0c5f50] px-4 py-3 text-sm font-semibold text-white transition-colors"
+                    disabled={loading}
+                    className="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-[#0e6f5c] hover:bg-[#0c5f50] disabled:opacity-60 px-4 py-3 text-sm font-semibold text-white transition-colors"
                   >
-                    Envoyer le message
-                    <ArrowRight className="w-4 h-4" aria-hidden="true" />
+                    {loading ? "Envoi en cours…" : "Envoyer le message"}
+                    {!loading && <ArrowRight className="w-4 h-4" aria-hidden="true" />}
                   </button>
 
                   <p className="text-center text-xs text-slate-400">
