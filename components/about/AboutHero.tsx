@@ -22,7 +22,7 @@ export default function AboutHero() {
               <span className="text-brand-green">sans frontières.</span>
             </h1>
             <p className="mt-4 text-slate-600 text-sm sm:text-base leading-relaxed max-w-xl">
-              SAIEN est le pont entre la communauté sénégalaise de l&apos;IA, étudiants, chercheurs, ingénieurs, entrepreneurs, professionnels,
+              SAIEN (Réseau sénégalais d'excellence en intelligence artificielle) est le pont entre la communauté sénégalaise de l&apos;IA, étudiants, chercheurs, ingénieurs, entrepreneurs, professionnels,
               et l&apos;écosystème technologique mondial. Notre raison d&apos;être : faire émerger les talents, vulgariser l&apos;IA et accélérer
               le développement du Sénégal par l&apos;innovation.
             </p>

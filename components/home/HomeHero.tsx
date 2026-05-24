@@ -24,7 +24,7 @@ export default function HomeHero() {
             </h1>
 
             <p className="text-slate-500 text-sm sm:text-base leading-relaxed max-w-md">
-              SAIEN rassemble étudiants, chercheurs, ingénieurs, entrepreneurs et professionnels sénégalais de l'IA, de la Data et de la Cybersécurité en France, au Sénégal et dans la diaspora, pour faire émerger les talents, accélérer l'innovation et bâtir des ponts technologiques entre la diaspora et le Sénégal.
+              SAIEN (Senegalese Artificial Intelligence Excellence Network) rassemble étudiants, chercheurs, ingénieurs, entrepreneurs et professionnels sénégalais de l'IA, de la Data et de la Cybersécurité en France, au Sénégal et dans la diaspora, pour faire émerger les talents, accélérer l'innovation et bâtir des ponts technologiques entre la diaspora et le Sénégal.
             </p>
 
             <div className="flex flex-col sm:flex-row gap-3">

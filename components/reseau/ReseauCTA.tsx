@@ -67,7 +67,7 @@ export default function ReseauCTA() {
 
                 <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
                   <Pin className="h-4 w-4 text-brand-green" aria-hidden="true" />
-                  Cotisation annuelle : à définir par l&apos;AG
+                  Carte de membre : 10 € - Cotisation annuelle : à définir par l&apos;AG
                 </p>
 
                 <div className="mt-5">
@@ -108,7 +108,7 @@ export default function ReseauCTA() {
 
                 <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
                   <Pin className="h-4 w-4 text-brand-green" aria-hidden="true" />
-                  Droit d&apos;entrée + cotisation annuelle
+                  Droit d&apos;entrée - cotisation annuelle : Libre
                 </p>
 
                 <div className="mt-5">
@@ -149,7 +149,7 @@ export default function ReseauCTA() {
 
                 <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
                   <Pin className="h-4 w-4 text-brand-green" aria-hidden="true" />
-                  Sur invitation uniquement
+                  Sur invitation uniquement : participation symbolique - libre
                 </p>
 
                 <div className="mt-5">

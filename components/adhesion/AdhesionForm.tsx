@@ -50,7 +50,7 @@ const MEMBER_OPTIONS: Array<{
       "Pour les Sénégalais (ou amis du Sénégal) en IA, Data ou Cybersécurité qui veulent contribuer activement.",
     cta: "Devenir membre actif",
     annualFeeEur: 10,
-    notice: "Cotisation annuelle: 10 €",
+    notice: "Carte de membre : 10 €",
     benefits: [
       "Participer aux activités et programmes",
       "Voter à l'Assemblée Générale",
@@ -64,8 +64,8 @@ const MEMBER_OPTIONS: Array<{
     subtitle:
       "Pour les particuliers ou structures souhaitant soutenir financièrement SAIEN au-delà de la cotisation standard.",
     cta: "Devenir bienfaiteur",
-    annualFeeEur: 20,
-    notice: "Cotisation annuelle: 20 €",
+    annualFeeEur: 999,
+    notice: "Carte de membre : Libre",
     benefits: [
       "Tous les avantages des membres actifs",
       "Reconnaissance publique en tant que soutien",
@@ -79,8 +79,8 @@ const MEMBER_OPTIONS: Array<{
     subtitle:
       "Personnalités reconnues pour leur contribution exceptionnelle à l'IA et à notre communauté.",
     cta: "Recommander un membre d'honneur",
-    annualFeeEur: 50,
-    notice: "Sur invitation uniquement - participation symbolique: 50 €",
+    annualFeeEur: 0,
+    notice: "Sur invitation uniquement - participation symbolique : libre",
     benefits: [
       "Désigné par décision de l'Assemblée Générale",
       "Voix consultative sur les sujets stratégiques",
@@ -99,20 +99,20 @@ const PAYMENT_METHODS: Array<{
   {
     id: "wero",
     label: "Wero",
-    details: "+221 77 000 00 00",
+    details: "+33 7 59 73 35 45",
     helper: "Envoyer au compte SAIEN, puis renseigner la référence.",
   },
   {
     id: "bank_transfer",
     label: "Virement bancaire",
-    details: "IBAN: SN00 0000 0000 0000 0000 0000 000 - BIC: SAIENSN",
+    details: "IBAN : FR76 1027 8089 5000 0212 2680 163",
     helper: "Mention: Adhésion + votre nom complet.",
   },
   {
     id: "mobile_money",
-    label: "Mobile Money",
-    details: "+221 78 000 00 00",
-    helper: "Wave/Orange Money au nom de SAIEN.",
+    label: "Wave",
+    details: "+221 76 0 15 70 73",
+    helper: "Wave au nom de SAIEN.",
   },
 ];
 
