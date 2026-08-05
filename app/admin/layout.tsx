@@ -45,6 +45,15 @@ const ADMIN_NAV_ITEMS: AdminNavItem[] = [
   { href: "/admin/parametres", label: "Parametres", icon: Settings },
 ];
 
+// Sections accessibles au role restreint "admin-event" (gestion des actualites, des evenements et des projets).
+const EVENT_ADMIN_NAV_ITEMS: AdminNavItem[] = [
+  { href: "/admin/evenements", label: "Evenements", icon: Calendar },
+  { href: "/admin/actualites", label: "Actualites", icon: Newspaper },
+  { href: "/admin/projets", label: "Projets", icon: BriefcaseBusiness },
+];
+const EVENT_ADMIN_ALLOWED_PREFIXES = ["/admin/evenements", "/admin/actualites", "/admin/projets"];
+const EVENT_ADMIN_DEFAULT_PATH = "/admin/evenements";
+
 const formatPendingCounter = (value: number) => {
   if (value > 99) return "99+";
   return String(value);
@@ -54,7 +63,7 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
   const router = useRouter();
   const pathname = usePathname();
   const { summary } = useAdminContext();
-  const { isHydrated, isAuthenticated, isAdmin, session, signOut } = useUserSession();
+  const { isHydrated, isAuthenticated, isAdmin, isEventAdmin, session, signOut } = useUserSession();
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false);
   const [pendingFromApi, setPendingFromApi] = useState<number | null>(null);
 
@@ -84,8 +93,16 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
 
     if (!isAdmin) {
       router.replace("/espace-membre");
+      return;
     }
-  }, [isHydrated, isAuthenticated, isAdmin, router]);
+
+    if (
+      isEventAdmin &&
+      !EVENT_ADMIN_ALLOWED_PREFIXES.some((prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`))
+    ) {
+      router.replace(EVENT_ADMIN_DEFAULT_PATH);
+    }
+  }, [isHydrated, isAuthenticated, isAdmin, isEventAdmin, pathname, router]);
 
   useEffect(() => {
     if (!isHydrated || !isAuthenticated || !isAdmin) return;
@@ -165,7 +182,11 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
       ? "Super Admin"
       : session?.role === "admin"
         ? "Admin"
-        : "Membre";
+        : session?.role === "admin-event"
+          ? "Admin Evenements"
+          : "Membre";
+
+  const navItems = isEventAdmin ? EVENT_ADMIN_NAV_ITEMS : ADMIN_NAV_ITEMS;
 
   const pendingRegistrationsCount = pendingFromApi ?? summary.pendingRegistrations;
 
@@ -208,7 +229,7 @@ function AdminLayoutShell({ children }: AdminLayoutProps) {
               </div>
 
               <nav className="p-4 space-y-1">
-                {ADMIN_NAV_ITEMS.map(({ href, label, icon: Icon }) => {
+                {navItems.map(({ href, label, icon: Icon }) => {
                   const active = isActive(href);
                   const isRegistrationsLink = href === "/admin/inscriptions";
 

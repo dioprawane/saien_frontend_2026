@@ -27,6 +27,8 @@ import {
   type UpsertShowcaseArticleInput,
 } from "@/lib/api/showcase";
 import { ARTICLE_CATEGORIES, type Article, type ArticleImage } from "@/lib/articles-data";
+import RichTextEditor from "@/components/admin/RichTextEditor";
+import { splitHtmlIntoBlocks } from "@/lib/rich-text";
 
 type ArticleSectionDraft = {
   localId: string;
@@ -919,12 +921,13 @@ export default function ActualitesAdminPage() {
                       placeholder="Titre de section"
                       className="h-9 w-full rounded-md border border-gray-200 px-3 text-sm"
                     />
-                    <textarea
+                    <RichTextEditor
                       value={section.paragraphsText}
-                      onChange={(event) => updateSection(section.localId, "paragraphsText", event.target.value)}
-                      placeholder="Paragraphes (une ligne = un paragraphe)"
-                      rows={4}
-                      className="w-full rounded-md border border-gray-200 px-3 py-2 text-sm"
+                      onChange={(html) =>
+                        updateSection(section.localId, "paragraphsText", splitHtmlIntoBlocks(html).join("\n"))
+                      }
+                      placeholder="Contenu de la section"
+                      minHeightClassName="min-h-[100px]"
                     />
                     <textarea
                       value={section.imagesJson}

@@ -76,6 +76,7 @@ const ROLE_LABELS: Record<string, string> = {
   member: "Membre",
   admin: "Administrateur",
   "super-admin": "Super administrateur",
+  "admin-event": "Admin Événements",
 };
 
 function splitFullName(fullName: string) {

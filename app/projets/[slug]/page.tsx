@@ -7,6 +7,7 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { ApiClientError } from "@/lib/api/client";
 import { getShowcaseProjectBySlug, type ShowcaseProject } from "@/lib/api/showcase";
+import RichTextContent from "@/components/RichTextContent";
 
 export const dynamic = "force-dynamic";
 
@@ -94,7 +95,7 @@ export default async function ProjectDetailPage({
                   <h2 className="text-xl font-bold text-[#0A2540] mb-3">
                     Présentation du projet
                   </h2>
-                  <p className="text-slate-600 leading-relaxed">{project.fullDescription}</p>
+                  <RichTextContent html={project.fullDescription} className="text-slate-600 leading-relaxed" />
                 </div>
 
                 <div className="bg-white border border-slate-100 rounded-2xl p-6 shadow-sm">

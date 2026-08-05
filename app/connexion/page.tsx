@@ -54,7 +54,11 @@ export default function ConnexionPage() {
         return;
       }
 
-      if (response.session.role === "admin" || response.session.role === "super-admin") {
+      if (
+        response.session.role === "admin" ||
+        response.session.role === "super-admin" ||
+        response.session.role === "admin-event"
+      ) {
         router.push("/admin");
         return;
       }

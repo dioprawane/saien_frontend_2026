@@ -38,6 +38,9 @@ type ApiShowcaseEvent = {
   day: string;
   month: string;
   year: string;
+  endDay: string | null;
+  endMonth: string | null;
+  endYear: string | null;
   thematique: string;
   format: string;
   title: string;
@@ -195,6 +198,9 @@ export type UpsertShowcaseEventInput = {
   day: string;
   month: string;
   year: string;
+  endDay?: string;
+  endMonth?: string;
+  endYear?: string;
   thematique: string;
   format: string;
   title: string;
@@ -406,6 +412,9 @@ function normalizeShowcaseEvent(event: ApiShowcaseEvent): AgendaEvent {
     day: event.day,
     month: event.month,
     year: event.year,
+    endDay: event.endDay ?? undefined,
+    endMonth: event.endMonth ?? undefined,
+    endYear: event.endYear ?? undefined,
     status: event.status ?? "draft",
     tags: (event.tags ?? []).map(normalizeEventTag),
     thematique: event.thematique,
@@ -640,6 +649,9 @@ export async function upsertShowcaseEvent(input: UpsertShowcaseEventInput) {
     day: input.day,
     month: input.month,
     year: input.year,
+    endDay: input.endDay ?? null,
+    endMonth: input.endMonth ?? null,
+    endYear: input.endYear ?? null,
     thematique: input.thematique,
     format: input.format,
     title: input.title,

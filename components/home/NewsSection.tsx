@@ -74,7 +74,11 @@ export default function NewsSection() {
   }, []);
 
   const displayedArticles = useMemo(
-    () => articles.slice(0, 3).map(toHomeArticleRow),
+    () =>
+      [...articles]
+        .sort((a, b) => (b.id ?? 0) - (a.id ?? 0))
+        .slice(0, 3)
+        .map(toHomeArticleRow),
     [articles],
   );
 

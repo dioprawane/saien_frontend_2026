@@ -29,10 +29,14 @@ const FLOW_STEPS = [
 
 type JoinMemberType = "active" | "benefactor" | "honor";
 type AccountMode = "new" | "existing";
-type PaymentMethod = "wero" | "bank_transfer" | "mobile_money";
+type PaymentMethod = "helloasso" | "bank_transfer" | "mobile_money";
 type FlowStep = 1 | 2 | 3;
 
 const CONTACT_REVIEW_EMAIL = "bureau@saien.org";
+
+// const HELLOASSO_PAYMENT_URL =
+//   "https://www.helloasso.com/associations/senegalese-artificial-intelligence-excellence-network-saien/paiements/carte-de-membre";
+const HELLOASSO_PAYMENT_URL = "https://www.helloasso.com/beta/associations/senegalese-artificial-intelligence-excellence-network-saien/adhesions/carte-de-membre";
 
 const MEMBER_OPTIONS: Array<{
   type: JoinMemberType;
@@ -50,7 +54,7 @@ const MEMBER_OPTIONS: Array<{
       "Pour les Sénégalais (ou amis du Sénégal) en IA, Data ou Cybersécurité qui veulent contribuer activement.",
     cta: "Devenir membre actif",
     annualFeeEur: 10,
-    notice: "Carte de membre : 10 €",
+    notice: "Carte de membre : 10 € (diaspora) / 1 000 CFA (Sénégal)",
     benefits: [
       "Participer aux activités et programmes",
       "Voter à l'Assemblée Générale",
@@ -64,7 +68,7 @@ const MEMBER_OPTIONS: Array<{
     subtitle:
       "Pour les particuliers ou structures souhaitant soutenir financièrement SAIEN au-delà de la cotisation standard.",
     cta: "Devenir bienfaiteur",
-    annualFeeEur: 999,
+    annualFeeEur: 99,
     notice: "Carte de membre : Libre",
     benefits: [
       "Tous les avantages des membres actifs",
@@ -95,12 +99,14 @@ const PAYMENT_METHODS: Array<{
   label: string;
   details: string;
   helper: string;
+  url?: string;
 }> = [
   {
-    id: "wero",
-    label: "Wero",
-    details: "+33 7 59 73 35 45",
-    helper: "Envoyer au compte SAIEN, puis renseigner la référence.",
+    id: "helloasso",
+    label: "HelloAsso (carte bancaire)",
+    details: "Paiement sécurisé en ligne",
+    helper: "Réglez la carte de membre directement sur HelloAsso, puis revenez confirmer.",
+    url: HELLOASSO_PAYMENT_URL,
   },
   {
     id: "bank_transfer",
@@ -160,11 +166,12 @@ export default function AdhesionForm() {
   const [professionalBackground, setProfessionalBackground] = useState("");
   const [imageConsent, setImageConsent] = useState(false);
 
-  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("wero");
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("helloasso");
   const [paymentReference, setPaymentReference] = useState("");
   const [paymentDate, setPaymentDate] = useState("");
   const [hasSentPayment, setHasSentPayment] = useState(false);
   const [acceptReview, setAcceptReview] = useState(false);
+  const [acceptStatuts, setAcceptStatuts] = useState(false);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
@@ -240,20 +247,26 @@ export default function AdhesionForm() {
       return null;
     }
 
-    if (!paymentReference.trim()) {
-      return "Renseignez la référence de paiement (transaction, reçu ou virement).";
-    }
+    if (paymentMethod !== "helloasso") {
+      if (!paymentReference.trim()) {
+        return "Renseignez la référence de paiement (transaction, reçu ou virement).";
+      }
 
-    if (!paymentDate) {
-      return "Veuillez indiquer la date d'envoi du paiement.";
+      if (!paymentDate) {
+        return "Veuillez indiquer la date d'envoi du paiement.";
+      }
     }
 
     if (!hasSentPayment) {
-      return "Confirmez avoir initié le paiement avant de soumettre.";
+      return "Confirmez avoir effectué le paiement avant de soumettre.";
     }
 
     if (!acceptReview) {
       return "Vous devez accepter l'étude et la validation de votre dossier par l'équipe SAIEN.";
+    }
+
+    if (!acceptStatuts) {
+      return "Veuillez confirmer avoir pris connaissance des statuts et du règlement intérieur de l'association.";
     }
 
     return null;
@@ -768,7 +781,11 @@ export default function AdhesionForm() {
                     <div className="rounded-xl border border-slate-200 bg-slate-50 p-4">
                       <p className="text-sm text-slate-700">
                         Montant à envoyer pour <span className="font-semibold">{selectedOption.title}</span> :{" "}
-                        <span className="font-bold text-slate-900">{selectedOption.annualFeeEur} €</span>
+                        <span className="font-bold text-slate-900">
+                          {paymentMethod === "mobile_money" && memberType === "active"
+                            ? "1 000 F CFA"
+                            : `${selectedOption.annualFeeEur} €`}
+                        </span>
                       </p>
                     </div>
 
@@ -794,36 +811,47 @@ export default function AdhesionForm() {
                               <p className="text-sm font-semibold text-slate-900">{method.label}</p>
                               <p className="text-xs text-slate-600 mt-0.5">{method.details}</p>
                               <p className="text-xs text-slate-500 mt-1">{method.helper}</p>
+                              {method.url && paymentMethod === method.id && (
+                                <a
+                                  href={method.url}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="mt-3 inline-flex items-center gap-2 rounded-full bg-brand-green px-4 py-2 text-xs font-semibold text-white transition-colors hover:bg-brand-green-hover"
+                                >
+                                  Payer la carte de membre sur HelloAsso
+                                  <ArrowRight className="h-3.5 w-3.5" aria-hidden="true" />
+                                </a>
+                              )}
                             </div>
                           </div>
                         </label>
                       ))}
                     </div>
 
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <label className="text-sm font-medium text-slate-700">
-                        Référence de paiement
-                        <input
-                          type="text"
-                          placeholder="Ex: WERO-842923 / VIR-2026-..."
-                          className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green"
-                          value={paymentReference}
-                          onChange={(event) => setPaymentReference(event.target.value)}
-                          required
-                        />
-                      </label>
+                    {paymentMethod !== "helloasso" && (
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <label className="text-sm font-medium text-slate-700">
+                          Référence de paiement
+                          <input
+                            type="text"
+                            placeholder="Ex: VIR-2026-... / Wave-..."
+                            className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green"
+                            value={paymentReference}
+                            onChange={(event) => setPaymentReference(event.target.value)}
+                          />
+                        </label>
 
-                      <label className="text-sm font-medium text-slate-700">
-                        Date d'envoi du paiement
-                        <input
-                          type="date"
-                          className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green"
-                          value={paymentDate}
-                          onChange={(event) => setPaymentDate(event.target.value)}
-                          required
-                        />
-                      </label>
-                    </div>
+                        <label className="text-sm font-medium text-slate-700">
+                          Date d'envoi du paiement
+                          <input
+                            type="date"
+                            className="mt-1.5 w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-green"
+                            value={paymentDate}
+                            onChange={(event) => setPaymentDate(event.target.value)}
+                          />
+                        </label>
+                      </div>
+                    )}
 
                     <div className="space-y-2">
                       <label className="flex items-start gap-2 text-sm text-slate-700">
@@ -833,7 +861,7 @@ export default function AdhesionForm() {
                           onChange={(event) => setHasSentPayment(event.target.checked)}
                           className="mt-0.5"
                         />
-                        <span>Je confirme avoir envoyé le paiement via la méthode choisie.</span>
+                        <span>Je confirme avoir effectué le paiement via la méthode choisie.</span>
                       </label>
 
                       <label className="flex items-start gap-2 text-sm text-slate-700">
@@ -845,6 +873,36 @@ export default function AdhesionForm() {
                         />
                         <span>
                           J&apos;accepte que l&apos;équipe SAIEN étudie ce dossier et valide l&apos;adhésion après vérification du paiement.
+                        </span>
+                      </label>
+
+                      <label className="flex items-start gap-2 text-sm text-slate-700">
+                        <input
+                          type="checkbox"
+                          checked={acceptStatuts}
+                          onChange={(event) => setAcceptStatuts(event.target.checked)}
+                          className="mt-0.5"
+                        />
+                        <span>
+                          J&apos;ai pris connaissance et j&apos;accepte les{" "}
+                          <a
+                            href="/documents/statuts_saien.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold underline hover:text-slate-900"
+                          >
+                            statuts
+                          </a>{" "}
+                          et le{" "}
+                          <a
+                            href="/documents/reglement_interieur_saien.pdf"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="font-semibold underline hover:text-slate-900"
+                          >
+                            règlement intérieur
+                          </a>{" "}
+                          de l&apos;association SAIEN.
                         </span>
                       </label>
                     </div>

@@ -67,7 +67,7 @@ export default function ReseauCTA() {
 
                 <p className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-slate-600">
                   <Pin className="h-4 w-4 text-brand-green" aria-hidden="true" />
-                  Carte de membre : 10 € - Cotisation annuelle : à définir par l&apos;AG
+                  Carte de membre : 10 € (diaspora) / 1 000 CFA (Sénégal) - Cotisation annuelle : à définir par l&apos;AG
                 </p>
 
                 <div className="mt-5">

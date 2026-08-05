@@ -10,6 +10,7 @@ import ArticleImageGallery from "@/components/actualites/ArticleImageGallery";
 import { ApiClientError } from "@/lib/api/client";
 import { getShowcaseArticleBySlug } from "@/lib/api/showcase";
 import { type Article } from "@/lib/articles-data";
+import RichTextContent from "@/components/RichTextContent";
 
 type ActualiteDetailClientProps = {
   slug: string;
@@ -153,9 +154,11 @@ export default function ActualiteDetailClient({ slug }: ActualiteDetailClientPro
 
                     <div className="space-y-4 mb-6">
                       {section.paragraphs.map((paragraph, paragraphIndex) => (
-                        <p key={`${section.heading}-${paragraphIndex}`} className="text-slate-600 leading-relaxed">
-                          {paragraph}
-                        </p>
+                        <RichTextContent
+                          key={`${section.heading}-${paragraphIndex}`}
+                          html={paragraph}
+                          className="text-slate-600 leading-relaxed"
+                        />
                       ))}
                     </div>
 

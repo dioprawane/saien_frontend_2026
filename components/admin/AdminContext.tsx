@@ -14,7 +14,7 @@ const STORAGE_KEY = "saien-admin-console-v1";
 export type RegistrationStatus = "pending" | "approved" | "rejected";
 export type MemberType = "active" | "adherent" | "honor" | "benefactor";
 export type MemberStatus = "active" | "suspended";
-export type AdminRole = "member" | "admin" | "super-admin";
+export type AdminRole = "member" | "admin" | "super-admin" | "admin-event";
 export type EventFormat = "onsite" | "online" | "hybrid";
 export type EventStatus = "draft" | "published" | "completed" | "cancelled";
 

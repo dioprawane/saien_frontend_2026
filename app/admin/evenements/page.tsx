@@ -32,12 +32,16 @@ import {
   type UpsertShowcaseEventInput,
 } from "@/lib/api/showcase";
 import type { AgendaEvent, EventTag, Intervenant } from "@/lib/events-data";
+import { formatEventDateLabel } from "@/lib/event-display";
+import RichTextEditor from "@/components/admin/RichTextEditor";
+import { isHtmlBlockEmpty } from "@/lib/rich-text";
 
 type ShowcaseStatus = "draft" | "published" | "completed" | "cancelled";
 
 type EventFormState = {
   id: string;
   date: string;
+  endDate: string;
   startTimeGmt: string;
   endTimeGmt: string;
   thematique: string;
@@ -147,6 +151,18 @@ const toDateInputValue = (eventItem: AgendaEvent) => {
   return `${year}-${month}-${day}`;
 };
 
+const toEndDateInputValue = (eventItem: AgendaEvent) => {
+  if (!eventItem.endDay || !eventItem.endMonth || !eventItem.endYear) {
+    return "";
+  }
+  const normalizedMonth = normalizeMonthKey(eventItem.endMonth);
+  const monthIndex = MONTH_INDEX_BY_KEY[normalizedMonth] ?? 0;
+  const month = String(monthIndex + 1).padStart(2, "0");
+  const day = String(Math.max(1, Number(eventItem.endDay) || 1)).padStart(2, "0");
+  const year = /^\d{4}$/.test(eventItem.endYear) ? eventItem.endYear : String(new Date().getFullYear());
+  return `${year}-${month}-${day}`;
+};
+
 const getNextLegacyId = (events: AgendaEvent[]) => {
   const maxId = events.reduce((max, eventItem) => Math.max(max, eventItem.id), 0);
   return maxId + 1;
@@ -155,6 +171,7 @@ const getNextLegacyId = (events: AgendaEvent[]) => {
 const createEmptyForm = (nextId: number): EventFormState => ({
   id: String(nextId),
   date: new Date().toISOString().slice(0, 10),
+  endDate: "",
   startTimeGmt: "10:00",
   endTimeGmt: "12:00",
   thematique: "Intelligence Artificielle",
@@ -201,6 +218,7 @@ const eventToForm = (eventItem: AgendaEvent): EventFormState => {
   return {
     id: String(eventItem.id),
     date: toDateInputValue(eventItem),
+    endDate: toEndDateInputValue(eventItem),
     startTimeGmt: timeRange.startTimeGmt,
     endTimeGmt: timeRange.endTimeGmt,
     thematique: eventItem.thematique,
@@ -221,8 +239,7 @@ const eventToForm = (eventItem: AgendaEvent): EventFormState => {
   };
 };
 
-const eventDateLabel = (eventItem: AgendaEvent) =>
-  `${eventItem.day} ${eventItem.month} ${eventItem.year}`;
+const eventDateLabel = (eventItem: AgendaEvent) => formatEventDateLabel(eventItem);
 
 const getEventStatus = (eventItem: AgendaEvent): ShowcaseStatus => {
   return eventItem.status ?? "draft";
@@ -423,6 +440,7 @@ export default function EvenementsAdminPage() {
     }
 
     const { day, month, year } = buildDatePartsFromInput(formState.date);
+    const endDateParts = formState.endDate ? buildDatePartsFromInput(formState.endDate) : null;
     const existingEvent = events.find((eventItem) => eventItem.id === id);
     const formatTrimmed = formState.format.trim();
     const typeTrimmed = formState.type.trim();
@@ -444,11 +462,14 @@ export default function EvenementsAdminPage() {
       day,
       month,
       year,
+      endDay: endDateParts?.day,
+      endMonth: endDateParts?.month,
+      endYear: endDateParts?.year,
       thematique: formState.thematique.trim(),
       format: formatTrimmed,
       title: formState.title.trim(),
       description: formState.description.trim(),
-      fullDescription: formState.fullDescription.trim() || undefined,
+      fullDescription: isHtmlBlockEmpty(formState.fullDescription) ? undefined : formState.fullDescription,
       time: buildGmtTimeLabel(formState.startTimeGmt, formState.endTimeGmt),
       location: formState.location.trim(),
       seats: formState.seats.trim() || undefined,
@@ -727,6 +748,28 @@ export default function EvenementsAdminPage() {
 
           <p className="text-xs text-gray-500">Les heures sont en GMT.</p>
 
+          <label className="block text-sm text-gray-700">
+            Date de fin (optionnel, pour un evenement sur plusieurs jours)
+            <div className="mt-1 flex items-center gap-2">
+              <input
+                type="date"
+                value={formState.endDate}
+                min={formState.date}
+                onChange={(event) => setFormState((previous) => ({ ...previous, endDate: event.target.value }))}
+                className="h-10 rounded-lg border border-gray-200 px-3 text-sm"
+              />
+              {formState.endDate && (
+                <button
+                  type="button"
+                  onClick={() => setFormState((previous) => ({ ...previous, endDate: "" }))}
+                  className="text-xs font-semibold text-gray-500 hover:text-gray-700"
+                >
+                  Retirer
+                </button>
+              )}
+            </div>
+          </label>
+
           <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
             <div className="flex flex-col gap-2">
               <select
@@ -844,14 +887,10 @@ export default function EvenementsAdminPage() {
             className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm"
           />
 
-          <textarea
+          <RichTextEditor
             value={formState.fullDescription}
-            onChange={(event) =>
-              setFormState((previous) => ({ ...previous, fullDescription: event.target.value }))
-            }
+            onChange={(html) => setFormState((previous) => ({ ...previous, fullDescription: html }))}
             placeholder="Description detaillee (optionnel)"
-            rows={4}
-            className="w-full rounded-lg border border-gray-200 px-3 py-2.5 text-sm"
           />
 
           <textarea

@@ -18,7 +18,9 @@ import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import { getShowcaseEventById, registerToShowcaseEvent } from "@/lib/api/showcase";
 import { EVENTS, type AgendaEvent } from "@/lib/events-data";
+import { formatEventDateLabel } from "@/lib/event-display";
 import { useUserSession } from "@/components/auth/UserSessionContext";
+import RichTextContent from "@/components/RichTextContent";
 
 type EvenementDetailClientProps = {
   id: number;
@@ -187,7 +189,7 @@ export default function EvenementDetailClient({ id }: EvenementDetailClientProps
               <div className="flex flex-wrap items-center gap-x-8 gap-y-4 p-5 bg-white rounded-2xl border border-gray-100 shadow-sm text-sm text-slate-600 font-medium">
                 <span className="flex items-center gap-2">
                   <Calendar className="w-4 h-4 text-brand-green shrink-0" />
-                  {event.day} {event.month} {event.year}
+                  {formatEventDateLabel(event)}
                 </span>
                 <span className="flex items-center gap-2">
                   <Clock className="w-4 h-4 text-brand-green shrink-0" />
@@ -207,9 +209,10 @@ export default function EvenementDetailClient({ id }: EvenementDetailClientProps
 
               <div>
                 <h2 className="text-xl font-bold text-[#0A2540] mb-4">A propos de cet evenement</h2>
-                <p className="text-slate-600 leading-relaxed text-[15px]">
-                  {event.fullDescription || event.description}
-                </p>
+                <RichTextContent
+                  html={event.fullDescription || event.description}
+                  className="text-slate-600 leading-relaxed text-[15px]"
+                />
               </div>
 
               {event.objectifs && event.objectifs.length > 0 ? (
@@ -322,7 +325,7 @@ export default function EvenementDetailClient({ id }: EvenementDetailClientProps
                 <div className="space-y-3 text-sm text-slate-600">
                   <div className="flex items-center gap-3">
                     <Calendar className="w-4 h-4 text-brand-green shrink-0" />
-                    <span>{event.day} {event.month} {event.year}</span>
+                    <span>{formatEventDateLabel(event)}</span>
                   </div>
                   <div className="flex items-center gap-3">
                     <Clock className="w-4 h-4 text-brand-green shrink-0" />

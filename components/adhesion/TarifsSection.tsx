@@ -4,7 +4,7 @@ const PLANS = [
   {
     name: "Membre Actif",
     subtitle: "Pour les professionnels et chercheurs.",
-    price: "50",
+    price: "10",
     features: [
       "Accès complet à l'annuaire",
       "Participation aux groupes de travail",
@@ -17,7 +17,7 @@ const PLANS = [
   {
     name: "Membre Bienfaiteur",
     subtitle: "Pour soutenir activement l'ONG.",
-    price: "200",
+    price: "Libre",
     features: [
       "Tous les avantages Actif",
       "Mention sur la page des partenaires",

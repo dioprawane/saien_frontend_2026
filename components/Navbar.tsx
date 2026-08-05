@@ -21,7 +21,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const { session, isAuthenticated } = useUserSession();
   const dashboardHref =
-    session?.role === "admin" || session?.role === "super-admin"
+    session?.role === "admin" || session?.role === "super-admin" || session?.role === "admin-event"
       ? "/admin"
       : "/espace-membre";
 

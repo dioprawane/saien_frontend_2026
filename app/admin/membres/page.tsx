@@ -36,6 +36,7 @@ const roleLabel: Record<AdminRole, string> = {
   member: "Membre",
   admin: "Admin",
   "super-admin": "Super Admin",
+  "admin-event": "Admin Evenements",
 };
 
 const statusLabel: Record<MemberStatus, string> = {
@@ -321,6 +322,7 @@ export default function MembresAdminPage() {
           >
             <option value="member">Membre</option>
             <option value="admin">Admin</option>
+            <option value="admin-event">Admin Evenements</option>
             <option value="super-admin">Super Admin</option>
           </select>
           <button
@@ -401,6 +403,7 @@ export default function MembresAdminPage() {
               <option value="all">Tous roles</option>
               <option value="member">Membre</option>
               <option value="admin">Admin</option>
+              <option value="admin-event">Admin Evenements</option>
               <option value="super-admin">Super Admin</option>
             </select>
           </div>
@@ -604,6 +607,7 @@ function MemberCard({
           >
             <option value="member">{roleLabel.member}</option>
             <option value="admin">{roleLabel.admin}</option>
+            <option value="admin-event">{roleLabel["admin-event"]}</option>
             <option value="super-admin">{roleLabel["super-admin"]}</option>
           </select>
         </label>
@@ -685,6 +689,7 @@ function MemberRow({
         >
           <option value="member">{roleLabel.member}</option>
           <option value="admin">{roleLabel.admin}</option>
+          <option value="admin-event">{roleLabel["admin-event"]}</option>
           <option value="super-admin">{roleLabel["super-admin"]}</option>
         </select>
       </td>

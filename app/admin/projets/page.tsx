@@ -26,6 +26,8 @@ import {
   type ShowcaseProject,
   type UpsertShowcaseProjectInput,
 } from "@/lib/api/showcase";
+import RichTextEditor from "@/components/admin/RichTextEditor";
+import { isHtmlBlockEmpty } from "@/lib/rich-text";
 
 type ProjectFormState = {
   slug: string;
@@ -420,7 +422,7 @@ export default function ProjetsAdminPage() {
       !formState.badge.trim()
       || !formState.title.trim()
       || !formState.description.trim()
-      || !formState.fullDescription.trim()
+      || isHtmlBlockEmpty(formState.fullDescription)
       || !formState.footerType.trim()
       || !formState.footerValue.trim()
       || !formState.period.trim()
@@ -659,13 +661,10 @@ export default function ProjetsAdminPage() {
 
             <label className="block text-sm text-gray-700">
               Description complete *
-              <textarea
+              <RichTextEditor
                 value={formState.fullDescription}
-                onChange={(event) =>
-                  setFormState((previous) => ({ ...previous, fullDescription: event.target.value }))
-                }
-                rows={4}
-                className="mt-1 w-full rounded-lg border border-gray-200 px-3 py-2 text-sm"
+                onChange={(html) => setFormState((previous) => ({ ...previous, fullDescription: html }))}
+                placeholder="Description complete du projet"
               />
             </label>
 

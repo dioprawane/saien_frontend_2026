@@ -4,7 +4,7 @@ export type AdminRegistrationStatus = "pending" | "approved" | "rejected";
 export type AdminMemberType = "active" | "adherent" | "honor" | "benefactor";
 export type AdminRegistrationSource = "website" | "event" | "referral";
 export type AdminMemberStatus = "active" | "pending" | "expired" | "suspended";
-export type AdminRole = "member" | "admin" | "super-admin";
+export type AdminRole = "member" | "admin" | "super-admin" | "admin-event";
 
 export type AdminRegistration = {
   id: string;

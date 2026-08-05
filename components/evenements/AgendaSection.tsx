@@ -19,6 +19,7 @@ import {
   compareEventsByChronology,
   getEventChronology,
   getFormatBadgeClass,
+  isMultiDayEvent,
 } from "@/lib/event-display";
 import { EVENTS as FALLBACK_EVENTS, type AgendaEvent } from "@/lib/events-data";
 
@@ -249,6 +250,11 @@ export default function AgendaSection() {
                       <span className="text-[10px] font-bold text-brand-green uppercase tracking-[0.2em]">{event.month}</span>
                       <span className="text-[2.8rem] leading-none font-black text-white my-1">{event.day}</span>
                       <span className="text-[10px] text-white/50 font-medium">{event.year}</span>
+                      {isMultiDayEvent(event) ? (
+                        <span className="mt-1 text-[9px] text-white/70 font-semibold">
+                          → {event.endDay} {event.endMonth}
+                        </span>
+                      ) : null}
                     </div>
 
                     {/* Contenu */}

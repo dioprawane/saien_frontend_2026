@@ -11,7 +11,7 @@ import {
 
 const STORAGE_KEY = "saien-auth-session-v1";
 
-export type UserRole = "member" | "admin" | "super-admin";
+export type UserRole = "member" | "admin" | "super-admin" | "admin-event";
 
 export type UserSession = {
   id: string;
@@ -36,6 +36,7 @@ type UserSessionContextValue = {
   session: UserSession | null;
   isAuthenticated: boolean;
   isAdmin: boolean;
+  isEventAdmin: boolean;
   signIn: (auth: StoredAuthSession) => void;
   signOut: () => void;
   updateSession: (nextSession: UserSession) => void;
@@ -43,7 +44,8 @@ type UserSessionContextValue = {
 
 const UserSessionContext = createContext<UserSessionContextValue | undefined>(undefined);
 
-const isAdminRole = (role: UserRole) => role === "admin" || role === "super-admin";
+const isAdminRole = (role: UserRole) =>
+  role === "admin" || role === "super-admin" || role === "admin-event";
 
 export function UserSessionProvider({ children }: { children: ReactNode }) {
   const [isHydrated, setIsHydrated] = useState(false);
@@ -106,6 +108,7 @@ export function UserSessionProvider({ children }: { children: ReactNode }) {
       session,
       isAuthenticated: Boolean(session),
       isAdmin: Boolean(session && isAdminRole(session.role)),
+      isEventAdmin: session?.role === "admin-event",
       signIn: (auth) => {
         setToken(auth.token ?? null);
         setSession(auth.session);

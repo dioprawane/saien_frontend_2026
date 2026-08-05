@@ -28,6 +28,81 @@
   animation: count-up 0.5s ease-out both;
 }
 
+/* Tiptap rich text editor placeholder */
+.tiptap p.is-editor-empty:first-child::before,
+.ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  color: #9ca3af;
+  pointer-events: none;
+}
+
+/* Shared rich text styling: used both by the admin RichTextEditor (live typing)
+   and by the public RichTextContent renderer, so what admins see while editing
+   matches what visitors see. Needed because Tailwind's preflight strips the
+   browser default styling of headings/lists/blockquotes. */
+.rich-text-content p:not(:last-child) {
+  margin-bottom: 0.75rem;
+}
+
+.rich-text-content h2 {
+  margin-top: 1.25rem;
+  margin-bottom: 0.5rem;
+  font-size: 1.125rem;
+  font-weight: 700;
+}
+
+.rich-text-content h3 {
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.rich-text-content ul {
+  margin-bottom: 0.75rem;
+  padding-left: 1.25rem;
+  list-style-type: disc;
+}
+
+.rich-text-content ol {
+  margin-bottom: 0.75rem;
+  padding-left: 1.25rem;
+  list-style-type: decimal;
+}
+
+.rich-text-content li {
+  margin-bottom: 0.25rem;
+}
+
+.rich-text-content li p {
+  margin-bottom: 0;
+}
+
+.rich-text-content blockquote {
+  margin: 0.75rem 0;
+  padding-left: 1rem;
+  border-left: 4px solid #e2e8f0;
+  font-style: italic;
+  color: #64748b;
+}
+
+.rich-text-content a {
+  color: var(--brand-green);
+  text-decoration: underline;
+}
+
+.rich-text-content strong {
+  font-weight: 700;
+}
+
+.rich-text-content em {
+  font-style: italic;
+}
+
+
+
 .animate-modal-in {
   animation: modal-in 0.25s cubic-bezier(0.16, 1, 0.3, 1) both;
 }

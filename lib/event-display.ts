@@ -49,6 +49,56 @@ export function toEventDate(event: AgendaEvent): Date | null {
   return date;
 }
 
+export function toEventEndDate(event: AgendaEvent): Date | null {
+  if (!event.endDay || !event.endMonth || !event.endYear) {
+    return toEventDate(event);
+  }
+
+  const year = Number(event.endYear);
+  const day = Number(event.endDay);
+  const month = MONTH_INDEX_BY_KEY[normalizeMonthKey(event.endMonth)] ?? -1;
+
+  if (!Number.isInteger(year) || !Number.isInteger(day) || month < 0) {
+    return toEventDate(event);
+  }
+
+  const date = new Date(year, month, day, 0, 0, 0, 0);
+  if (Number.isNaN(date.getTime())) {
+    return toEventDate(event);
+  }
+
+  return date;
+}
+
+export function isMultiDayEvent(event: AgendaEvent): boolean {
+  return Boolean(event.endDay && event.endMonth && event.endYear);
+}
+
+/**
+ * Builds a human-readable date (or date range) label such as
+ * "24 OCT 2026", "24-26 OCT 2026", "24 OCT - 15 NOV 2026" or
+ * "24 OCT 2026 - 15 JAN 2027" depending on whether the event spans
+ * multiple days, months or years.
+ */
+export function formatEventDateLabel(event: AgendaEvent): string {
+  if (!isMultiDayEvent(event)) {
+    return `${event.day} ${event.month} ${event.year}`;
+  }
+
+  const sameYear = event.year === event.endYear;
+  const sameMonth = sameYear && event.month === event.endMonth;
+
+  if (sameMonth) {
+    return `${event.day}-${event.endDay} ${event.month} ${event.year}`;
+  }
+
+  if (sameYear) {
+    return `${event.day} ${event.month} - ${event.endDay} ${event.endMonth} ${event.year}`;
+  }
+
+  return `${event.day} ${event.month} ${event.year} - ${event.endDay} ${event.endMonth} ${event.endYear}`;
+}
+
 export function getEventChronology(event: AgendaEvent, now = new Date()): EventChronology {
   if (event.status === "cancelled") {
     return {
@@ -75,21 +125,22 @@ export function getEventChronology(event: AgendaEvent, now = new Date()): EventC
     };
   }
 
+  const endDate = toEventEndDate(event) ?? eventDate;
   const today = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
 
-  if (eventDate.getTime() === today.getTime()) {
-    return {
-      state: "today",
-      label: "Aujourd'hui",
-      className: "bg-blue-100 text-blue-700",
-    };
-  }
-
-  if (eventDate.getTime() < today.getTime()) {
+  if (today.getTime() > endDate.getTime()) {
     return {
       state: "finished",
       label: "Termine",
       className: "bg-slate-100 text-slate-700",
+    };
+  }
+
+  if (today.getTime() >= eventDate.getTime() && today.getTime() <= endDate.getTime()) {
+    return {
+      state: "today",
+      label: isMultiDayEvent(event) ? "En cours" : "Aujourd'hui",
+      className: "bg-blue-100 text-blue-700",
     };
   }
 
