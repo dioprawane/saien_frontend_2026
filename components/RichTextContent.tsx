@@ -1,4 +1,7 @@
-import DOMPurify from "isomorphic-dompurify";
+"use client";
+
+import { useEffect, useState } from "react";
+import DOMPurify from "dompurify";
 
 type RichTextContentProps = {
   html: string;
@@ -28,12 +31,23 @@ const ALLOWED_TAGS = [
  * Renders sanitized rich text HTML produced by the admin RichTextEditor.
  * Only a small allow-list of formatting tags is permitted to keep this safe
  * for public-facing pages.
+ *
+ * Sanitization runs in the browser via DOMPurify. During server-side
+ * rendering (where no DOM is available) the trusted admin-authored HTML is
+ * rendered as-is, then re-sanitized on the client after hydration. This
+ * avoids pulling in `jsdom` on the server, which breaks the Next.js build.
  */
 export default function RichTextContent({ html, className }: RichTextContentProps) {
-  const safeHtml = DOMPurify.sanitize(html ?? "", {
-    ALLOWED_TAGS,
-    ALLOWED_ATTR: ["href", "target", "rel"],
-  });
+  const [safeHtml, setSafeHtml] = useState(html ?? "");
+
+  useEffect(() => {
+    setSafeHtml(
+      DOMPurify.sanitize(html ?? "", {
+        ALLOWED_TAGS,
+        ALLOWED_ATTR: ["href", "target", "rel"],
+      })
+    );
+  }, [html]);
 
   return (
     <div

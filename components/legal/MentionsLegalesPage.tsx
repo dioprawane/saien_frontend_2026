@@ -21,7 +21,11 @@ const SECTIONS = [
     icon: Building2,
     title: "Informations de l'Éditeur",
     paragraphs: [
-      "Le site SAIEN (ci-après le Site) est édité par l'association SAIEN (Senegalese Artificial Intelligence Excellence Network), association loi 1901 à but non lucratif, fondée le 30 novembre 2025.",
+      "SENEGALESE ARTIFICIAL INTELLIGENCE EXCELLENCE NETWORK (SAIEN)",
+      "Association loi 1901 — N° RNA : W062020725 — SIRET : 995 258 290 00015",
+      "Journal Officiel des Associations n° 20250050 du 16/12/2025 – Annonce n° 122",
+      "Siège social : 12 boulevard Joseph Garnier, 06000 NICE, France",
+      "Contact : bureau@saien.org",
     ],
   },
   {
@@ -101,17 +105,9 @@ export default function MentionsLegalesPage() {
 
                   {id === 1 && (
                     <div className="mt-4 rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-2.5 text-sm text-slate-600">
-                      <p className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-[#0e6f5c] shrink-0" aria-hidden="true" />
-                        Siège social : 12 boulevard Joseph Garnier, 06000 Nice, France
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <Mail className="h-4 w-4 text-[#0e6f5c] shrink-0" aria-hidden="true" />
-                        Email de contact : bureau@saien.org
-                      </p>
-                      <p className="flex items-center gap-2">
-                        <UserRound className="h-4 w-4 text-[#0e6f5c] shrink-0" aria-hidden="true" />
-                        Directeur de la publication : M. DIOP Serigne Rawane, Président-Fondateur.
+                      <p className="flex items-start gap-2">
+                        <MapPin className="h-4 w-4 text-[#0e6f5c] shrink-0 mt-0.5" aria-hidden="true" />
+                        <span>SENEGALESE ARTIFICIAL INTELLIGENCE EXCELLENCE NETWORK (SAIEN)<br />Association loi 1901 — N° RNA : W062020725 — SIRET : 995 258 290 00015<br />Journal Officiel des Associations n° 20250050 du 16/12/2025 – Annonce n° 122<br />Siège social : 12 boulevard Joseph Garnier, 06000 NICE, France<br />Contact : bureau@saien.org</span>
                       </p>
                     </div>
                   )}

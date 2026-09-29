@@ -5,7 +5,7 @@ export type AuthApiSession = {
   id: string;
   fullName: string;
   email: string;
-  role: "member" | "admin" | "super-admin";
+  role: "member" | "admin" | "super-admin" | "admin-event";
   isMember: boolean;
   memberLabel: string;
   memberType: string | null;

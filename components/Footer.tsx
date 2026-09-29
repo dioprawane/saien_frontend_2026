@@ -124,9 +124,14 @@ export default function Footer() {
               </li>
               <li className="flex items-start gap-2 text-sm">
                 <MapPin className="w-4 h-4 shrink-0 text-[#0e6f5c] mt-0.5" aria-hidden="true" />
-                <span>06000 Nice, FRANCE</span>
+                <span>12 boulevard Joseph Garnier, 06000 NICE, France</span>
               </li>
             </ul>
+            <div className="mt-5 rounded-xl border border-white/10 bg-white/5 p-3 text-[11px] leading-relaxed text-slate-300">
+              <p>Association loi 1901 — N° RNA : W062020725 — SIRET : 995 258 290 00015</p>
+              <p>JO des Associations n° 20250050 du 16/12/2025 – Annonce n° 122</p>
+              <p>Siège social : 12 boulevard Joseph Garnier, 06000 NICE, France</p>
+            </div>
             <Link
               href="/contact"
               className="mt-5 inline-flex items-center gap-2 rounded-lg bg-[#0e6f5c] px-4 py-2 text-sm font-semibold text-white hover:bg-[#0b5a4a] transition-colors"

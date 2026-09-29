@@ -141,3 +141,14 @@ Le build de production utilise `output: "standalone"` de Next.js.
 PS C:\Projets\saien\front> docker compose up web 
 ```
 
+# Exécuter le zip 
+```
+Remove-Item -Recurse -Force .\deploy-runtime -ErrorAction SilentlyContinue                       
+>> New-Item -ItemType Directory -Path .\deploy-runtime\.next -Force | Out-Null
+>> 
+>> Copy-Item -Recurse -Force .\.next\standalone\* .\deploy-runtime\
+>> Copy-Item -Recurse -Force .\.next\static .\deploy-runtime\.next\
+>> Copy-Item -Recurse -Force .\public .\deploy-runtime\
+>> 
+>> Compress-Archive -Path .\deploy-runtime\* -DestinationPath .\saien-front-runtime.zip -Force
+```
